@@ -2,13 +2,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HighlightDirective } from './directives/highlight.directive';
 import { TruncatePipe } from './pipes/truncate.pipe';
+import { InputFieldComponent } from './components/form/input-field/input-field.component';
 
 
 
 @NgModule({
   declarations: [
     HighlightDirective,
-    TruncatePipe
+    TruncatePipe,
+    InputFieldComponent
   ],
   imports: [
     CommonModule
@@ -16,7 +18,8 @@ import { TruncatePipe } from './pipes/truncate.pipe';
   exports: [
     CommonModule,
     HighlightDirective,
-    TruncatePipe
+    TruncatePipe,
+    InputFieldComponent
   ]
 })
 export class SharedModule { }
