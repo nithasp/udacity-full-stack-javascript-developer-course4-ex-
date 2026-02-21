@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HighlightDirective } from './directives/highlight.directive';
 import { TruncatePipe } from './pipes/truncate.pipe';
 import { InputFieldComponent } from './components/form/input-field/input-field.component';
+import { CartComponent } from './components/cart/cart.component';
 
 
 
@@ -10,7 +11,8 @@ import { InputFieldComponent } from './components/form/input-field/input-field.c
   declarations: [
     HighlightDirective,
     TruncatePipe,
-    InputFieldComponent
+    InputFieldComponent,
+    CartComponent
   ],
   imports: [
     CommonModule
