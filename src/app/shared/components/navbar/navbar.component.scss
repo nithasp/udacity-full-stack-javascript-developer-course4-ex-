@@ -1,0 +1,141 @@
+@import 'variables';
+@import 'mixins';
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: $color-bg-white;
+  border-bottom: 1px solid $color-border;
+  box-shadow: $shadow-sm;
+  height: $navbar-height;
+
+  &__container {
+    @include container;
+    @include flex-between;
+    height: 100%;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: 1.65rem;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+    text-decoration: none;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__logo {
+    color: $color-primary;
+    font-size: 2.0625rem;
+  }
+
+  &__toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: $spacing-sm;
+
+    @include respond-to(md) {
+      display: none;
+    }
+  }
+
+  &__toggle-bar {
+    width: 31px;
+    height: 3px;
+    background: $color-text;
+    border-radius: 2px;
+    transition: all $transition-fast;
+  }
+
+  &__menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: $navbar-height;
+    left: 0;
+    right: 0;
+    background: $color-bg-white;
+    border-bottom: 1px solid $color-border;
+    padding: $spacing-md;
+    box-shadow: $shadow-lg;
+    animation: slideUp 0.2s ease;
+
+    &--open {
+      display: flex;
+    }
+
+    @include respond-to(md) {
+      display: flex;
+      flex-direction: row;
+      position: static;
+      background: none;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+      gap: $spacing-sm;
+      align-items: center;
+      animation: none;
+    }
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    font-size: 1.1rem;
+    font-weight: $font-weight-medium;
+    color: $color-text-light;
+    text-decoration: none;
+    border-radius: $border-radius-md;
+    transition: all $transition-fast;
+
+    &:hover {
+      color: $color-primary;
+      background: $color-primary-bg;
+    }
+
+    &--active {
+      color: $color-primary;
+      background: $color-primary-bg;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  &__cart-link {
+    position: relative;
+  }
+
+  &__cart-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  &__badge {
+    @include flex-center;
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    background: $color-primary;
+    color: white;
+    font-size: 14px;
+    font-weight: $font-weight-bold;
+    border-radius: $border-radius-full;
+    line-height: 1;
+    animation: scaleIn 0.3s ease;
+  }
+}

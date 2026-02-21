@@ -6,13 +6,15 @@ import { HighlightDirective } from './directives/highlight.directive';
 import { TruncatePipe } from './pipes/truncate.pipe';
 import { InputFieldComponent } from './components/form/input-field/input-field.component';
 import { ProductCardComponent } from './components/product-card/product-card.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @NgModule({
   declarations: [
     HighlightDirective,
     TruncatePipe,
     InputFieldComponent,
-    ProductCardComponent
+    ProductCardComponent,
+    NavbarComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +28,8 @@ import { ProductCardComponent } from './components/product-card/product-card.com
     HighlightDirective,
     TruncatePipe,
     InputFieldComponent,
-    ProductCardComponent
+    ProductCardComponent,
+    NavbarComponent
   ]
 })
 export class SharedModule {}

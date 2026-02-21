@@ -1,43 +1,4 @@
-<nav class="navbar">
-  <div class="navbar__container">
-    <a routerLink="/products" class="navbar__brand" (click)="closeMobileMenu()">
-      <span class="navbar__logo">&#9670;</span>
-      {{ title }}
-    </a>
-
-    <button
-      class="navbar__toggle"
-      (click)="toggleMobileMenu()"
-      [attr.aria-expanded]="mobileMenuOpen"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar__toggle-bar"></span>
-      <span class="navbar__toggle-bar"></span>
-      <span class="navbar__toggle-bar"></span>
-    </button>
-
-    <div class="navbar__menu" [class.navbar__menu--open]="mobileMenuOpen">
-      <a
-        routerLink="/products"
-        routerLinkActive="navbar__link--active"
-        class="navbar__link"
-        (click)="closeMobileMenu()"
-      >
-        Products
-      </a>
-      <a
-        routerLink="/cart"
-        routerLinkActive="navbar__link--active"
-        class="navbar__link navbar__cart-link"
-        (click)="closeMobileMenu()"
-      >
-        Cart
-        <span *ngIf="cartCount > 0" class="navbar__badge">{{ cartCount }}</span>
-      </a>
-    </div>
-  </div>
-</nav>
-
+<app-navbar></app-navbar>
 <main class="main-content">
   <router-outlet></router-outlet>
 </main>
