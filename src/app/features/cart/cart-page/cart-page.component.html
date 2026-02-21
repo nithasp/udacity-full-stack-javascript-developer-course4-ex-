@@ -1,0 +1,135 @@
+<div class="cart-page animate-fade-in">
+  <h1 class="cart-page__title">Shopping Cart</h1>
+
+  <div *ngIf="cartItems.length === 0 && !showCheckout" class="cart-page__empty">
+    <div class="cart-page__empty-icon">&#128722;</div>
+    <h2>Your cart is empty</h2>
+    <p>Looks like you haven't added any products yet.</p>
+    <a routerLink="/products" class="cart-page__continue-btn">Browse Products</a>
+  </div>
+
+  <div *ngIf="cartItems.length > 0" class="cart-page__content">
+    <div class="cart-page__items">
+      <div *ngFor="let item of cartItems" class="cart-item animate-slide-up">
+        <a [routerLink]="['/products', item.product._id]" class="cart-item__image-link">
+          <img
+            [src]="item.selectedType?.image || item.product.image"
+            [alt]="item.product.name"
+            class="cart-item__image"
+          />
+        </a>
+
+        <div class="cart-item__details">
+          <h3 class="cart-item__name">{{ item.product.name }}</h3>
+          <p *ngIf="item.selectedType" class="cart-item__variant">
+            Color: {{ item.selectedType.color }}
+          </p>
+          <p class="cart-item__price">${{ getItemPrice(item) | number:'1.2-2' }}</p>
+        </div>
+
+        <div class="cart-item__actions">
+          <select
+            class="cart-item__quantity"
+            [ngModel]="item.quantity"
+            (ngModelChange)="updateQuantity(item, $event)"
+            [name]="'qty-' + item.product._id"
+            aria-label="Quantity"
+          >
+            <option *ngFor="let q of quantities" [ngValue]="q">{{ q }}</option>
+          </select>
+
+          <span class="cart-item__subtotal">
+            ${{ getItemSubtotal(item) | number:'1.2-2' }}
+          </span>
+
+          <button class="cart-item__remove" (click)="removeItem(item)" aria-label="Remove item">
+            &times;
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-page__summary">
+      <div class="cart-summary">
+        <h2 class="cart-summary__title">Order Summary</h2>
+        <div class="cart-summary__row">
+          <span>Items ({{ cartCount }})</span>
+          <span>${{ cartTotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="cart-summary__row">
+          <span>Shipping</span>
+          <span class="cart-summary__free">Free</span>
+        </div>
+        <div class="cart-summary__total">
+          <span>Total</span>
+          <span>${{ cartTotal | number:'1.2-2' }}</span>
+        </div>
+        <button
+          class="cart-summary__checkout-btn"
+          (click)="toggleCheckout()"
+          *ngIf="!showCheckout"
+        >
+          Proceed to Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showCheckout" class="cart-page__checkout animate-slide-up">
+    <h2 class="cart-page__checkout-title">Checkout</h2>
+    <form class="checkout-form" (ngSubmit)="onCheckout()" #checkoutForm="ngForm">
+      <app-input-field
+        label="Full Name"
+        name="fullName"
+        placeholder="Enter your full name"
+        [(ngModel)]="checkoutData.fullName"
+        (ngModelChange)="onFieldChange('fullName', $event)"
+        [required]="true"
+        [minLength]="3"
+        successMessage="Looks good!"
+      ></app-input-field>
+
+      <app-input-field
+        label="Address"
+        name="address"
+        placeholder="Enter your shipping address"
+        [(ngModel)]="checkoutData.address"
+        (ngModelChange)="onFieldChange('address', $event)"
+        [required]="true"
+        [minLength]="6"
+        successMessage="Valid address"
+      ></app-input-field>
+
+      <app-input-field
+        label="City"
+        name="city"
+        placeholder="Enter your city"
+        [(ngModel)]="checkoutData.city"
+        (ngModelChange)="onFieldChange('city', $event)"
+        [required]="true"
+        [minLength]="2"
+        successMessage="Valid city"
+      ></app-input-field>
+
+      <app-input-field
+        label="Credit Card Number"
+        name="creditCard"
+        placeholder="1234567890123456"
+        [(ngModel)]="checkoutData.creditCard"
+        (ngModelChange)="onFieldChange('creditCard', $event)"
+        [required]="true"
+        pattern="^\d{16}$"
+        [errorMessages]="{ pattern: 'Credit card must be 16 digits' }"
+        successMessage="Valid card number"
+      ></app-input-field>
+
+      <button
+        type="submit"
+        class="checkout-form__submit"
+        [disabled]="!isFormValid"
+      >
+        Place Order — ${{ cartTotal | number:'1.2-2' }}
+      </button>
+    </form>
+  </div>
+</div>

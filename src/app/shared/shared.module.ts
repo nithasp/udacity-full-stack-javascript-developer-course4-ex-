@@ -1,27 +1,32 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { HighlightDirective } from './directives/highlight.directive';
 import { TruncatePipe } from './pipes/truncate.pipe';
 import { InputFieldComponent } from './components/form/input-field/input-field.component';
-import { CartComponent } from './components/cart/cart.component';
-
-
+import { ProductCardComponent } from './components/product-card/product-card.component';
 
 @NgModule({
   declarations: [
     HighlightDirective,
     TruncatePipe,
     InputFieldComponent,
-    CartComponent
+    ProductCardComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule,
+    RouterModule
   ],
   exports: [
     CommonModule,
+    FormsModule,
+    RouterModule,
     HighlightDirective,
     TruncatePipe,
-    InputFieldComponent
+    InputFieldComponent,
+    ProductCardComponent
   ]
 })
-export class SharedModule { }
+export class SharedModule {}

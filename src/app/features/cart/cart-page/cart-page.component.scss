@@ -1,0 +1,220 @@
+@import 'variables';
+@import 'mixins';
+
+.cart-page {
+  @include container;
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-3xl;
+
+  &__title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__empty {
+    @include flex-center;
+    flex-direction: column;
+    gap: $spacing-md;
+    padding: $spacing-3xl 0;
+    text-align: center;
+    color: $color-text-light;
+  }
+
+  &__empty-icon {
+    font-size: 4rem;
+    margin-bottom: $spacing-md;
+  }
+
+  &__continue-btn {
+    @include button-primary;
+    margin-top: $spacing-md;
+    text-decoration: none;
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-xl;
+
+    @include respond-to(lg) {
+      grid-template-columns: 1fr 360px;
+    }
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__checkout {
+    margin-top: $spacing-xl;
+    max-width: 560px;
+  }
+
+  &__checkout-title {
+    font-size: $font-size-2xl;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.cart-item {
+  @include card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+  }
+
+  &__image-link {
+    flex-shrink: 0;
+  }
+
+  &__image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: $border-radius-md;
+
+    @include respond-to(md) {
+      width: 120px;
+      height: 120px;
+    }
+  }
+
+  &__details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    margin-bottom: $spacing-xs;
+    @include truncate-text;
+
+    @include respond-to(md) {
+      font-size: $font-size-lg;
+    }
+  }
+
+  &__variant {
+    font-size: $font-size-sm;
+    color: $color-text-light;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__price {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-primary;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex-shrink: 0;
+  }
+
+  &__quantity {
+    padding: $spacing-xs $spacing-sm;
+    border: 2px solid $color-border;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    color: $color-text;
+    cursor: pointer;
+    outline: none;
+    min-width: 50px;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  &__subtotal {
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  &__remove {
+    @include button-base;
+    background: none;
+    color: $color-text-muted;
+    font-size: $font-size-2xl;
+    padding: $spacing-xs;
+    line-height: 1;
+
+    &:hover {
+      color: $color-error;
+      transform: scale(1.2);
+    }
+  }
+}
+
+.cart-summary {
+  @include card;
+  padding: $spacing-lg;
+  position: sticky;
+  top: calc($navbar-height + $spacing-lg);
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__row {
+    @include flex-between;
+    padding: $spacing-sm 0;
+    font-size: $font-size-base;
+    color: $color-text-light;
+  }
+
+  &__free {
+    color: $color-success;
+    font-weight: $font-weight-medium;
+  }
+
+  &__total {
+    @include flex-between;
+    padding: $spacing-md 0;
+    margin-top: $spacing-md;
+    border-top: 2px solid $color-text;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+  }
+
+  &__checkout-btn {
+    @include button-primary;
+    width: 100%;
+    padding: $spacing-md;
+    font-size: $font-size-base;
+    margin-top: $spacing-lg;
+  }
+}
+
+.checkout-form {
+  background: $color-bg-white;
+  border-radius: $border-radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-md;
+
+  &__submit {
+    @include button-primary;
+    width: 100%;
+    padding: $spacing-md;
+    font-size: $font-size-lg;
+    margin-top: $spacing-md;
+  }
+}

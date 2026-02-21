@@ -1,21 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'products', pathMatch: 'full' },
   {
-    path: 'auth',
+    path: 'products',
     loadChildren: () =>
-      import('./features/auth/auth.module').then((m) => m.AuthModule)
+      import('./features/products/products.module').then(m => m.ProductsModule)
   },
   {
-    path: 'products',
-    canActivate: [authGuard],
+    path: 'cart',
     loadChildren: () =>
-      import('./features/products/products.module').then(
-        (m) => m.ProductsModule
-      )
+      import('./features/cart/cart.module').then(m => m.CartModule)
   },
   { path: '**', redirectTo: 'products' }
 ];
@@ -24,4 +20,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
