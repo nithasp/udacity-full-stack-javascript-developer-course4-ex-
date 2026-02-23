@@ -137,19 +137,19 @@
     padding: $spacing-lg;
     display: flex;
     flex-direction: column;
-    gap: $spacing-md;
+    gap: $spacing-sm-md;
   }
 
   &__actions {
     display: flex;
+    justify-content: flex-end;
     gap: $spacing-md;
     margin-top: $spacing-xs;
   }
 
   &__cancel {
     @include button-base;
-    flex: 1;
-    padding: $spacing-md;
+    padding: $spacing-sm $spacing-xl;
     background: $color-bg;
     color: $color-text;
     border-radius: $border-radius-md;
@@ -162,8 +162,7 @@
 
   &__save {
     @include button-primary;
-    flex: 2;
-    padding: $spacing-md;
+    padding: $spacing-sm $spacing-xl;
     font-size: $font-size-base;
   }
 }

@@ -18,6 +18,7 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
   dialogMode: AddressDialogMode = 'list';
   editingAddressId: string | null = null;
   addressForm: AddressForm = this.blankForm();
+  formSubmitted = false;
 
   constructor(
     private elementRef: ElementRef<HTMLElement>,
@@ -42,11 +43,13 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     this.dialogMode = 'list';
     this.editingAddressId = null;
     this.addressForm = this.blankForm();
+    this.formSubmitted = false;
   }
 
   // ── Navigation ─────────────────────────────────────────────────────────────
 
   openAddMode(): void {
+    this.formSubmitted = false;
     this.addressForm = this.blankForm();
     this.editingAddressId = null;
     this.dialogMode = 'add';
@@ -54,6 +57,7 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
 
   openEditMode(address: AddressEntry, event: Event): void {
     event.preventDefault();
+    this.formSubmitted = false;
     this.editingAddressId = address.id;
     this.addressForm = {
       fullName: address.fullName,
@@ -67,6 +71,7 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   backToList(): void {
+    this.formSubmitted = false;
     this.editingAddressId = null;
     this.addressForm = this.blankForm();
     this.dialogMode = 'list';
@@ -116,10 +121,10 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   saveAddress(): void {
+    this.formSubmitted = true;
     if (!this.addressForm.fullName.trim() ||
         !this.addressForm.address.trim() ||
         !this.addressForm.city.trim()) {
-      this.notificationService.error('Please fill in all required fields.');
       return;
     }
 

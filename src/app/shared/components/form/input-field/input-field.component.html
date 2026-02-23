@@ -1,6 +1,5 @@
 <div class="input-field"
-     [class.input-field--error]="showErrors"
-     [class.input-field--success]="showSuccess">
+     [class.input-field--error]="showErrors">
   <label class="input-field__label" [for]="name">
     {{ label }}
     <span *ngIf="required" class="input-field__required">*</span>
@@ -21,9 +20,6 @@
   <div class="input-field__feedback" [id]="name + '-feedback'">
     <span *ngIf="showErrors" class="input-field__error-msg">
       {{ errors[0] }}
-    </span>
-    <span *ngIf="showSuccess && successMessage" class="input-field__success-msg">
-      {{ successMessage }}
     </span>
   </div>
 </div>

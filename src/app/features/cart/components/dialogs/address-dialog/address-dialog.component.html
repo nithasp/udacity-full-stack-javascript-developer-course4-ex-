@@ -75,53 +75,41 @@
 
       <form class="address-dialog__form" (ngSubmit)="saveAddress()">
         <div class="address-form-row">
-          <div class="address-form-field">
-            <label class="address-form-field__label">Full Name <span class="address-form-field__req">*</span></label>
-            <input
-              type="text"
-              class="address-form-field__input"
-              [(ngModel)]="addressForm.fullName"
-              name="afFullName"
-              placeholder="Full Name"
-              autocomplete="name"
-            />
-          </div>
-          <div class="address-form-field">
-            <label class="address-form-field__label">Phone Number</label>
-            <input
-              type="tel"
-              class="address-form-field__input"
-              [(ngModel)]="addressForm.phone"
-              name="afPhone"
-              placeholder="Phone Number"
-              autocomplete="tel"
-            />
-          </div>
+          <app-input-field
+            name="afFullName"
+            label="Full Name"
+            placeholder="Full Name"
+            [required]="true"
+            [forceTouch]="formSubmitted"
+            [(ngModel)]="addressForm.fullName"
+          ></app-input-field>
+          <app-input-field
+            name="afPhone"
+            label="Phone Number"
+            type="tel"
+            placeholder="Phone Number"
+            [forceTouch]="formSubmitted"
+            [(ngModel)]="addressForm.phone"
+          ></app-input-field>
         </div>
 
-        <div class="address-form-field">
-          <label class="address-form-field__label">City / Province <span class="address-form-field__req">*</span></label>
-          <input
-            type="text"
-            class="address-form-field__input"
-            [(ngModel)]="addressForm.city"
-            name="afCity"
-            placeholder="City, Province, Postal Code"
-            autocomplete="address-level2"
-          />
-        </div>
+        <app-input-field
+          name="afCity"
+          label="City / Province"
+          placeholder="City, Province, Postal Code"
+          [required]="true"
+          [forceTouch]="formSubmitted"
+          [(ngModel)]="addressForm.city"
+        ></app-input-field>
 
-        <div class="address-form-field">
-          <label class="address-form-field__label">Street Address <span class="address-form-field__req">*</span></label>
-          <input
-            type="text"
-            class="address-form-field__input"
-            [(ngModel)]="addressForm.address"
-            name="afAddress"
-            placeholder="Street Name, Building, House No."
-            autocomplete="street-address"
-          />
-        </div>
+        <app-input-field
+          name="afAddress"
+          label="Street Address"
+          placeholder="Street Name, Building, House No."
+          [required]="true"
+          [forceTouch]="formSubmitted"
+          [(ngModel)]="addressForm.address"
+        ></app-input-field>
 
         <div class="address-form-field">
           <label class="address-form-field__label">Label As</label>

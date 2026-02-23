@@ -23,7 +23,7 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() maxLength = 0;
   @Input() pattern = '';
   @Input() errorMessages: Record<string, string> = {};
-  @Input() successMessage = '';
+  @Input() forceTouch = false;
 
   @Output() valueChanged = new EventEmitter<string>();
 
@@ -92,11 +92,7 @@ export class InputFieldComponent implements ControlValueAccessor {
   }
 
   get showErrors(): boolean {
-    return this.touched && this.errors.length > 0;
-  }
-
-  get showSuccess(): boolean {
-    return this.touched && this.errors.length === 0 && !!this.value?.trim();
+    return (this.touched || this.forceTouch) && this.errors.length > 0;
   }
 
   get isValid(): boolean {
