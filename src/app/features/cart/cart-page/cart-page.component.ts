@@ -13,7 +13,6 @@ import { NotificationService } from '../../../core/services/notification.service
 export class CartPageComponent implements OnInit, OnDestroy {
   cartItems: CartItem[] = [];
   quantities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  showCheckout = false;
 
   checkoutData = {
     fullName: '',
@@ -64,14 +63,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
   removeItem(item: CartItem): void {
     this.cartService.removeFromCart(item.product._id, item.selectedType?._id);
     this.notificationService.info(`${item.product.name} removed from cart`);
-  }
-
-  toggleCheckout(): void {
-    if (this.cartItems.length === 0) {
-      this.notificationService.warning('Your cart is empty');
-      return;
-    }
-    this.showCheckout = true;
   }
 
   onFieldChange(_field: string, _value: string): void {

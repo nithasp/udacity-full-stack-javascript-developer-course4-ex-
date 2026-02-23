@@ -36,9 +36,10 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: $spacing-xl;
+    align-items: start;
 
     @include respond-to(lg) {
-      grid-template-columns: 1fr 360px;
+      grid-template-columns: 1fr 400px;
     }
   }
 
@@ -48,14 +49,25 @@
     gap: $spacing-md;
   }
 
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+
   &__checkout {
-    margin-top: $spacing-xl;
-    max-width: 560px;
+    background: $color-bg-white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+    padding: $spacing-lg;
   }
 
   &__checkout-title {
-    font-size: $font-size-2xl;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
     margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $color-border;
   }
 }
 
@@ -162,8 +174,6 @@
 .cart-summary {
   @include card;
   padding: $spacing-lg;
-  position: sticky;
-  top: calc($navbar-height + $spacing-lg);
 
   &__title {
     font-size: $font-size-xl;
@@ -205,11 +215,6 @@
 }
 
 .checkout-form {
-  background: $color-bg-white;
-  border-radius: $border-radius-lg;
-  padding: $spacing-lg;
-  box-shadow: $shadow-md;
-
   &__submit {
     @include button-primary;
     width: 100%;

@@ -1,7 +1,7 @@
 <div class="cart-page animate-fade-in">
   <h1 class="cart-page__title">Shopping Cart</h1>
 
-  <div *ngIf="cartItems.length === 0 && !showCheckout" class="cart-page__empty">
+  <div *ngIf="cartItems.length === 0" class="cart-page__empty">
     <div class="cart-page__empty-icon">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="9" cy="21" r="1"></circle>
@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    <div class="cart-page__summary">
+    <div class="cart-page__sidebar">
       <div class="cart-summary">
         <h2 class="cart-summary__title">Order Summary</h2>
         <div class="cart-summary__row">
@@ -70,72 +70,68 @@
           <span>Total</span>
           <span>${{ cartTotal | number:'1.2-2' }}</span>
         </div>
-        <button
-          class="cart-summary__checkout-btn"
-          (click)="toggleCheckout()"
-          *ngIf="!showCheckout"
-        >
+        <a class="cart-summary__checkout-btn" href="#checkout">
           Proceed to Checkout
-        </button>
+        </a>
+      </div>
+
+      <div id="checkout" class="cart-page__checkout animate-slide-up">
+        <h2 class="cart-page__checkout-title">Checkout</h2>
+        <form class="checkout-form" (ngSubmit)="onCheckout()" #checkoutForm="ngForm">
+          <app-input-field
+            label="Full Name"
+            name="fullName"
+            placeholder="Enter your full name"
+            [(ngModel)]="checkoutData.fullName"
+            (ngModelChange)="onFieldChange('fullName', $event)"
+            [required]="true"
+            [minLength]="3"
+            successMessage="Looks good!"
+          ></app-input-field>
+
+          <app-input-field
+            label="Address"
+            name="address"
+            placeholder="Enter your shipping address"
+            [(ngModel)]="checkoutData.address"
+            (ngModelChange)="onFieldChange('address', $event)"
+            [required]="true"
+            [minLength]="6"
+            successMessage="Valid address"
+          ></app-input-field>
+
+          <app-input-field
+            label="City"
+            name="city"
+            placeholder="Enter your city"
+            [(ngModel)]="checkoutData.city"
+            (ngModelChange)="onFieldChange('city', $event)"
+            [required]="true"
+            [minLength]="2"
+            successMessage="Valid city"
+          ></app-input-field>
+
+          <app-input-field
+            label="Credit Card Number"
+            name="creditCard"
+            placeholder="1234567890123456"
+            [(ngModel)]="checkoutData.creditCard"
+            (ngModelChange)="onFieldChange('creditCard', $event)"
+            [required]="true"
+            pattern="^\d{16}$"
+            [errorMessages]="{ pattern: 'Credit card must be 16 digits' }"
+            successMessage="Valid card number"
+          ></app-input-field>
+
+          <button
+            type="submit"
+            class="checkout-form__submit"
+            [disabled]="!isFormValid"
+          >
+            Place Order — ${{ cartTotal | number:'1.2-2' }}
+          </button>
+        </form>
       </div>
     </div>
-  </div>
-
-  <div *ngIf="showCheckout" class="cart-page__checkout animate-slide-up">
-    <h2 class="cart-page__checkout-title">Checkout</h2>
-    <form class="checkout-form" (ngSubmit)="onCheckout()" #checkoutForm="ngForm">
-      <app-input-field
-        label="Full Name"
-        name="fullName"
-        placeholder="Enter your full name"
-        [(ngModel)]="checkoutData.fullName"
-        (ngModelChange)="onFieldChange('fullName', $event)"
-        [required]="true"
-        [minLength]="3"
-        successMessage="Looks good!"
-      ></app-input-field>
-
-      <app-input-field
-        label="Address"
-        name="address"
-        placeholder="Enter your shipping address"
-        [(ngModel)]="checkoutData.address"
-        (ngModelChange)="onFieldChange('address', $event)"
-        [required]="true"
-        [minLength]="6"
-        successMessage="Valid address"
-      ></app-input-field>
-
-      <app-input-field
-        label="City"
-        name="city"
-        placeholder="Enter your city"
-        [(ngModel)]="checkoutData.city"
-        (ngModelChange)="onFieldChange('city', $event)"
-        [required]="true"
-        [minLength]="2"
-        successMessage="Valid city"
-      ></app-input-field>
-
-      <app-input-field
-        label="Credit Card Number"
-        name="creditCard"
-        placeholder="1234567890123456"
-        [(ngModel)]="checkoutData.creditCard"
-        (ngModelChange)="onFieldChange('creditCard', $event)"
-        [required]="true"
-        pattern="^\d{16}$"
-        [errorMessages]="{ pattern: 'Credit card must be 16 digits' }"
-        successMessage="Valid card number"
-      ></app-input-field>
-
-      <button
-        type="submit"
-        class="checkout-form__submit"
-        [disabled]="!isFormValid"
-      >
-        Place Order — ${{ cartTotal | number:'1.2-2' }}
-      </button>
-    </form>
   </div>
 </div>
