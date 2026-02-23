@@ -1,6 +1,8 @@
 @import 'variables';
 @import 'mixins';
 
+// ─── Page Layout ──────────────────────────────────────────────────────────────
+
 .cart-page {
   @include container;
   padding-top: $spacing-xl;
@@ -24,6 +26,7 @@
   &__empty-icon {
     font-size: 4rem;
     margin-bottom: $spacing-md;
+    color: $color-text-muted;
   }
 
   &__continue-btn {
@@ -54,22 +57,119 @@
     flex-direction: column;
     gap: $spacing-lg;
   }
+}
 
-  &__checkout {
-    background: $color-bg-white;
-    border-radius: $border-radius-lg;
-    box-shadow: $shadow-md;
-    padding: $spacing-lg;
-  }
+// ─── Delivery Address Bar ─────────────────────────────────────────────────────
 
-  &__checkout-title {
-    font-size: $font-size-xl;
+.delivery-bar {
+  background: $color-bg-white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-lg;
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
     font-weight: $font-weight-bold;
-    margin-bottom: $spacing-lg;
-    padding-bottom: $spacing-md;
+    color: $color-primary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: $spacing-sm;
+    padding-bottom: $spacing-sm;
     border-bottom: 1px solid $color-border;
   }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+    white-space: nowrap;
+  }
+
+  &__phone {
+    font-size: $font-size-sm;
+    color: $color-text-light;
+    white-space: nowrap;
+  }
+
+  &__sep {
+    color: $color-border-dark;
+    user-select: none;
+  }
+
+  &__address {
+    font-size: $font-size-sm;
+    color: $color-text-light;
+  }
+
+  &__default {
+    display: inline-block;
+    border: 1px solid $color-primary;
+    color: $color-primary;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    padding: 1px 7px;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__change {
+    @include button-base;
+    color: $color-primary;
+    background: none;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    padding: $spacing-xs $spacing-md;
+    border: 1px solid $color-primary;
+    border-radius: $border-radius-sm;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: $color-primary;
+      color: $color-bg-white;
+    }
+  }
+
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+
+  &__add {
+    @include button-primary;
+    font-size: $font-size-sm;
+    padding: $spacing-xs $spacing-md;
+  }
 }
+
+// ─── Cart Item ────────────────────────────────────────────────────────────────
 
 .cart-item {
   @include card;
@@ -77,6 +177,7 @@
   align-items: center;
   gap: $spacing-md;
   padding: $spacing-md;
+  transition: box-shadow $transition-base;
 
   &:hover {
     box-shadow: $shadow-lg;
@@ -142,6 +243,7 @@
     cursor: pointer;
     outline: none;
     min-width: 50px;
+    transition: border-color $transition-fast;
 
     &:focus {
       border-color: $color-primary;
@@ -163,6 +265,7 @@
     font-size: $font-size-2xl;
     padding: $spacing-xs;
     line-height: 1;
+    transition: color $transition-fast, transform $transition-fast;
 
     &:hover {
       color: $color-error;
@@ -170,6 +273,8 @@
     }
   }
 }
+
+// ─── Order Summary ────────────────────────────────────────────────────────────
 
 .cart-summary {
   @include card;
@@ -188,6 +293,44 @@
     padding: $spacing-sm 0;
     font-size: $font-size-base;
     color: $color-text-light;
+
+    &--discount {
+      color: $color-success;
+    }
+  }
+
+  &__discount-badge {
+    display: inline-block;
+    background: $color-success-bg;
+    color: $color-success;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    padding: 2px 7px;
+    border-radius: $border-radius-full;
+    margin-left: $spacing-xs;
+  }
+
+  &__discount-value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: $color-success;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__remove-discount {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-text-muted;
+    font-size: $font-size-base;
+    line-height: 1;
+    padding: 0 2px;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $color-error;
+    }
   }
 
   &__free {
@@ -198,7 +341,7 @@
   &__total {
     @include flex-between;
     padding: $spacing-md 0;
-    margin-top: $spacing-md;
+    margin-top: $spacing-sm;
     border-top: 2px solid $color-text;
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
@@ -210,16 +353,195 @@
     width: 100%;
     padding: $spacing-md;
     font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
     margin-top: $spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
   }
 }
 
-.checkout-form {
-  &__submit {
-    @include button-primary;
-    width: 100%;
-    padding: $spacing-md;
-    font-size: $font-size-lg;
-    margin-top: $spacing-md;
+// ─── Discount Section ─────────────────────────────────────────────────────────
+
+.discount-section {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $color-border;
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__row {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__input {
+    flex: 1;
+    padding: $spacing-sm $spacing-md;
+    border: 2px solid $color-border;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-sm;
+    color: $color-text;
+    outline: none;
+    min-width: 0;
+    transition: border-color $transition-fast;
+
+    &:focus { border-color: $color-primary; }
+    &::placeholder { color: $color-text-muted; }
+  }
+
+  &__apply {
+    @include button-base;
+    background: $color-text;
+    color: $color-bg-white;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-sm;
+    white-space: nowrap;
+    transition: background $transition-fast;
+
+    &:hover { background: $color-primary; }
+  }
+
+  &__success {
+    font-size: $font-size-xs;
+    color: $color-success;
+    font-weight: $font-weight-medium;
+    margin-top: $spacing-xs;
+  }
+
+  &__error {
+    font-size: $font-size-xs;
+    color: $color-error;
+    margin-top: $spacing-xs;
+  }
+
+  &__hints {
+    margin-top: $spacing-sm;
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    flex-wrap: wrap;
+  }
+
+  &__hint-tag {
+    @include button-base;
+    background: transparent;
+    color: $color-primary;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    padding: 2px 8px;
+    border-radius: $border-radius-full;
+    border: 1px solid $color-primary;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: $color-primary;
+      color: $color-bg-white;
+    }
   }
 }
+
+// ─── Payment Method Card ──────────────────────────────────────────────────────
+
+.payment-card {
+  @include card;
+  padding: $spacing-lg;
+
+  &__title {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+    margin-bottom: $spacing-md;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__note {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+    margin-top: $spacing-md;
+    text-align: center;
+  }
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  border: 2px solid $color-border;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  user-select: none;
+
+  input[type='radio'] { display: none; }
+
+  &:hover {
+    border-color: $color-primary-light;
+    background: $color-primary-bg;
+  }
+
+  &--selected {
+    border-color: $color-primary;
+    background: $color-primary-bg;
+  }
+
+  &__badge {
+    width: 46px;
+    height: 30px;
+    border-radius: $border-radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__name {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text;
+  }
+
+  &__desc {
+    font-size: $font-size-xs;
+    color: $color-text-light;
+  }
+
+  &__check {
+    color: $color-primary;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+}
+
+// Dialog styles live in address-dialog.component.scss
