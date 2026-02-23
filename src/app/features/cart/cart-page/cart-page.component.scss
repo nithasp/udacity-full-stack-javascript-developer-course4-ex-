@@ -515,4 +515,239 @@
   }
 }
 
-// Dialog styles live in address-dialog.component.scss
+// ─── Small-screen overrides (< $breakpoint-sm) ──────────────────────────────
+
+@media (max-width: $breakpoint-sm) {
+  .cart-page {
+    padding-top: $spacing-lg;
+    padding-bottom: $spacing-xl;
+
+    &__title {
+      font-size: $font-size-2xl;
+      margin-bottom: $spacing-md;
+    }
+  }
+
+  .delivery-bar {
+    padding: $spacing-sm $spacing-md;
+
+    &__row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-sm;
+    }
+
+    &__info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-xs;
+    }
+
+    &__sep {
+      display: none;
+    }
+
+    &__change {
+      align-self: stretch;
+      text-align: center;
+    }
+
+    &__empty {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-sm;
+    }
+  }
+
+  .cart-item {
+    flex-wrap: wrap;
+
+    &__image {
+      width: 80px;
+      height: 80px;
+    }
+
+    &__name {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    &__actions {
+      flex-basis: 100%;
+      justify-content: flex-end;
+      padding-top: $spacing-sm;
+      border-top: 1px solid $color-border;
+    }
+
+    &__subtotal {
+      min-width: auto;
+    }
+  }
+
+  .sidebar-card {
+    padding: $spacing-md;
+  }
+
+  .cart-summary {
+    padding: $spacing-md;
+
+    &__checkout-btn {
+      font-size: $font-size-sm;
+    }
+  }
+
+  .payment-section__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Extra-small-screen overrides (< $breakpoint-xs) ─────────────────────────
+
+@media (max-width: $breakpoint-xs) {
+  .cart-page {
+    padding: $spacing-md $spacing-sm;
+    padding-bottom: $spacing-lg;
+    overflow-x: hidden;
+
+    &__title {
+      font-size: $font-size-xl;
+    }
+
+    &__content {
+      gap: $spacing-md;
+    }
+
+    &__items {
+      gap: $spacing-sm;
+    }
+  }
+
+  .delivery-bar {
+    padding: $spacing-sm;
+    border-radius: $border-radius-md;
+    margin-bottom: $spacing-md;
+
+    &__heading {
+      font-size: $font-size-xs;
+    }
+
+    &__name {
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    &__phone {
+      white-space: normal;
+    }
+  }
+
+  .cart-item {
+    padding: $spacing-sm;
+    gap: $spacing-sm;
+
+    &__image {
+      width: 64px;
+      height: 64px;
+    }
+
+    &__name {
+      font-size: $font-size-sm;
+    }
+
+    &__variant {
+      font-size: $font-size-xs;
+    }
+
+    &__price {
+      font-size: $font-size-sm;
+    }
+
+    &__actions {
+      gap: $spacing-sm;
+      padding-top: $spacing-xs;
+    }
+
+    &__quantity {
+      min-width: 42px;
+      padding: 2px $spacing-xs;
+      font-size: $font-size-xs;
+    }
+
+    &__subtotal {
+      font-size: $font-size-sm;
+    }
+
+    &__remove {
+      font-size: $font-size-lg;
+      padding: 2px;
+    }
+  }
+
+  .sidebar-card {
+    padding: $spacing-sm;
+    border-radius: $border-radius-md;
+  }
+
+  .discount-section {
+    &__row {
+      flex-direction: column;
+    }
+
+    &__apply {
+      align-self: stretch;
+    }
+
+    &__input {
+      padding: $spacing-xs $spacing-sm;
+    }
+  }
+
+  .payment-chip {
+    padding: $spacing-xs;
+
+    &__badge {
+      width: 28px;
+      height: 20px;
+      font-size: 8px;
+    }
+
+    &__name {
+      font-size: 0.6875rem;
+    }
+  }
+
+  .cart-summary {
+    padding: $spacing-sm;
+    border-radius: $border-radius-md;
+
+    &__title {
+      font-size: $font-size-lg;
+      margin-bottom: $spacing-md;
+      padding-bottom: $spacing-sm;
+    }
+
+    &__row {
+      font-size: $font-size-sm;
+    }
+
+    &__total {
+      font-size: $font-size-lg;
+    }
+
+    &__checkout-btn {
+      padding: $spacing-sm;
+      font-size: $font-size-xs;
+      gap: $spacing-xs;
+      flex-wrap: wrap;
+
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+}
