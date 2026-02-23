@@ -126,7 +126,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
 
   useHintCode(code: string): void {
     this.discountCode = code;
-    this.applyDiscount();
   }
 
   removeDiscount(): void {
