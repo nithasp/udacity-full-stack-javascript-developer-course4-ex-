@@ -75,6 +75,10 @@
       display: flex;
     }
 
+    &--closing {
+      animation: menuSlideDown 0.2s ease forwards;
+    }
+
     @include respond-to(md) {
       display: flex;
       flex-direction: row;
@@ -138,4 +142,9 @@
     line-height: 1;
     animation: scaleIn 0.3s ease;
   }
+}
+
+@keyframes menuSlideDown {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(24px); }
 }

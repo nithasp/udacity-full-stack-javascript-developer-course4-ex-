@@ -11,6 +11,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   title = 'MyStore';
   cartCount = 0;
   mobileMenuOpen = false;
+  menuClosing = false;
   private cartSub!: Subscription;
 
   constructor(private cartService: CartService) {}
@@ -26,10 +27,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   toggleMobileMenu(): void {
-    this.mobileMenuOpen = !this.mobileMenuOpen;
+    if (this.mobileMenuOpen) {
+      this.closeMobileMenu();
+    } else {
+      this.menuClosing = false;
+      this.mobileMenuOpen = true;
+    }
   }
 
   closeMobileMenu(): void {
-    this.mobileMenuOpen = false;
+    if (!this.mobileMenuOpen || this.menuClosing) return;
+    this.menuClosing = true;
+  }
+
+  onMenuAnimationDone(event: AnimationEvent): void {
+    if (this.menuClosing && event.target === event.currentTarget) {
+      this.mobileMenuOpen = false;
+      this.menuClosing = false;
+    }
   }
 }

@@ -16,7 +16,12 @@
       <span class="navbar__toggle-bar"></span>
     </button>
 
-    <div class="navbar__menu" [class.navbar__menu--open]="mobileMenuOpen">
+    <div
+      class="navbar__menu"
+      [class.navbar__menu--open]="mobileMenuOpen"
+      [class.navbar__menu--closing]="menuClosing"
+      (animationend)="onMenuAnimationDone($event)"
+    >
       <a
         routerLink="/products"
         routerLinkActive="navbar__link--active"
