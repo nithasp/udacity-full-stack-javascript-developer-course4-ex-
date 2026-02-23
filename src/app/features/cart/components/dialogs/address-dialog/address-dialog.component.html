@@ -1,6 +1,11 @@
 <!-- Fixed overlay — covers the entire app viewport -->
-<div class="address-dialog-overlay" (click)="close()">
-  <div class="address-dialog" (click)="$event.stopPropagation()">
+<div
+  class="address-dialog-overlay"
+  [class.address-dialog-overlay--closing]="closing"
+  (click)="close()"
+  (animationend)="onOverlayAnimationDone($event)"
+>
+  <div class="address-dialog" [class.address-dialog--closing]="closing" (click)="$event.stopPropagation()">
 
     <!-- ── LIST mode ──────────────────────────────────────────────────────── -->
     <ng-container *ngIf="dialogMode === 'list'">

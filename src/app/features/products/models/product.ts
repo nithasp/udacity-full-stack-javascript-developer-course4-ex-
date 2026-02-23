@@ -32,10 +32,21 @@ export interface Product {
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  shopId?: string;
+  shopName?: string;
+}
+
+export interface Shop {
+  shop_id: string;
+  name: string;
+  image?: string;
+  products: Product[];
 }
 
 export interface CartItem {
   product: Product;
   quantity: number;
   selectedType?: ProductType;
+  shopId: string;
+  shopName: string;
 }

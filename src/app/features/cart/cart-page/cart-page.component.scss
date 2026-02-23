@@ -49,7 +49,7 @@
   &__items {
     display: flex;
     flex-direction: column;
-    gap: $spacing-md;
+    gap: $spacing-lg;
   }
 
   &__sidebar {
@@ -169,18 +169,95 @@
   }
 }
 
+// ─── Custom Checkbox ──────────────────────────────────────────────────────────
+
+.custom-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid $color-border-dark;
+  border-radius: $border-radius-sm;
+  background: $color-bg-white;
+  transition: all $transition-fast;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  &--checked {
+    background: $color-primary;
+    border-color: $color-primary;
+
+    svg { color: #fff; }
+  }
+
+  &--indeterminate {
+    background: $color-primary;
+    border-color: $color-primary;
+
+    svg { color: #fff; }
+  }
+}
+
+// ─── Shop Group ───────────────────────────────────────────────────────────────
+
+.shop-group {
+  @include card;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    background: linear-gradient(135deg, $color-primary-bg, darken($color-primary-bg, 2%));
+    border-bottom: 2px solid $color-primary;
+  }
+
+  &__checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    input[type='checkbox'] { display: none; }
+  }
+
+  &__icon {
+    color: $color-primary;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+    color: $color-text;
+  }
+}
+
 // ─── Cart Item ────────────────────────────────────────────────────────────────
 
 .cart-item {
-  @include card;
   display: flex;
   align-items: center;
   gap: $spacing-md;
-  padding: $spacing-md;
-  transition: box-shadow $transition-base;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid $color-border;
 
-  &:hover {
-    box-shadow: $shadow-lg;
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &--unselected {
+    opacity: 0.5;
+  }
+
+  &__checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    input[type='checkbox'] { display: none; }
   }
 
   &__image-link {
@@ -188,14 +265,14 @@
   }
 
   &__image {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
     border-radius: $border-radius-md;
 
     @include respond-to(md) {
-      width: 120px;
-      height: 120px;
+      width: 100px;
+      height: 100px;
     }
   }
 
@@ -559,8 +636,19 @@
     }
   }
 
+  .shop-group {
+    &__header {
+      padding: $spacing-sm $spacing-md;
+    }
+
+    &__name {
+      font-size: $font-size-sm;
+    }
+  }
+
   .cart-item {
     flex-wrap: wrap;
+    padding: $spacing-sm $spacing-md;
 
     &__image {
       width: 80px;
@@ -643,6 +731,29 @@
     &__phone {
       white-space: normal;
     }
+  }
+
+  .shop-group {
+    border-radius: $border-radius-md;
+
+    &__header {
+      padding: $spacing-sm;
+      gap: $spacing-xs;
+    }
+
+    &__name {
+      font-size: $font-size-xs;
+    }
+
+    &__icon {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .custom-checkbox {
+    width: 18px;
+    height: 18px;
   }
 
   .cart-item {

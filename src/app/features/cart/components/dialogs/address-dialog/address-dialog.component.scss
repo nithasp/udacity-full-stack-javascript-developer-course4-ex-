@@ -13,6 +13,10 @@
   justify-content: center;
   padding: $spacing-md;
   animation: overlayFadeIn $transition-base forwards;
+
+  &--closing {
+    animation: overlayFadeOut $transition-base forwards;
+  }
 }
 
 // ─── Dialog Panel ─────────────────────────────────────────────────────────────
@@ -27,6 +31,10 @@
   display: flex;
   flex-direction: column;
   animation: dialogSlideUp $transition-slow forwards;
+
+  &--closing {
+    animation: dialogSlideDown $transition-base forwards;
+  }
 
   &__header {
     display: flex;
@@ -406,4 +414,14 @@
 @keyframes dialogSlideUp {
   from { transform: translateY(24px); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes overlayFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes dialogSlideDown {
+  from { transform: translateY(0);    opacity: 1; }
+  to   { transform: translateY(24px); opacity: 0; }
 }

@@ -27,7 +27,18 @@ describe('CartPageComponent', () => {
     ],
     reviews: [],
     overall_rating: 4.5,
-    stock: 50
+    stock: 50,
+    shopId: 'shop1',
+    shopName: 'Test Shop'
+  };
+
+  const mockProduct2: Product = {
+    ...mockProduct,
+    _id: 'prod2',
+    name: 'Test Product 2',
+    price: 49.99,
+    shopId: 'shop2',
+    shopName: 'Another Shop'
   };
 
   beforeEach(async () => {
@@ -65,82 +76,70 @@ describe('CartPageComponent', () => {
   });
 
   it('should calculate item price correctly', () => {
-    const item: CartItem = { product: mockProduct, quantity: 1, selectedType: mockProduct.types[0] };
+    const item: CartItem = { product: mockProduct, quantity: 1, selectedType: mockProduct.types[0], shopId: 'shop1', shopName: 'Test Shop' };
     expect(component.getItemPrice(item)).toBe(79.99);
   });
 
   it('should calculate item subtotal correctly', () => {
-    const item: CartItem = { product: mockProduct, quantity: 3, selectedType: mockProduct.types[0] };
+    const item: CartItem = { product: mockProduct, quantity: 3, selectedType: mockProduct.types[0], shopId: 'shop1', shopName: 'Test Shop' };
     expect(component.getItemSubtotal(item)).toBeCloseTo(239.97, 2);
   });
 
-  it('should calculate cart total', () => {
+  it('should group items by shop', () => {
+    cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
+    cartService.addToCart(mockProduct2, 1);
+    fixture.detectChanges();
+
+    const groups = component.shopGroups;
+    expect(groups.length).toBe(2);
+    expect(groups[0].shopName).toBe('Test Shop');
+    expect(groups[1].shopName).toBe('Another Shop');
+  });
+
+  it('should select all items by default', () => {
     cartService.addToCart(mockProduct, 2, mockProduct.types[0]);
-    expect(component.cartTotal).toBeCloseTo(159.98, 2);
+    fixture.detectChanges();
+    expect(component.selectedCount).toBe(2);
+    expect(component.selectedTotal).toBeCloseTo(159.98, 2);
+  });
+
+  it('should toggle item selection', () => {
+    cartService.addToCart(mockProduct, 2, mockProduct.types[0]);
+    fixture.detectChanges();
+
+    const item = component.cartItems[0];
+    component.toggleItem(item);
+    expect(component.isItemSelected(item)).toBeFalse();
+    expect(component.selectedCount).toBe(0);
+  });
+
+  it('should toggle all items in a shop', () => {
+    cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
+    fixture.detectChanges();
+
+    const group = component.shopGroups[0];
+    component.toggleShop(group);
+    expect(component.isShopAllSelected(group)).toBeFalse();
+
+    component.toggleShop(group);
+    expect(component.isShopAllSelected(group)).toBeTrue();
   });
 
   it('should remove item from cart', () => {
     cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
-    const item: CartItem = { product: mockProduct, quantity: 1, selectedType: mockProduct.types[0] };
+    const item: CartItem = { product: mockProduct, quantity: 1, selectedType: mockProduct.types[0], shopId: 'shop1', shopName: 'Test Shop' };
     component.removeItem(item);
     expect(component.cartItems.length).toBe(0);
     expect(notificationSpy.info).toHaveBeenCalled();
   });
 
-  it('should show checkout form when toggled', () => {
+  it('should prevent checkout with no selected items', () => {
     cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
     fixture.detectChanges();
-    component.toggleCheckout();
-    fixture.detectChanges();
-    expect(component.showCheckout).toBeTrue();
-  });
 
-  it('should warn when trying to checkout empty cart', () => {
-    component.toggleCheckout();
-    expect(notificationSpy.warning).toHaveBeenCalledWith('Your cart is empty');
-    expect(component.showCheckout).toBeFalse();
-  });
-
-  it('should validate checkout form - invalid when empty', () => {
-    expect(component.isFormValid).toBeFalse();
-  });
-
-  it('should validate checkout form - invalid when name too short', () => {
-    component.checkoutData = { fullName: 'AB', address: '123 Main St', city: 'NY', creditCard: '1234567890123456' };
-    expect(component.isFormValid).toBeFalse();
-  });
-
-  it('should validate checkout form - invalid credit card', () => {
-    component.checkoutData = { fullName: 'John Doe', address: '123 Main St', city: 'NY', creditCard: '123' };
-    expect(component.isFormValid).toBeFalse();
-  });
-
-  it('should validate checkout form - valid', () => {
-    component.checkoutData = {
-      fullName: 'John Doe',
-      address: '123 Main Street',
-      city: 'New York',
-      creditCard: '1234567890123456'
-    };
-    expect(component.isFormValid).toBeTrue();
-  });
-
-  it('should not submit invalid form', () => {
-    component.checkoutData = { fullName: '', address: '', city: '', creditCard: '' };
-    component.onCheckout();
-    expect(notificationSpy.error).toHaveBeenCalled();
-  });
-
-  it('should clear cart and navigate on successful checkout', () => {
-    cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
-    component.checkoutData = {
-      fullName: 'John Doe',
-      address: '123 Main Street',
-      city: 'New York',
-      creditCard: '1234567890123456'
-    };
-    component.onCheckout();
-    expect(cartService.getItems().length).toBe(0);
-    expect(notificationSpy.success).toHaveBeenCalled();
+    const item = component.cartItems[0];
+    component.toggleItem(item);
+    component.onProceedToCheckout();
+    expect(notificationSpy.error).toHaveBeenCalledWith('Please select at least one item to checkout.');
   });
 });

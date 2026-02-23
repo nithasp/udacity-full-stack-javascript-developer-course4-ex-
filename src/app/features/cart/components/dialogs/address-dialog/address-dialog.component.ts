@@ -19,6 +19,7 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
   editingAddressId: string | null = null;
   addressForm: AddressForm = this.blankForm();
   formSubmitted = false;
+  closing = false;
 
   constructor(
     private elementRef: ElementRef<HTMLElement>,
@@ -78,14 +79,21 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   close(): void {
-    this.closed.emit();
+    if (this.closing) return;
+    this.closing = true;
+  }
+
+  onOverlayAnimationDone(event: AnimationEvent): void {
+    if (this.closing && event.target === event.currentTarget) {
+      this.closed.emit();
+    }
   }
 
   // ── Selection ──────────────────────────────────────────────────────────────
 
   confirmSelection(): void {
     this.selectedAddressIdChange.emit(this.selectedAddressId);
-    this.closed.emit();
+    this.close();
   }
 
   onRadioChange(id: string): void {

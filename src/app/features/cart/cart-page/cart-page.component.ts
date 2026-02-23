@@ -14,6 +14,12 @@ interface PaymentMethod {
   color: string;
 }
 
+export interface ShopGroup {
+  shopId: string;
+  shopName: string;
+  items: CartItem[];
+}
+
 @Component({
   selector: 'app-cart-page',
   templateUrl: './cart-page.component.html',
@@ -21,7 +27,11 @@ interface PaymentMethod {
 })
 export class CartPageComponent implements OnInit, OnDestroy {
   cartItems: CartItem[] = [];
+  shopGroups: ShopGroup[] = [];
   quantities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  // ── Selection ───────────────────────────────────────────────────────────────
+  selectedKeys = new Set<string>();
 
   // ── Addresses ──────────────────────────────────────────────────────────────
   addresses: AddressEntry[] = [
@@ -68,15 +78,111 @@ export class CartPageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.cartSub = this.cartService.cart$.subscribe(items => this.cartItems = items);
+    this.cartSub = this.cartService.cart$.subscribe(items => {
+      this.cartItems = items;
+      items.forEach(item => {
+        const key = this.getItemKey(item);
+        if (!this.selectedKeys.has(key) && !this._initializedKeys.has(key)) {
+          this.selectedKeys.add(key);
+        }
+        this._initializedKeys.add(key);
+      });
+      this.cleanUpRemovedKeys();
+      this.rebuildShopGroups();
+    });
+  }
+
+  private _initializedKeys = new Set<string>();
+
+  private cleanUpRemovedKeys(): void {
+    const currentKeys = new Set(this.cartItems.map(i => this.getItemKey(i)));
+    for (const key of this.selectedKeys) {
+      if (!currentKeys.has(key)) {
+        this.selectedKeys.delete(key);
+      }
+    }
+    for (const key of this._initializedKeys) {
+      if (!currentKeys.has(key)) {
+        this._initializedKeys.delete(key);
+      }
+    }
   }
 
   ngOnDestroy(): void {
     this.cartSub.unsubscribe();
   }
 
-  get cartTotal(): number { return this.cartService.getTotal(); }
-  get cartCount(): number { return this.cartService.getCartCount(); }
+  // ── Item key ────────────────────────────────────────────────────────────────
+  getItemKey(item: CartItem): string {
+    return `${item.product._id}_${item.selectedType?._id ?? 'default'}`;
+  }
+
+  // ── Shop grouping ──────────────────────────────────────────────────────────
+  private rebuildShopGroups(): void {
+    const groupMap = new Map<string, ShopGroup>();
+    for (const item of this.cartItems) {
+      const id = item.shopId || 'unknown';
+      if (!groupMap.has(id)) {
+        groupMap.set(id, { shopId: id, shopName: item.shopName || 'Unknown Shop', items: [] });
+      }
+      groupMap.get(id)!.items.push(item);
+    }
+    this.shopGroups = Array.from(groupMap.values());
+  }
+
+  // ── Selection logic ────────────────────────────────────────────────────────
+  isItemSelected(item: CartItem): boolean {
+    return this.selectedKeys.has(this.getItemKey(item));
+  }
+
+  toggleItem(item: CartItem): void {
+    const key = this.getItemKey(item);
+    if (this.selectedKeys.has(key)) {
+      this.selectedKeys.delete(key);
+    } else {
+      this.selectedKeys.add(key);
+    }
+  }
+
+  isShopAllSelected(group: ShopGroup): boolean {
+    return group.items.every(item => this.selectedKeys.has(this.getItemKey(item)));
+  }
+
+  isShopIndeterminate(group: ShopGroup): boolean {
+    const count = group.items.filter(item => this.selectedKeys.has(this.getItemKey(item))).length;
+    return count > 0 && count < group.items.length;
+  }
+
+  toggleShop(group: ShopGroup): void {
+    const allSelected = this.isShopAllSelected(group);
+    for (const item of group.items) {
+      const key = this.getItemKey(item);
+      if (allSelected) {
+        this.selectedKeys.delete(key);
+      } else {
+        this.selectedKeys.add(key);
+      }
+    }
+  }
+
+  // ── Selected totals ────────────────────────────────────────────────────────
+  get selectedItems(): CartItem[] {
+    return this.cartItems.filter(item => this.selectedKeys.has(this.getItemKey(item)));
+  }
+
+  get selectedTotal(): number {
+    return this.selectedItems.reduce((total, item) => {
+      return total + this.getItemSubtotal(item);
+    }, 0);
+  }
+
+  get selectedCount(): number {
+    return this.selectedItems.reduce((count, item) => count + item.quantity, 0);
+  }
+
+  // ── Price helpers ──────────────────────────────────────────────────────────
+  get cartTotal(): number { return this.selectedTotal; }
+  get cartCount(): number { return this.selectedCount; }
   get discountAmount(): number { return this.cartTotal * this.appliedDiscount; }
   get cartTotalAfterDiscount(): number { return this.cartTotal - this.discountAmount; }
 
@@ -137,6 +243,10 @@ export class CartPageComponent implements OnInit, OnDestroy {
   }
 
   onProceedToCheckout(): void {
+    if (this.selectedCount === 0) {
+      this.notificationService.error('Please select at least one item to checkout.');
+      return;
+    }
     if (!this.selectedAddress) {
       this.notificationService.error('Please select a shipping address to continue.');
       this.isAddressDialogOpen = true;

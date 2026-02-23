@@ -1,4 +1,4 @@
-<div class="cart-page animate-fade-in">
+<div class="cart-page">
   <h1 class="cart-page__title">Shopping Cart</h1>
 
   <!-- Empty State -->
@@ -48,44 +48,92 @@
     <!-- ── Cart Content Grid ──────────────────────────────────────────────── -->
     <div class="cart-page__content">
 
-      <!-- Left: Cart Items -->
+      <!-- Left: Cart Items grouped by shop -->
       <div class="cart-page__items">
-        <div *ngFor="let item of cartItems" class="cart-item animate-slide-up">
-          <a [routerLink]="['/products', item.product._id]" class="cart-item__image-link">
-            <img
-              [src]="item.selectedType?.image || item.product.image"
-              [alt]="item.product.name"
-              class="cart-item__image"
-            />
-          </a>
+        <div *ngFor="let group of shopGroups" class="shop-group">
 
-          <div class="cart-item__details">
-            <h3 class="cart-item__name">{{ item.product.name }}</h3>
-            <p *ngIf="item.selectedType" class="cart-item__variant">
-              Color: {{ item.selectedType.color }}
-            </p>
-            <p class="cart-item__price">${{ getItemPrice(item) | number:'1.2-2' }}</p>
+          <!-- Shop Header -->
+          <div class="shop-group__header">
+            <label class="shop-group__checkbox-label">
+              <input
+                type="checkbox"
+                class="shop-group__checkbox"
+                [checked]="isShopAllSelected(group)"
+                [indeterminate]="isShopIndeterminate(group)"
+                (change)="toggleShop(group)"
+              />
+              <span class="custom-checkbox"
+                [class.custom-checkbox--checked]="isShopAllSelected(group)"
+                [class.custom-checkbox--indeterminate]="isShopIndeterminate(group)"
+              >
+                <svg *ngIf="isShopAllSelected(group)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="12" height="12">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                <svg *ngIf="isShopIndeterminate(group)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="12" height="12">
+                  <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </label>
+            <svg class="shop-group__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
+              <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z" />
+              <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd" />
+            </svg>
+            <span class="shop-group__name">{{ group.shopName }}</span>
           </div>
 
-          <div class="cart-item__actions">
-            <select
-              class="cart-item__quantity"
-              [ngModel]="item.quantity"
-              (ngModelChange)="updateQuantity(item, $event)"
-              [name]="'qty-' + item.product._id"
-              aria-label="Quantity"
-            >
-              <option *ngFor="let q of quantities" [ngValue]="q">{{ q }}</option>
-            </select>
+          <!-- Products in this shop -->
+          <div *ngFor="let item of group.items" class="cart-item" [class.cart-item--unselected]="!isItemSelected(item)">
+            <label class="cart-item__checkbox-label">
+              <input
+                type="checkbox"
+                class="cart-item__checkbox"
+                [checked]="isItemSelected(item)"
+                (change)="toggleItem(item)"
+              />
+              <span class="custom-checkbox" [class.custom-checkbox--checked]="isItemSelected(item)">
+                <svg *ngIf="isItemSelected(item)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="12" height="12">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </label>
 
-            <span class="cart-item__subtotal">
-              ${{ getItemSubtotal(item) | number:'1.2-2' }}
-            </span>
+            <a [routerLink]="['/products', item.product._id]" class="cart-item__image-link">
+              <img
+                [src]="item.selectedType?.image || item.product.image"
+                [alt]="item.product.name"
+                class="cart-item__image"
+              />
+            </a>
 
-            <button class="cart-item__remove" (click)="removeItem(item)" aria-label="Remove item">
-              &times;
-            </button>
+            <div class="cart-item__details">
+              <h3 class="cart-item__name">{{ item.product.name }}</h3>
+              <p *ngIf="item.selectedType" class="cart-item__variant">
+                Color: {{ item.selectedType.color }}
+              </p>
+              <p class="cart-item__price">${{ getItemPrice(item) | number:'1.2-2' }}</p>
+            </div>
+
+            <div class="cart-item__actions">
+              <select
+                class="cart-item__quantity"
+                [ngModel]="item.quantity"
+                (ngModelChange)="updateQuantity(item, $event)"
+                [name]="'qty-' + item.product._id + '-' + (item.selectedType?._id || 'default')"
+                aria-label="Quantity"
+              >
+                <option *ngFor="let q of quantities" [ngValue]="q">{{ q }}</option>
+              </select>
+
+              <span class="cart-item__subtotal">
+                ${{ getItemSubtotal(item) | number:'1.2-2' }}
+              </span>
+
+              <button class="cart-item__remove" (click)="removeItem(item)" aria-label="Remove item">
+                &times;
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
 
@@ -147,8 +195,8 @@
           <h2 class="cart-summary__title">Order Summary</h2>
 
           <div class="cart-summary__row">
-            <span>Subtotal ({{ cartCount }} {{ cartCount === 1 ? 'item' : 'items' }})</span>
-            <span>${{ cartTotal | number:'1.2-2' }}</span>
+            <span>Selected ({{ selectedCount }} {{ selectedCount === 1 ? 'item' : 'items' }})</span>
+            <span>${{ selectedTotal | number:'1.2-2' }}</span>
           </div>
 
           <div class="cart-summary__row cart-summary__row--discount" *ngIf="appliedDiscount > 0">
@@ -176,7 +224,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
               <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
             </svg>
-            Proceed to Checkout
+            Checkout ({{ selectedCount }})
           </button>
         </div>
 

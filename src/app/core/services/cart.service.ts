@@ -19,7 +19,13 @@ export class CartService {
     if (existingIndex > -1) {
       this.cartItems[existingIndex].quantity += quantity;
     } else {
-      this.cartItems.push({ product, quantity, selectedType });
+      this.cartItems.push({
+        product,
+        quantity,
+        selectedType,
+        shopId: product.shopId ?? '',
+        shopName: product.shopName ?? '',
+      });
     }
 
     this.cartSubject.next([...this.cartItems]);
