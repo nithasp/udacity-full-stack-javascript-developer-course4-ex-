@@ -265,6 +265,44 @@
     }
   }
 
+  // ── Auth buttons ─────────────────────────────────────────────────────────
+  &__auth-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: $font-family;
+
+    &--logout {
+      color: $color-error;
+
+      &:hover {
+        color: darken($color-error, 10%);
+        background: $color-error-bg;
+      }
+
+      .navbar__link-icon {
+        opacity: 1;
+      }
+    }
+
+    // Active state for both login & register buttons
+    &--login.navbar__link--active,
+    &--register.navbar__link--active {
+      background: #1d4ed8;
+      color: white;
+      box-shadow: inset 0 -2px 0 0 white;
+
+      &::after {
+        display: none;
+      }
+
+      &:hover {
+        background: #1d4ed8;
+        color: white;
+      }
+    }
+  }
+
   // ── Badge ──────────────────────────────────────────────────────────────────
   &__badge {
     @include flex-center;

@@ -1,6 +1,9 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../../core/services/cart.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-navbar',
@@ -12,10 +15,15 @@ export class NavbarComponent implements OnInit, OnDestroy {
   cartCount = 0;
   mobileMenuOpen = false;
   menuClosing = false;
+  isLoggedIn = false;
   private cartSub!: Subscription;
+  private authSub!: Subscription;
 
   constructor(
     private cartService: CartService,
+    private authService: AuthService,
+    private notification: NotificationService,
+    private router: Router,
     private elRef: ElementRef
   ) {}
 
@@ -23,10 +31,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.cartSub = this.cartService.cart$.subscribe(() => {
       this.cartCount = this.cartService.getCartCount();
     });
+
+    this.authSub = this.authService.isLoggedIn$.subscribe(loggedIn => {
+      this.isLoggedIn = loggedIn;
+    });
   }
 
   ngOnDestroy(): void {
     this.cartSub.unsubscribe();
+    this.authSub.unsubscribe();
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.notification.success('You have been logged out.');
+    this.closeMobileMenu();
+    this.router.navigate(['/auth/login']);
   }
 
   toggleMobileMenu(): void {
