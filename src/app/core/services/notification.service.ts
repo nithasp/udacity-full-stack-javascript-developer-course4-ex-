@@ -35,7 +35,7 @@ export class NotificationService {
     });
   }
 
-  info(message: string, title = 'Info'): void {
+  info(message: string, title = 'Information'): void {
     this.toastr.info(message, title, {
       timeOut: 3000,
       progressBar: true,

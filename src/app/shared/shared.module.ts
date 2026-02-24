@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HighlightDirective } from './directives/highlight.directive';
 import { TruncatePipe } from './pipes/truncate.pipe';
 import { InputFieldComponent } from './components/form/input-field/input-field.component';
+import { QuantityInputComponent } from './components/form/quantity-input/quantity-input.component';
 import { ProductCardComponent } from './components/product-card/product-card.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 
@@ -13,6 +14,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     HighlightDirective,
     TruncatePipe,
     InputFieldComponent,
+    QuantityInputComponent,
     ProductCardComponent,
     NavbarComponent
   ],
@@ -28,6 +30,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     HighlightDirective,
     TruncatePipe,
     InputFieldComponent,
+    QuantityInputComponent,
     ProductCardComponent,
     NavbarComponent
   ]

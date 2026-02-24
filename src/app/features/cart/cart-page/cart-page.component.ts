@@ -28,7 +28,6 @@ export interface ShopGroup {
 export class CartPageComponent implements OnInit, OnDestroy {
   cartItems: CartItem[] = [];
   shopGroups: ShopGroup[] = [];
-  quantities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   // ── Selection ───────────────────────────────────────────────────────────────
   selectedKeys = new Set<string>();

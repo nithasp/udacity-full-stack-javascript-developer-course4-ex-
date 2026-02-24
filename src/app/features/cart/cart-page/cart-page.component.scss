@@ -311,21 +311,7 @@
     flex-shrink: 0;
   }
 
-  &__quantity {
-    padding: $spacing-xs $spacing-sm;
-    border: 2px solid $color-border;
-    border-radius: $border-radius-sm;
-    font-size: $font-size-sm;
-    color: $color-text;
-    cursor: pointer;
-    outline: none;
-    min-width: 50px;
-    transition: border-color $transition-fast;
-
-    &:focus {
-      border-color: $color-primary;
-    }
-  }
+  // quantity stepper lives inside app-quantity-input (.qty-input component)
 
   &__subtotal {
     font-size: $font-size-base;
@@ -780,12 +766,6 @@
     &__actions {
       gap: $spacing-sm;
       padding-top: $spacing-xs;
-    }
-
-    &__quantity {
-      min-width: 42px;
-      padding: 2px $spacing-xs;
-      font-size: $font-size-xs;
     }
 
     &__subtotal {
