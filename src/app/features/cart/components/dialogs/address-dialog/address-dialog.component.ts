@@ -21,6 +21,9 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
   formSubmitted = false;
   closing = false;
 
+  /** Local copy — only pushed to parent on Confirm */
+  localSelectedId = '';
+
   constructor(
     private elementRef: ElementRef<HTMLElement>,
     private notificationService: NotificationService
@@ -45,6 +48,7 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     this.editingAddressId = null;
     this.addressForm = this.blankForm();
     this.formSubmitted = false;
+    this.localSelectedId = this.selectedAddressId;
   }
 
   // ── Navigation ─────────────────────────────────────────────────────────────
@@ -92,12 +96,12 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
   // ── Selection ──────────────────────────────────────────────────────────────
 
   confirmSelection(): void {
-    this.selectedAddressIdChange.emit(this.selectedAddressId);
+    this.selectedAddressIdChange.emit(this.localSelectedId);
     this.close();
   }
 
   onRadioChange(id: string): void {
-    this.selectedAddressIdChange.emit(id);
+    this.localSelectedId = id;
   }
 
   // ── Label ──────────────────────────────────────────────────────────────────
@@ -115,11 +119,9 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
     let updated = this.addresses.filter(a => a.id !== id);
-    let newSelectedId = this.selectedAddressId;
-    if (newSelectedId === id) {
+    if (this.localSelectedId === id) {
       const fallback = updated.find(a => a.isDefault) ?? updated[0];
-      newSelectedId = fallback.id;
-      this.selectedAddressIdChange.emit(newSelectedId);
+      this.localSelectedId = fallback.id;
     }
     if (!updated.some(a => a.isDefault)) {
       updated = [{ ...updated[0], isDefault: true }, ...updated.slice(1)];
@@ -152,7 +154,7 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       const newId = `address-${Date.now()}`;
       updated = [...updated, { id: newId, ...this.addressForm }];
-      this.selectedAddressIdChange.emit(newId);
+      this.localSelectedId = newId;
       this.notificationService.success('New address added!');
     }
 
