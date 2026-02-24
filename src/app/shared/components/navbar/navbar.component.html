@@ -5,8 +5,10 @@
       {{ title }}
     </a>
 
+    <!-- Hamburger toggle (mobile only) -->
     <button
       class="navbar__toggle"
+      [class.navbar__toggle--active]="mobileMenuOpen"
       (click)="toggleMobileMenu()"
       [attr.aria-expanded]="mobileMenuOpen"
       aria-label="Toggle navigation"
@@ -16,6 +18,15 @@
       <span class="navbar__toggle-bar"></span>
     </button>
 
+    <!-- Backdrop overlay (mobile only) -->
+    <div
+      class="navbar__backdrop"
+      [class.navbar__backdrop--visible]="mobileMenuOpen"
+      (click)="closeMobileMenu()"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Navigation menu -->
     <div
       class="navbar__menu"
       [class.navbar__menu--open]="mobileMenuOpen"
@@ -28,8 +39,13 @@
         class="navbar__link"
         (click)="closeMobileMenu()"
       >
-        Products
+        <svg class="navbar__link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span>Products</span>
       </a>
+
       <a
         routerLink="/cart"
         routerLinkActive="navbar__link--active"
@@ -37,12 +53,15 @@
         (click)="closeMobileMenu()"
         aria-label="Cart"
       >
-        <svg class="navbar__cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="21" r="1"/>
-          <circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-        </svg>
-        <span *ngIf="cartCount > 0" class="navbar__badge">{{ cartCount }}</span>
+        <span class="navbar__cart-icon-wrap">
+          <svg class="navbar__cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"/>
+            <circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          <span *ngIf="cartCount > 0" class="navbar__badge">{{ cartCount }}</span>
+        </span>
+        <span class="navbar__cart-label">Cart</span>
       </a>
     </div>
   </div>
