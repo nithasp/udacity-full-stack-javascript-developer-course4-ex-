@@ -23,7 +23,6 @@ import { SharedModule } from './shared/shared.module';
     ToastrModule.forRoot({
       timeOut: 3000,
       positionClass: 'toast-top-right',
-      preventDuplicates: true,
       progressBar: true,
       closeButton: true,
       progressAnimation: 'increasing'

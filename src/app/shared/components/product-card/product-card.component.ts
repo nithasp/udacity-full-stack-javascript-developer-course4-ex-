@@ -18,7 +18,6 @@ export class ProductCardComponent {
       product: this.product,
       quantity: this.selectedQuantity
     });
-    this.selectedQuantity = 1;
   }
 
   get ratingStars(): number[] {
