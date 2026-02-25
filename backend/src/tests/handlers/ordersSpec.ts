@@ -25,7 +25,11 @@ describe('Order Endpoints', () => {
     const product: Product = {
       name: 'Order Test Product',
       price: 99.99,
-      category: 'Test'
+      category: 'Test',
+      image: 'https://example.com/test.jpg',
+      description: 'A test product for order endpoint testing',
+      stock: 20,
+      isActive: true
     };
     const productResponse = await request
       .post('/products')

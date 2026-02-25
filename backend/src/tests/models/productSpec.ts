@@ -5,9 +5,37 @@ const store = new ProductStore();
 
 describe('Product Model', () => {
   const testProduct: Product = {
-    name: 'Test Product',
-    price: 29.99,
-    category: 'Electronics'
+    name: 'Wireless Bluetooth Headphones',
+    price: 79.99,
+    category: 'Electronics',
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
+    description: 'Premium wireless headphones with active noise cancellation.',
+    preview_img: [
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
+      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500'
+    ],
+    types: [
+      {
+        product_id: 1001,
+        color: 'Black',
+        quantity: 50,
+        price: 79.99,
+        stock: 50,
+        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'
+      }
+    ],
+    reviews: [
+      {
+        star: 5,
+        comment: 'Amazing sound quality!',
+        userId: 'user123',
+        userName: 'John Doe',
+        date: '2026-01-15T10:30:00.000Z'
+      }
+    ],
+    overall_rating: 4.5,
+    stock: 85,
+    isActive: true
   };
 
   it('should have an index method', () => {
@@ -31,6 +59,14 @@ describe('Product Model', () => {
     expect(result.name).toBe(testProduct.name);
     expect(parseFloat(result.price as unknown as string)).toBe(testProduct.price);
     expect(result.category).toBe(testProduct.category);
+    expect(result.image).toBe(testProduct.image);
+    expect(result.description).toBe(testProduct.description);
+    expect(result.preview_img).toEqual(testProduct.preview_img);
+    expect(result.types).toEqual(testProduct.types);
+    expect(result.reviews).toEqual(testProduct.reviews);
+    expect(result.overall_rating).toBe(testProduct.overall_rating);
+    expect(result.stock).toBe(testProduct.stock);
+    expect(result.isActive).toBe(testProduct.isActive);
   });
 
   it('index method should return a list of products', async () => {
@@ -61,13 +97,26 @@ describe('Product Model', () => {
   it('update method should update product information', async () => {
     const products = await store.index();
     const productId = products[0].id as number;
-    const result = await store.update(productId, { name: 'Updated Product', price: 39.99 });
+    const result = await store.update(productId, {
+      name: 'Updated Product',
+      price: 39.99,
+      description: 'Updated description',
+      stock: 100
+    });
     expect(result.name).toBe('Updated Product');
     expect(parseFloat(result.price as unknown as string)).toBe(39.99);
+    expect(result.description).toBe('Updated description');
+    expect(result.stock).toBe(100);
   });
 
   it('delete method should remove the product', async () => {
-    const created = await store.create({ name: 'To Delete', price: 5.00, category: 'Temp' });
+    const created = await store.create({
+      name: 'To Delete',
+      price: 5.00,
+      category: 'Temp',
+      stock: 0,
+      isActive: false
+    });
     const result = await store.delete(created.id as number);
     expect(result.id).toBe(created.id);
     const remaining = await store.index();

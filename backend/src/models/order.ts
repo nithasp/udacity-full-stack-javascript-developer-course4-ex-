@@ -87,7 +87,7 @@ export class OrderStore {
   async recentPurchases(userId: number, limit: number = 5): Promise<RecentPurchase[]> {
     try {
       const { rows } = await client.query(
-        `SELECT p.id AS product_id, p.name, p.price, p.category, op.quantity, o.id AS order_id
+        `SELECT p.id AS product_id, p.name, p.price, p.category, p.image, p.description, op.quantity, o.id AS order_id
          FROM orders o
          JOIN order_products op ON o.id = op.order_id
          JOIN products p ON op.product_id = p.id

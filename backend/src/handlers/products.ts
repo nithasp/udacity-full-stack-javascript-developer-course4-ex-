@@ -32,15 +32,36 @@ const create = asyncHandler(async (req: Request, res: Response) => {
   if (Number(req.body.price) < 0)
     throw new AppError('price must be a non-negative number', 400);
 
-  res.json(await store.create({ name, price: parseFloat(req.body.price), category: req.body.category }));
+  const product: Product = {
+    name,
+    price: parseFloat(req.body.price),
+    category: req.body.category,
+    image: req.body.image,
+    description: req.body.description,
+    preview_img: req.body.preview_img,
+    types: req.body.types,
+    reviews: req.body.reviews,
+    overall_rating: req.body.overall_rating !== undefined ? parseFloat(req.body.overall_rating) : undefined,
+    stock: req.body.stock !== undefined ? parseInt(req.body.stock) : undefined,
+    isActive: req.body.isActive,
+  };
+
+  res.json(await store.create(product));
 });
 
 const update = asyncHandler(async (req: Request, res: Response) => {
   const id = parseId(req.params.id, 'product id');
-  const { name, price, category } = req.body;
+  const {
+    name, price, category, image, description,
+    preview_img, types, reviews, overall_rating, stock, isActive
+  } = req.body;
 
-  if (!name && price === undefined && category === undefined)
-    throw new AppError('at least one field (name, price, category) is required to update', 400);
+  if (!name && price === undefined && category === undefined &&
+      image === undefined && description === undefined &&
+      preview_img === undefined && types === undefined &&
+      reviews === undefined && overall_rating === undefined &&
+      stock === undefined && isActive === undefined)
+    throw new AppError('at least one field is required to update', 400);
 
   const validatedName = optionalString(name, 'name');
 
@@ -53,6 +74,14 @@ const update = asyncHandler(async (req: Request, res: Response) => {
     name: validatedName,
     price: price !== undefined ? parseFloat(price) : undefined,
     category,
+    image,
+    description,
+    preview_img,
+    types,
+    reviews,
+    overall_rating: overall_rating !== undefined ? parseFloat(overall_rating) : undefined,
+    stock: stock !== undefined ? parseInt(stock) : undefined,
+    isActive,
   });
   if (!updatedProduct) throw new AppError(`product with id ${req.params.id} not found`, 404);
   res.json(updatedProduct);

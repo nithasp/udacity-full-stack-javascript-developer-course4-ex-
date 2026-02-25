@@ -21,7 +21,24 @@ describe('Product Endpoints', () => {
   const testProduct: Product = {
     name: 'Test API Product',
     price: 49.99,
-    category: 'Books'
+    category: 'Books',
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
+    description: 'A test product for API testing.',
+    preview_img: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'],
+    types: [
+      {
+        product_id: 9001,
+        color: 'Red',
+        quantity: 10,
+        price: 49.99,
+        stock: 10,
+        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'
+      }
+    ],
+    reviews: [],
+    overall_rating: 0,
+    stock: 10,
+    isActive: true
   };
 
   it('GET /products should return list of products', async () => {
@@ -38,6 +55,13 @@ describe('Product Endpoints', () => {
 
     expect(response.body.name).toBe(testProduct.name);
     expect(parseFloat(response.body.price)).toBe(testProduct.price);
+    expect(response.body.category).toBe(testProduct.category);
+    expect(response.body.image).toBe(testProduct.image);
+    expect(response.body.description).toBe(testProduct.description);
+    expect(response.body.preview_img).toEqual(testProduct.preview_img);
+    expect(response.body.types).toEqual(testProduct.types);
+    expect(response.body.stock).toBe(testProduct.stock);
+    expect(response.body.isActive).toBe(testProduct.isActive);
   });
 
   it('POST /products should require token', async () => {
@@ -85,11 +109,12 @@ describe('Product Endpoints', () => {
     const response = await request
       .put(`/products/${productId}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ name: 'Updated Product', price: 59.99 })
+      .send({ name: 'Updated Product', price: 59.99, description: 'Updated description' })
       .expect(200);
 
     expect(response.body.name).toBe('Updated Product');
     expect(parseFloat(response.body.price)).toBe(59.99);
+    expect(response.body.description).toBe('Updated description');
   });
 
   it('PUT /products/:id should require token', async () => {
@@ -173,7 +198,7 @@ describe('Product Endpoints', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({})
         .expect(400);
-      expect(response.body.error).toBe('at least one field (name, price, category) is required to update');
+      expect(response.body.error).toBe('at least one field is required to update');
     });
 
     it('PUT /products/:id should return 400 when name is empty string', async () => {

@@ -16,6 +16,8 @@ export interface RecentPurchase {
   name: string;
   price: number;
   category: string | null;
+  image: string | null;
+  description: string | null;
   quantity: number;
   order_id: number;
 }

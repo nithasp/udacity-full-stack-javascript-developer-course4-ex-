@@ -27,7 +27,11 @@ describe('Order Model', () => {
     const product: Product = {
       name: 'Test Order Product',
       price: 19.99,
-      category: 'Test'
+      category: 'Test',
+      image: 'https://example.com/test.jpg',
+      description: 'A test product for order testing',
+      stock: 10,
+      isActive: true
     };
     const createdProduct = await productStore.create(product);
     testProductId = createdProduct.id as number;
