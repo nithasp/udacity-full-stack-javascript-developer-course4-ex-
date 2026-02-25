@@ -35,16 +35,16 @@
     </div>
   </div>
 
-  <div *ngIf="loading" class="product-list__loading">
+  <div *ngIf="isLoading" class="product-list__isLoading">
     <div class="product-list__spinner"></div>
     <p>Loading products...</p>
   </div>
 
-  <div *ngIf="!loading && filteredProducts.length === 0" class="product-list__empty">
+  <div *ngIf="!isLoading && filteredProducts.length === 0" class="product-list__empty">
     <p>No products found. Try a different search or category.</p>
   </div>
 
-  <div *ngIf="!loading" class="product-list__grid">
+  <div *ngIf="!isLoading" class="product-list__grid">
     <app-product-card
       *ngFor="let product of filteredProducts; let i = index"
       [product]="product"

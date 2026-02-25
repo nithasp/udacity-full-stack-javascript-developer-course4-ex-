@@ -36,11 +36,6 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              {
-                "glob": "mockup-data.json",
-                "input": "src/app/features/products/mockup-data",
-                "output": "/data"
               }
             ],
             "stylePreprocessorOptions": {
@@ -104,11 +99,6 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              {
-                "glob": "mockup-data.json",
-                "input": "src/app/features/products/mockup-data",
-                "output": "/data"
               }
             ],
             "stylePreprocessorOptions": {

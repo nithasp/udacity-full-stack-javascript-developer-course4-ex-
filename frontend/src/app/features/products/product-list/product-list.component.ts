@@ -15,7 +15,7 @@ export class ProductListComponent implements OnInit {
   categories: string[] = [];
   selectedCategory = '';
   searchTerm = '';
-  loading = true;
+  isLoading = true;
 
   constructor(
     private productService: ProductService,
@@ -29,11 +29,11 @@ export class ProductListComponent implements OnInit {
         this.products = products;
         this.filteredProducts = products;
         this.categories = [...new Set(products.map(p => p.category))];
-        this.loading = false;
+        this.isLoading = false;
       },
       error: () => {
         this.notificationService.error('Failed to load products');
-        this.loading = false;
+        this.isLoading = false;
       }
     });
   }

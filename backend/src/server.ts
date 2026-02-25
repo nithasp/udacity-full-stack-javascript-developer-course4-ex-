@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import authRoutes from './handlers/auth';
 import userRoutes from './handlers/users';
 import productRoutes from './handlers/products';
 import orderRoutes from './handlers/orders';
@@ -16,6 +17,7 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 // Routes
+authRoutes(app);
 userRoutes(app);
 productRoutes(app);
 orderRoutes(app);

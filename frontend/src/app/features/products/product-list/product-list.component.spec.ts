@@ -82,7 +82,7 @@ describe('ProductListComponent', () => {
   it('should load products on init', () => {
     expect(productServiceSpy.getProducts).toHaveBeenCalled();
     expect(component.products.length).toBe(2);
-    expect(component.loading).toBeFalse();
+    expect(component.isLoading).toBeFalse();
   });
 
   it('should extract unique categories', () => {

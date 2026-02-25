@@ -36,12 +36,6 @@ export interface Product {
   shopName?: string;
 }
 
-export interface Shop {
-  shop_id: string;
-  name: string;
-  image?: string;
-  products: Product[];
-}
 
 export interface CartItem {
   product: Product;

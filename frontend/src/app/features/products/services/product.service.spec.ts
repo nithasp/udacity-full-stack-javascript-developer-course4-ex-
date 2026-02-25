@@ -1,42 +1,35 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ProductService } from './product.service';
-import { Shop } from '../models/product';
 
 describe('ProductService', () => {
   let service: ProductService;
   let httpMock: HttpTestingController;
 
-  const mockShops: Shop[] = [
+  const mockBackendProducts = [
     {
-      shop_id: 'shop1',
-      name: 'Test Shop',
-      products: [
-        {
-          _id: 'prod1',
-          name: 'Product 1',
-          category: 'Electronics',
-          price: 99.99,
-          image: 'https://example.com/img1.jpg',
-          description: 'First product',
-          preview_img: [],
-          types: [],
-          reviews: [],
-          overall_rating: 4.5
-        },
-        {
-          _id: 'prod2',
-          name: 'Product 2',
-          category: 'Furniture',
-          price: 199.99,
-          image: 'https://example.com/img2.jpg',
-          description: 'Second product',
-          preview_img: [],
-          types: [],
-          reviews: [],
-          overall_rating: 5
-        }
-      ]
+      id: 1,
+      name: 'Product 1',
+      category: 'Electronics',
+      price: 99.99,
+      image: 'https://example.com/img1.jpg',
+      description: 'First product',
+      preview_img: [],
+      types: [],
+      reviews: [],
+      overall_rating: 4.5
+    },
+    {
+      id: 2,
+      name: 'Product 2',
+      category: 'Furniture',
+      price: 199.99,
+      image: 'https://example.com/img2.jpg',
+      description: 'Second product',
+      preview_img: [],
+      types: [],
+      reviews: [],
+      overall_rating: 5
     }
   ];
 
@@ -57,48 +50,45 @@ describe('ProductService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should fetch products via HttpClient', () => {
+  it('should fetch products from the backend API', () => {
     service.getProducts().subscribe(products => {
       expect(products.length).toBe(2);
       expect(products[0].name).toBe('Product 1');
       expect(products[1].name).toBe('Product 2');
-      expect(products[0].shopId).toBe('shop1');
-      expect(products[0].shopName).toBe('Test Shop');
+      expect(products[0]._id).toBe('1');
+      expect(products[1]._id).toBe('2');
     });
 
-    const req = httpMock.expectOne('data/mockup-data.json');
+    const req = httpMock.expectOne('http://localhost:3000/products');
     expect(req.request.method).toBe('GET');
-    req.flush(mockShops);
+    req.flush(mockBackendProducts);
   });
 
   it('should find a product by ID', () => {
-    service.getProductById('prod2').subscribe(product => {
+    service.getProductById('2').subscribe(product => {
       expect(product).toBeTruthy();
       expect(product?.name).toBe('Product 2');
       expect(product?.price).toBe(199.99);
+      expect(product?._id).toBe('2');
     });
 
-    const req = httpMock.expectOne('data/mockup-data.json');
-    req.flush(mockShops);
+    const req = httpMock.expectOne('http://localhost:3000/products/2');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockBackendProducts[1]);
   });
 
-  it('should return undefined for a non-existent product ID', () => {
-    service.getProductById('nonexistent').subscribe(product => {
-      expect(product).toBeUndefined();
+  it('should map backend product fields correctly', () => {
+    service.getProducts().subscribe(products => {
+      const product = products[0];
+      expect(product._id).toBe('1');
+      expect(product.category).toBe('Electronics');
+      expect(product.price).toBe(99.99);
+      expect(product.image).toBe('https://example.com/img1.jpg');
+      expect(product.description).toBe('First product');
+      expect(product.overall_rating).toBe(4.5);
     });
 
-    const req = httpMock.expectOne('data/mockup-data.json');
-    req.flush(mockShops);
-  });
-
-  it('should fetch shops', () => {
-    service.getShops().subscribe(shops => {
-      expect(shops.length).toBe(1);
-      expect(shops[0].name).toBe('Test Shop');
-      expect(shops[0].products.length).toBe(2);
-    });
-
-    const req = httpMock.expectOne('data/mockup-data.json');
-    req.flush(mockShops);
+    const req = httpMock.expectOne('http://localhost:3000/products');
+    req.flush(mockBackendProducts);
   });
 });

@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,6 @@ import { SharedModule } from './shared/shared.module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule,
     AppRoutingModule,
     CoreModule,
     SharedModule,
@@ -28,7 +28,9 @@ import { SharedModule } from './shared/shared.module';
       progressAnimation: 'increasing'
     })
   ],
-  providers: [],
+  providers: [
+    provideHttpClient(withInterceptors([authInterceptor]))
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
