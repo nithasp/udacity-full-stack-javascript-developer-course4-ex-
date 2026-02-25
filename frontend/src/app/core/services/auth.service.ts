@@ -41,13 +41,23 @@ export class AuthService {
 
   // ── Token helpers ──────────────────────────────────────────────────────────
 
-  /** Check if the stored access token exists and is not expired. */
+  /** Check if the stored access token exists, is well-formed, and is not expired. */
   hasValidToken(): boolean {
     const token = this.getAccessToken();
     if (!token) return false;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const parts = token.split('.');
+
+      // A valid JWT must have exactly 3 parts: header.payload.signature
+      if (parts.length !== 3) return false;
+
+      // Validate that the header is a proper JWT header
+      const header = JSON.parse(atob(parts[0]));
+      if (!header.alg || !header.typ) return false;
+
+      // Validate payload and check expiration
+      const payload = JSON.parse(atob(parts[1]));
       return payload.exp * 1000 > Date.now();
     } catch {
       return false;

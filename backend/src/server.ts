@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.set('etag', false);
 
 app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Storefront API is running!' });
