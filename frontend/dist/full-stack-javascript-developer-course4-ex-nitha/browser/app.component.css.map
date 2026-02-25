@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/app.component.scss"],
-  "sourcesContent": ["@import 'variables';\n\n.main-content {\n  min-height: calc(100vh - $navbar-height);\n  padding-top: calc($navbar-height / 2.5);\n}\n"],
-  "mappings": ";AAEA,CAAA;AACE,cAAA,KAAA,MAAA,EAAA;AACA,eAAA;;",
-  "names": []
-}
