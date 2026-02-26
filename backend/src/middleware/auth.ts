@@ -1,10 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { config } from '../config';
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET || 'default-secret-for-dev';
+// ── Extend Express Request so handlers can read req.user without re-decoding ─
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { userId: number };
+    }
+  }
+}
 
 /**
  * Middleware that verifies the Bearer access token.
+ *
+ * On success, attaches the decoded payload to `req.user` so downstream
+ * handlers can access `req.user.userId` without re-verifying the token.
  *
  * Returns distinct error codes so the frontend interceptor can decide
  * whether to attempt a token refresh or redirect to login:
@@ -25,7 +37,8 @@ export const verifyAuthToken = (req: Request, res: Response, next: NextFunction)
     }
 
     const token = authHeader.split(' ')[1];
-    jwt.verify(token, TOKEN_SECRET);
+    const decoded = jwt.verify(token, config.tokenSecret) as { userId: number };
+    req.user = decoded;
     next();
   } catch (err) {
     const jwtErr = err as { name?: string };

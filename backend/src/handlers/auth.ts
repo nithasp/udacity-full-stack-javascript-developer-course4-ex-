@@ -1,20 +1,17 @@
-import { Application, Request, Response } from 'express';
+import { Application, Request, RequestHandler, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserStore } from '../models/user';
 import { RefreshTokenStore } from '../models/refreshToken';
 import { verifyAuthToken } from '../middleware/auth';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/errorHandler';
-
-const TOKEN_SECRET = process.env.TOKEN_SECRET || 'default-secret-for-dev';
-const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY || '1h';
-const REFRESH_TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+import { config } from '../config';
 
 const userStore = new UserStore();
 const refreshTokenStore = new RefreshTokenStore();
 
 const generateAccessToken = (userId: number): string => {
-  return jwt.sign({ userId }, TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY as jwt.SignOptions['expiresIn'] });
+  return jwt.sign({ userId }, config.tokenSecret, { expiresIn: config.accessTokenExpiry as jwt.SignOptions['expiresIn'] });
 };
 
 // ── POST /auth/register ─────────────────────────────────────────────────────
@@ -25,8 +22,8 @@ const register = asyncHandler(async (req: Request, res: Response) => {
   if (!username || typeof username !== 'string' || !username.trim()) {
     throw new AppError('username is required', 400);
   }
-  if (!password || typeof password !== 'string' || password.length < 4) {
-    throw new AppError('password is required and must be at least 4 characters', 400);
+  if (!password || typeof password !== 'string' || password.length < 8) {
+    throw new AppError('password is required and must be at least 8 characters', 400);
   }
 
   const existing = await userStore.findByUsername(username.trim());
@@ -42,7 +39,7 @@ const register = asyncHandler(async (req: Request, res: Response) => {
   });
 
   const accessToken = generateAccessToken(user.id!);
-  const refreshToken = await refreshTokenStore.create(user.id!, REFRESH_TOKEN_EXPIRY_MS);
+  const refreshToken = await refreshTokenStore.create(user.id!, config.refreshTokenExpiryMs);
 
   res.json({ user, accessToken, refreshToken });
 });
@@ -65,7 +62,10 @@ const login = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const accessToken = generateAccessToken(user.id!);
-  const refreshToken = await refreshTokenStore.create(user.id!, REFRESH_TOKEN_EXPIRY_MS);
+  const refreshToken = await refreshTokenStore.create(user.id!, config.refreshTokenExpiryMs);
+
+  // Fire-and-forget: clean up expired tokens without blocking the response
+  refreshTokenStore.deleteExpired().catch(() => {});
 
   res.json({ user, accessToken, refreshToken });
 });
@@ -90,7 +90,7 @@ const refresh = asyncHandler(async (req: Request, res: Response) => {
   const accessToken = generateAccessToken(stored.user_id);
   const newRefreshToken = await refreshTokenStore.create(
     stored.user_id,
-    REFRESH_TOKEN_EXPIRY_MS
+    config.refreshTokenExpiryMs
   );
 
   res.json({ accessToken, refreshToken: newRefreshToken });
@@ -111,32 +111,27 @@ const logout = asyncHandler(async (req: Request, res: Response) => {
 // ── POST /auth/logout-all (requires valid access token) ─────────────────────
 
 const logoutAll = asyncHandler(async (req: Request, res: Response) => {
-  const token = req.headers.authorization!.split(' ')[1];
-  const decoded = jwt.verify(token, TOKEN_SECRET) as { userId: number };
-
-  await refreshTokenStore.deleteAllForUser(decoded.userId);
-
+  // req.user is guaranteed by verifyAuthToken middleware
+  await refreshTokenStore.deleteAllForUser(req.user!.userId);
   res.json({ message: 'All sessions revoked' });
 });
 
 // ── GET /auth/me (requires valid access token) ─────────────────────────────
 
 const me = asyncHandler(async (req: Request, res: Response) => {
-  const token = req.headers.authorization!.split(' ')[1];
-  const decoded = jwt.verify(token, TOKEN_SECRET) as { userId: number };
-
-  const user = await userStore.show(decoded.userId);
+  // req.user is guaranteed by verifyAuthToken middleware
+  const user = await userStore.show(req.user!.userId);
   if (!user) throw new AppError('User not found', 404);
-
   res.json(user);
 });
 
 // ── Register routes ─────────────────────────────────────────────────────────
 
-const authRoutes = (app: Application) => {
-  app.post('/auth/register', register);
-  app.post('/auth/login', login);
-  app.post('/auth/refresh', refresh);
+const authRoutes = (app: Application, limiter?: RequestHandler) => {
+  const guard = limiter ? [limiter] : [];
+  app.post('/auth/register', ...guard, register);
+  app.post('/auth/login', ...guard, login);
+  app.post('/auth/refresh', ...guard, refresh);
   app.post('/auth/logout', logout);
   app.post('/auth/logout-all', verifyAuthToken, logoutAll);
   app.get('/auth/me', verifyAuthToken, me);

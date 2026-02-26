@@ -1,6 +1,4 @@
 import { Application, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { User } from '../types/user.types';
 import { UserStore } from '../models/user';
 import { OrderStore } from '../models/order';
 import { verifyAuthToken } from '../middleware/auth';
@@ -10,7 +8,6 @@ import { parseId, requireString, optionalString } from '../utils/validate';
 
 const store = new UserStore();
 const orderStore = new OrderStore();
-const TOKEN_SECRET = process.env.TOKEN_SECRET as string;
 
 const index = asyncHandler(async (_req: Request, res: Response) => {
   res.json(await store.index());
@@ -31,8 +28,9 @@ const create = asyncHandler(async (req: Request, res: Response) => {
     username: requireString(req.body.username, 'username'),
     password: requireString(req.body.password, 'password'),
   });
-  const token = jwt.sign({ userId: newUser.id }, TOKEN_SECRET, { expiresIn: '1h' });
-  res.json({ user: newUser, token });
+  // Token issuance is handled by POST /auth/register.
+  // This endpoint only creates the record; the client should call /auth/login afterwards.
+  res.status(201).json({ user: newUser });
 });
 
 const update = asyncHandler(async (req: Request, res: Response) => {
@@ -59,25 +57,12 @@ const destroy = asyncHandler(async (req: Request, res: Response) => {
   res.json(deleted);
 });
 
-const authenticate = asyncHandler(async (req: Request, res: Response) => {
-  if (!req.body.username || typeof req.body.username !== 'string' || !req.body.username.trim())
-    throw new AppError('username is required', 400);
-  if (!req.body.password || typeof req.body.password !== 'string')
-    throw new AppError('password is required', 400);
-
-  const user = await store.authenticate(req.body.username.trim(), req.body.password);
-  if (!user) throw new AppError('Invalid credentials', 401);
-  const token = jwt.sign({ userId: user.id }, TOKEN_SECRET, { expiresIn: '1h' });
-  res.json({ user, token });
-});
-
 const userRoutes = (app: Application) => {
   app.get('/users', verifyAuthToken, index);
   app.get('/users/:id', verifyAuthToken, show);
-  app.post('/users', create);
+  app.post('/users', verifyAuthToken, create);
   app.put('/users/:id', verifyAuthToken, update);
   app.delete('/users/:id', verifyAuthToken, destroy);
-  app.post('/users/authenticate', authenticate);
 };
 
 export default userRoutes;
