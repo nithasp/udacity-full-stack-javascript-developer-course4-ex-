@@ -77,11 +77,21 @@ export class UserStore {
     }
   }
 
+  async findByUsername(username: string): Promise<User | undefined> {
+    try {
+      const { rows } = await client.query(`SELECT ${SAFE_FIELDS} FROM users WHERE username=$1`, [username]);
+      return rows[0];
+    } catch (err) {
+      throw new Error(`Cannot find user by username: ${err}`);
+    }
+  }
+
   async authenticate(username: string, password: string): Promise<User | null> {
     try {
       const { rows } = await client.query('SELECT * FROM users WHERE username=$1', [username]);
       if (rows.length && bcrypt.compareSync(password + BCRYPT_PASSWORD, rows[0].password)) {
-        return rows[0];
+        const { password: _pw, ...safeUser } = rows[0];
+        return safeUser;
       }
       return null;
     } catch (err) {

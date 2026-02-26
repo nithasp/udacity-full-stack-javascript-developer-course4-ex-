@@ -31,7 +31,8 @@ const create = asyncHandler(async (req: Request, res: Response) => {
     username: requireString(req.body.username, 'username'),
     password: requireString(req.body.password, 'password'),
   });
-  res.json({ user: newUser, token: jwt.sign({ user: newUser }, TOKEN_SECRET) });
+  const token = jwt.sign({ userId: newUser.id }, TOKEN_SECRET, { expiresIn: '1h' });
+  res.json({ user: newUser, token });
 });
 
 const update = asyncHandler(async (req: Request, res: Response) => {
@@ -66,7 +67,8 @@ const authenticate = asyncHandler(async (req: Request, res: Response) => {
 
   const user = await store.authenticate(req.body.username.trim(), req.body.password);
   if (!user) throw new AppError('Invalid credentials', 401);
-  res.json({ user, token: jwt.sign({ user }, TOKEN_SECRET) });
+  const token = jwt.sign({ userId: user.id }, TOKEN_SECRET, { expiresIn: '1h' });
+  res.json({ user, token });
 });
 
 const userRoutes = (app: Application) => {

@@ -95,7 +95,7 @@ const destroy = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const productRoutes = (app: Application) => {
-  app.get('/products', index);
+  app.get('/products',verifyAuthToken, index);
   app.get('/products/popular', mostPopular);
   app.get('/products/:id', show);
   app.post('/products', verifyAuthToken, create);

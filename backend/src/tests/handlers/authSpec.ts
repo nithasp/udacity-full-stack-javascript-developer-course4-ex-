@@ -1,18 +1,22 @@
 import supertest from 'supertest';
+import jwt from 'jsonwebtoken';
 import app from '../../server';
 
 const request = supertest(app);
+const TOKEN_SECRET = process.env.TOKEN_SECRET || 'default-secret-for-dev';
 
-describe('Auth Endpoints (mockup)', () => {
+describe('Auth Endpoints', () => {
   const testUser = {
     username: 'authtest_' + Date.now(),
     password: 'test1234',
+    first_name: 'Auth',
+    last_name: 'Tester',
   };
 
   let accessToken: string;
   let refreshToken: string;
 
-  // ── Register ───────────────────────────────────────────────────────────────
+  // ── Register ──────────────────────────────────────────────────────────────
 
   describe('POST /auth/register', () => {
     it('should register a new user and return tokens', async () => {
@@ -23,9 +27,16 @@ describe('Auth Endpoints (mockup)', () => {
 
       expect(res.body.user).toBeDefined();
       expect(res.body.user.username).toBe(testUser.username);
-      expect(res.body.user.password).toBeUndefined(); // password must not leak
+      expect(res.body.user.password).toBeUndefined();
       expect(res.body.accessToken).toBeDefined();
       expect(res.body.refreshToken).toBeDefined();
+
+      // Access token should be a valid JWT with userId
+      const decoded = jwt.verify(res.body.accessToken, TOKEN_SECRET) as { userId: number };
+      expect(decoded.userId).toBe(res.body.user.id);
+
+      // Refresh token should be an opaque string (not a JWT)
+      expect(res.body.refreshToken.split('.').length).not.toBe(3);
 
       accessToken = res.body.accessToken;
       refreshToken = res.body.refreshToken;
@@ -59,21 +70,21 @@ describe('Auth Endpoints (mockup)', () => {
     });
   });
 
-  // ── Login ──────────────────────────────────────────────────────────────────
+  // ── Login ─────────────────────────────────────────────────────────────────
 
   describe('POST /auth/login', () => {
     it('should login with valid credentials and return tokens', async () => {
       const res = await request
         .post('/auth/login')
-        .send(testUser)
+        .send({ username: testUser.username, password: testUser.password })
         .expect(200);
 
       expect(res.body.user).toBeDefined();
       expect(res.body.user.username).toBe(testUser.username);
+      expect(res.body.user.password).toBeUndefined();
       expect(res.body.accessToken).toBeDefined();
       expect(res.body.refreshToken).toBeDefined();
 
-      // Update tokens for later tests
       accessToken = res.body.accessToken;
       refreshToken = res.body.refreshToken;
     });
@@ -90,7 +101,7 @@ describe('Auth Endpoints (mockup)', () => {
     it('should return 401 with non-existent username', async () => {
       const res = await request
         .post('/auth/login')
-        .send({ username: 'nosuchuser', password: 'password' })
+        .send({ username: 'nosuchuser_' + Date.now(), password: 'password' })
         .expect(401);
 
       expect(res.body.error).toBe('Invalid username or password');
@@ -111,17 +122,28 @@ describe('Auth Endpoints (mockup)', () => {
     });
   });
 
-  // ── Refresh ────────────────────────────────────────────────────────────────
+  // ── Refresh (with rotation) ───────────────────────────────────────────────
 
   describe('POST /auth/refresh', () => {
-    it('should return a new access token with valid refresh token', async () => {
+    it('should return a new access token and rotate the refresh token', async () => {
       const res = await request
         .post('/auth/refresh')
         .send({ refreshToken })
         .expect(200);
 
       expect(res.body.accessToken).toBeDefined();
-      expect(res.body.refreshToken).toBe(refreshToken); // same refresh token returned
+      expect(res.body.refreshToken).toBeDefined();
+      expect(res.body.refreshToken).not.toBe(refreshToken); // rotated
+
+      // Old refresh token should now be invalid
+      await request
+        .post('/auth/refresh')
+        .send({ refreshToken })
+        .expect(401);
+
+      // Update tokens for subsequent tests
+      accessToken = res.body.accessToken;
+      refreshToken = res.body.refreshToken;
     });
 
     it('should return 400 when refreshToken is missing', async () => {
@@ -137,13 +159,92 @@ describe('Auth Endpoints (mockup)', () => {
         .send({ refreshToken: 'totally.invalid.token' })
         .expect(401);
 
-      expect(res.body.error).toBe('Invalid refresh token');
+      expect(res.body.error).toBe('Invalid or expired refresh token');
     });
   });
 
-  // ── Protected route (GET /auth/me) ─────────────────────────────────────────
+  // ── Logout ────────────────────────────────────────────────────────────────
+
+  describe('POST /auth/logout', () => {
+    it('should invalidate the refresh token on logout', async () => {
+      // Login to get a fresh session
+      const loginRes = await request
+        .post('/auth/login')
+        .send({ username: testUser.username, password: testUser.password })
+        .expect(200);
+
+      const sessionRefreshToken = loginRes.body.refreshToken;
+      accessToken = loginRes.body.accessToken;
+
+      // Logout
+      await request
+        .post('/auth/logout')
+        .send({ refreshToken: sessionRefreshToken })
+        .expect(200);
+
+      // Refresh with the same token should fail
+      await request
+        .post('/auth/refresh')
+        .send({ refreshToken: sessionRefreshToken })
+        .expect(401);
+    });
+
+    it('should succeed even without a refresh token (graceful)', async () => {
+      await request
+        .post('/auth/logout')
+        .send({})
+        .expect(200);
+    });
+  });
+
+  // ── Logout All ────────────────────────────────────────────────────────────
+
+  describe('POST /auth/logout-all', () => {
+    it('should revoke all sessions for the current user', async () => {
+      // Create two sessions
+      const login1 = await request
+        .post('/auth/login')
+        .send({ username: testUser.username, password: testUser.password });
+      const login2 = await request
+        .post('/auth/login')
+        .send({ username: testUser.username, password: testUser.password });
+
+      // Logout all using session 1's access token
+      await request
+        .post('/auth/logout-all')
+        .set('Authorization', `Bearer ${login1.body.accessToken}`)
+        .expect(200);
+
+      // Both refresh tokens should now be invalid
+      await request
+        .post('/auth/refresh')
+        .send({ refreshToken: login1.body.refreshToken })
+        .expect(401);
+
+      await request
+        .post('/auth/refresh')
+        .send({ refreshToken: login2.body.refreshToken })
+        .expect(401);
+    });
+
+    it('should require a valid access token', async () => {
+      await request
+        .post('/auth/logout-all')
+        .expect(401);
+    });
+  });
+
+  // ── Protected route (GET /auth/me) ────────────────────────────────────────
 
   describe('GET /auth/me', () => {
+    beforeAll(async () => {
+      const res = await request
+        .post('/auth/login')
+        .send({ username: testUser.username, password: testUser.password });
+      accessToken = res.body.accessToken;
+      refreshToken = res.body.refreshToken;
+    });
+
     it('should return the current user when access token is valid', async () => {
       const res = await request
         .get('/auth/me')
@@ -151,6 +252,7 @@ describe('Auth Endpoints (mockup)', () => {
         .expect(200);
 
       expect(res.body.username).toBe(testUser.username);
+      expect(res.body.password).toBeUndefined();
     });
 
     it('should return 401 when no token is provided', async () => {
@@ -158,9 +260,9 @@ describe('Auth Endpoints (mockup)', () => {
     });
   });
 
-  // ── Token expiry detection (middleware) ────────────────────────────────────
+  // ── Middleware error codes ────────────────────────────────────────────────
 
-  describe('Auth middleware – token_expired vs token_invalid', () => {
+  describe('Auth middleware – error codes', () => {
     it('should return code "no_token" when no Authorization header', async () => {
       const res = await request.get('/users').expect(401);
       expect(res.body.code).toBe('no_token');
@@ -175,16 +277,30 @@ describe('Auth Endpoints (mockup)', () => {
       expect(res.body.code).toBe('token_invalid');
     });
 
+    it('should return code "token_expired" for an expired token', async () => {
+      const expiredToken = jwt.sign(
+        { userId: 1 },
+        TOKEN_SECRET,
+        { expiresIn: '0s' }
+      );
+
+      // Small delay to ensure the token is past its expiry
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+
+      const res = await request
+        .get('/users')
+        .set('Authorization', `Bearer ${expiredToken}`)
+        .expect(401);
+
+      expect(res.body.code).toBe('token_expired');
+    });
+
     it('should allow access with a valid access token', async () => {
-      // The /users endpoint is protected by verifyAuthToken
       const res = await request
         .get('/users')
         .set('Authorization', `Bearer ${accessToken}`);
 
-      // Should not be 401
       expect(res.status).not.toBe(401);
     });
   });
-
 });
-

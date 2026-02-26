@@ -21,9 +21,13 @@ export class ProductListComponent implements OnInit {
     private productService: ProductService,
     private cartService: CartService,
     private notificationService: NotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+    this.getProducts();
+  }
+
+  getProducts(): void {
     this.productService.getProducts().subscribe({
       next: (products) => {
         this.products = products;

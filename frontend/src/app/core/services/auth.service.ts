@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 
-// ── Interfaces ─────────────────────────────────────────────────────────────────
+// ── Interfaces ──────────────────────────────────────────────────────────────
 
 export interface AuthUser {
   id: number;
@@ -23,7 +23,7 @@ export interface RefreshResponse {
   refreshToken: string;
 }
 
-// ── Constants ──────────────────────────────────────────────────────────────────
+// ── Constants ────────────────────────────────────────────────────────────────
 
 const API_URL = 'http://localhost:3000/auth';
 const ACCESS_TOKEN_KEY = 'accessToken';
@@ -41,22 +41,18 @@ export class AuthService {
 
   // ── Token helpers ──────────────────────────────────────────────────────────
 
-  /** Check if the stored access token exists, is well-formed, and is not expired. */
+  /** True if the stored access token exists, is well-formed, and not expired. */
   hasValidToken(): boolean {
     const token = this.getAccessToken();
     if (!token) return false;
 
     try {
       const parts = token.split('.');
-
-      // A valid JWT must have exactly 3 parts: header.payload.signature
       if (parts.length !== 3) return false;
 
-      // Validate that the header is a proper JWT header
       const header = JSON.parse(atob(parts[0]));
       if (!header.alg || !header.typ) return false;
 
-      // Validate payload and check expiration
       const payload = JSON.parse(atob(parts[1]));
       return payload.exp * 1000 > Date.now();
     } catch {
@@ -92,11 +88,6 @@ export class AuthService {
 
   // ── Auth operations ────────────────────────────────────────────────────────
 
-  /**
-   * Register a new user.
-   * The backend accepts `username` and `password` (with optional `first_name`
-   * and `last_name` that default to the username).
-   */
   register(username: string, password: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${API_URL}/register`, { username, password })
@@ -110,9 +101,6 @@ export class AuthService {
       );
   }
 
-  /**
-   * Log in with existing credentials.
-   */
   login(username: string, password: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${API_URL}/login`, { username, password })
@@ -127,8 +115,9 @@ export class AuthService {
   }
 
   /**
-   * Refresh the access token using the stored refresh token.
-   * Called by the HTTP interceptor when a 401 with `token_expired` is received.
+   * Exchange the stored refresh token for a new access + refresh token pair.
+   * Pure operation — no side effects on failure.
+   * Callers are responsible for calling logout() / clearSession() on error.
    */
   refreshAccessToken(): Observable<RefreshResponse> {
     const refreshToken = this.getRefreshToken();
@@ -142,8 +131,6 @@ export class AuthService {
       .pipe(
         tap((res) => this.storeRefreshedTokens(res)),
         catchError((err) => {
-          // Refresh failed – clear session
-          this.logout();
           const message =
             err.error?.error || 'Session expired. Please log in again.';
           return throwError(() => new Error(message));
@@ -152,9 +139,28 @@ export class AuthService {
   }
 
   /**
-   * Log out – clear all stored tokens / user data.
+   * Full logout: tell the backend to delete the refresh token from the DB,
+   * then wipe local storage.
+   * Use this from user-initiated logout or when the interceptor detects
+   * a failed refresh (the refresh token is still in localStorage at that point).
    */
   logout(): void {
+    const refreshToken = this.getRefreshToken();
+    if (refreshToken) {
+      this.http
+        .post(`${API_URL}/logout`, { refreshToken })
+        .subscribe({ error: () => {} });
+    }
+    this.clearSession();
+  }
+
+  /**
+   * Wipe local session data without notifying the backend.
+   * Use this when the backend has already invalidated the token
+   * (e.g. after a failed refresh in the auth guard — the backend already
+   * rejected it, so there is no valid token to delete).
+   */
+  clearSession(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);

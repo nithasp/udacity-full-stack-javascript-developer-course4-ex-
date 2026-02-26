@@ -88,8 +88,9 @@ export const authInterceptor: HttpInterceptorFn = (
         );
       }
 
-      // Any other 401 (invalid token / no token) → force logout
-      authService.logout();
+      // token_invalid or no_token → tampered / missing token,
+      // no server record to delete so just wipe localStorage.
+      authService.clearSession();
       notification.error('Your session is invalid. Please log in again.');
       router.navigate(['/auth/login']);
       return throwError(() => error);
@@ -120,7 +121,9 @@ function handle401Refresh(
       catchError((err) => {
         isRefreshing = false;
         refreshTokenSubject.next(null);
-        authService.logout();
+        // The backend already rejected the refresh token (expired / revoked),
+        // so just wipe localStorage — no need to hit POST /auth/logout again.
+        authService.clearSession();
         notification.error(
           'Your session has expired. Please log in again.'
         );
