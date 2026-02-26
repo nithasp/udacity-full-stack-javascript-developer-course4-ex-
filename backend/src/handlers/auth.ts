@@ -7,14 +7,14 @@ import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/errorHandler';
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET || 'default-secret-for-dev';
-const ACCESS_TOKEN_EXPIRY = '10s';
+const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY || '1h';
 const REFRESH_TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 const userStore = new UserStore();
 const refreshTokenStore = new RefreshTokenStore();
 
 const generateAccessToken = (userId: number): string => {
-  return jwt.sign({ userId }, TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY });
+  return jwt.sign({ userId }, TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY as jwt.SignOptions['expiresIn'] });
 };
 
 // ── POST /auth/register ─────────────────────────────────────────────────────
