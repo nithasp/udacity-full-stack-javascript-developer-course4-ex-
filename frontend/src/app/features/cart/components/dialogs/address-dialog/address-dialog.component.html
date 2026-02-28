@@ -12,8 +12,7 @@
 
       <!-- Loading state -->
       <div class="address-dialog__loading" *ngIf="isLoadingAddresses">
-        <div class="address-dialog__spinner"></div>
-        <span>Loading addresses…</span>
+        <app-loading-spinner message="Loading addresses…" layout="block"></app-loading-spinner>
       </div>
 
       <!-- Empty state -->

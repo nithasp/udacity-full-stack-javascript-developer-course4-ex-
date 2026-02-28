@@ -9,6 +9,7 @@ import { QuantityInputComponent } from './components/form/quantity-input/quantit
 import { ProductCardComponent } from './components/product-card/product-card.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { DialogConfirmComponent } from './components/dialogs/dialog-confirm/dialog-confirm.component';
+import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { DialogConfirmComponent } from './components/dialogs/dialog-confirm/dial
     QuantityInputComponent,
     ProductCardComponent,
     NavbarComponent,
-    DialogConfirmComponent
+    DialogConfirmComponent,
+    LoadingSpinnerComponent
   ],
   imports: [
     CommonModule,
@@ -35,7 +37,8 @@ import { DialogConfirmComponent } from './components/dialogs/dialog-confirm/dial
     QuantityInputComponent,
     ProductCardComponent,
     NavbarComponent,
-    DialogConfirmComponent
+    DialogConfirmComponent,
+    LoadingSpinnerComponent
   ]
 })
 export class SharedModule {}

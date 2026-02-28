@@ -9,18 +9,6 @@
   &__loading {
     @include flex-center;
     flex-direction: column;
-    gap: $spacing-md;
-    padding: $spacing-3xl 0;
-    color: $color-text-light;
-  }
-
-  &__spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid $color-border;
-    border-top-color: $color-primary;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
   }
 
   &__not-found {
@@ -304,8 +292,4 @@
     color: $color-text-light;
     line-height: 1.6;
   }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }

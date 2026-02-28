@@ -3,8 +3,7 @@
 
   <!-- Loading State -->
   <div *ngIf="isLoadingCart" class="cart-page__loading">
-    <div class="cart-page__spinner"></div>
-    <p>Loading your cart…</p>
+    <app-loading-spinner message="Loading your cart…" layout="block"></app-loading-spinner>
   </div>
 
   <!-- Empty State -->
@@ -38,8 +37,7 @@
 
       <!-- Loading state -->
       <div class="delivery-bar__loading" *ngIf="isLoadingAddresses">
-        <div class="delivery-bar__spinner"></div>
-        <span>Loading delivery address…</span>
+        <app-loading-spinner message="Loading delivery address…" size="small" layout="inline"></app-loading-spinner>
       </div>
 
       <ng-container *ngIf="!isLoadingAddresses">

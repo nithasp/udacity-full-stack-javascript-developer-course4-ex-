@@ -63,8 +63,7 @@
             <button type="submit" class="auth-btn" [disabled]="isLoading">
                 <span *ngIf="!isLoading">Create Account</span>
                 <span *ngIf="isLoading" class="auth-btn__loading">
-                    <span class="spinner"></span>
-                    Creating account...
+                    <app-loading-spinner size="small" layout="inline" message="Creating account..." variant="light"></app-loading-spinner>
                 </span>
             </button>
         </form>

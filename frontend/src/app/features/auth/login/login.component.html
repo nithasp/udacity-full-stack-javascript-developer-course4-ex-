@@ -62,8 +62,7 @@
       >
         <span *ngIf="!isLoading">Sign In</span>
         <span *ngIf="isLoading" class="auth-btn__loading">
-          <span class="spinner"></span>
-          Signing in...
+          <app-loading-spinner size="small" layout="inline" message="Signing in..." variant="light"></app-loading-spinner>
         </span>
       </button>
     </form>

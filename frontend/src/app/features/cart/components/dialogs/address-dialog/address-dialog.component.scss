@@ -104,17 +104,6 @@
     p { margin: 0; }
   }
 
-  // Spinner ring
-  &__spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid $color-border;
-    border-top-color: $color-primary;
-    border-radius: 50%;
-    animation: addressSpinnerRotate 0.7s linear infinite;
-    flex-shrink: 0;
-  }
-
   // Scrollable address list
   &__list {
     flex: 1;
@@ -452,9 +441,5 @@
 @keyframes dialogSlideDown {
   from { transform: translateY(0);    opacity: 1; }
   to   { transform: translateY(24px); opacity: 0; }
-}
-
-@keyframes addressSpinnerRotate {
-  to { transform: rotate(360deg); }
 }
 

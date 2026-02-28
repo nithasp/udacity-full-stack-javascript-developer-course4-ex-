@@ -36,9 +36,8 @@
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="product-list__isLoading">
-    <div class="product-list__spinner"></div>
-    <p>Loading products...</p>
+  <div *ngIf="isLoading" class="product-list__loading">
+    <app-loading-spinner message="Loading products..." layout="block"></app-loading-spinner>
   </div>
 
   <div *ngIf="!isLoading && filteredProducts.length === 0" class="product-list__empty">

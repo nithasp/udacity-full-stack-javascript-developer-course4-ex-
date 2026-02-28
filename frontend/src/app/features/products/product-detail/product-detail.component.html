@@ -1,6 +1,5 @@
 <div *ngIf="loading" class="product-detail__loading">
-  <div class="product-detail__spinner"></div>
-  <p>Loading product...</p>
+  <app-loading-spinner message="Loading product..." layout="block"></app-loading-spinner>
 </div>
 
 <div *ngIf="!loading && !product" class="product-detail__not-found animate-fade-in">

@@ -17,18 +17,6 @@
   &__loading {
     @include flex-center;
     flex-direction: column;
-    gap: $spacing-md;
-    padding: $spacing-3xl 0;
-    color: $color-text-light;
-  }
-
-  &__spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid $color-border;
-    border-top-color: $color-primary;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
   }
 
   &__empty {
@@ -173,19 +161,6 @@
   &__loading {
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
-    font-size: $font-size-sm;
-    color: $color-text-muted;
-  }
-
-  &__spinner {
-    width: 18px;
-    height: 18px;
-    border: 2px solid $color-border;
-    border-top-color: $color-primary;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
   }
 
   &__empty {
@@ -887,8 +862,3 @@
     }
   }
 }
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
