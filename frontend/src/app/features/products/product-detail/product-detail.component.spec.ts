@@ -25,16 +25,16 @@ describe('ProductDetailComponent', () => {
     price: 79.99,
     image: 'https://example.com/main.jpg',
     description: 'Premium wireless headphones',
-    preview_img: ['https://example.com/main.jpg', 'https://example.com/side.jpg'],
+    previewImg: ['https://example.com/main.jpg', 'https://example.com/side.jpg'],
     types: [
-      { _id: 't1', product_id: 1001, color: 'Black', quantity: 50, price: 79.99, stock: 50, image: 'https://example.com/black.jpg' },
-      { _id: 't2', product_id: 1002, color: 'Silver', quantity: 35, price: 84.99, stock: 35, image: 'https://example.com/silver.jpg' }
+      { _id: 't1', productId: 1001, color: 'Black', quantity: 50, price: 79.99, stock: 50, image: 'https://example.com/black.jpg' },
+      { _id: 't2', productId: 1002, color: 'Silver', quantity: 35, price: 84.99, stock: 35, image: 'https://example.com/silver.jpg' }
     ],
     reviews: [
       { star: 5, comment: 'Great product!', userName: 'John' },
       { star: 4, comment: 'Good value', userName: 'Jane' }
     ],
-    overall_rating: 4.5,
+    overallRating: 4.5,
     stock: 85
   };
 

@@ -1,23 +1,23 @@
 export interface Order {
   id?: number;
-  user_id: number;
+  userId: number;
   status: string;
 }
 
 export interface OrderProduct {
   id?: number;
-  order_id: number;
-  product_id: number;
+  orderId: number;
+  productId: number;
   quantity: number;
 }
 
 export interface RecentPurchase {
-  product_id: number;
+  productId: number;
   name: string;
   price: number;
   category: string | null;
   image: string | null;
   description: string | null;
   quantity: number;
-  order_id: number;
+  orderId: number;
 }

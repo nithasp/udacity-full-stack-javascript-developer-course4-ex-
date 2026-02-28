@@ -7,8 +7,8 @@ let token: string;
 
 describe('User Endpoints', () => {
   const testUser: User = {
-    first_name: 'API',
-    last_name: 'Test',
+    firstName: 'API',
+    lastName: 'Test',
     username: 'apitest',
     password: 'testpass123'
   };
@@ -63,7 +63,7 @@ describe('User Endpoints', () => {
     expect(Array.isArray(response.body)).toBe(true);
   });
 
-  it('GET /users/:id should return a user with recent_purchases', async () => {
+  it('GET /users/:id should return a user with recentPurchases', async () => {
     const usersResponse = await request
       .get('/users')
       .set('Authorization', `Bearer ${token}`);
@@ -76,11 +76,11 @@ describe('User Endpoints', () => {
       .expect(200);
 
     expect(response.body.id).toBe(userId);
-    expect(response.body.recent_purchases).toBeDefined();
-    expect(Array.isArray(response.body.recent_purchases)).toBe(true);
+    expect(response.body.recentPurchases).toBeDefined();
+    expect(Array.isArray(response.body.recentPurchases)).toBe(true);
   });
 
-  it('GET /users/:id recent_purchases should contain purchase data from completed orders', async () => {
+  it('GET /users/:id recentPurchases should contain purchase data from completed orders', async () => {
     const usersResponse = await request
       .get('/users')
       .set('Authorization', `Bearer ${token}`);
@@ -97,38 +97,38 @@ describe('User Endpoints', () => {
     const orderRes = await request
       .post('/orders')
       .set('Authorization', `Bearer ${token}`)
-      .send({ user_id: userId, status: 'active' });
+      .send({ userId, status: 'active' });
     const orderId = orderRes.body.id;
 
     await request
       .post(`/orders/${orderId}/products`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ product_id: productId, quantity: 2 });
+      .send({ productId, quantity: 2 });
 
     await request
       .put(`/orders/${orderId}`)
       .set('Authorization', `Bearer ${token}`)
       .send({ status: 'complete' });
 
-    // Now fetch user show and verify recent_purchases
+    // Now fetch user show and verify recentPurchases
     const response = await request
       .get(`/users/${userId}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    expect(response.body.recent_purchases).toBeDefined();
-    expect(response.body.recent_purchases.length).toBeGreaterThan(0);
+    expect(response.body.recentPurchases).toBeDefined();
+    expect(response.body.recentPurchases.length).toBeGreaterThan(0);
 
-    const purchase = response.body.recent_purchases.find(
-      (p: { product_id: number }) => p.product_id === productId
+    const purchase = response.body.recentPurchases.find(
+      (p: { productId: number }) => p.productId === productId
     );
     expect(purchase).toBeDefined();
     expect(purchase.name).toBe('Recent Purchase Item');
     expect(purchase.quantity).toBe(2);
-    expect(purchase.order_id).toBe(orderId);
+    expect(purchase.orderId).toBe(orderId);
   });
 
-  it('GET /users/:id recent_purchases should return at most 5 items', async () => {
+  it('GET /users/:id recentPurchases should return at most 5 items', async () => {
     const usersResponse = await request
       .get('/users')
       .set('Authorization', `Bearer ${token}`);
@@ -139,7 +139,7 @@ describe('User Endpoints', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    expect(response.body.recent_purchases.length).toBeLessThanOrEqual(5);
+    expect(response.body.recentPurchases.length).toBeLessThanOrEqual(5);
   });
 
   it('PUT /users/:id should update a user with token', async () => {
@@ -152,14 +152,14 @@ describe('User Endpoints', () => {
     const response = await request
       .put(`/users/${userId}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ first_name: 'Updated' })
+      .send({ firstName: 'Updated' })
       .expect(200);
 
-    expect(response.body.first_name).toBe('Updated');
+    expect(response.body.firstName).toBe('Updated');
   });
 
   it('PUT /users/:id should require token', async () => {
-    await request.put('/users/1').send({ first_name: 'Fail' }).expect(401);
+    await request.put('/users/1').send({ firstName: 'Fail' }).expect(401);
   });
 
   it('DELETE /users/:id should require token', async () => {
@@ -170,8 +170,8 @@ describe('User Endpoints', () => {
     const createRes = await request
       .post('/users')
       .send({
-        first_name: 'Delete',
-        last_name: 'Me',
+        firstName: 'Delete',
+        lastName: 'Me',
         username: 'deleteme',
         password: 'testpass123'
       });
@@ -187,26 +187,26 @@ describe('User Endpoints', () => {
   });
 
   describe('Input Validation', () => {
-    it('POST /users should return 400 when first_name is missing', async () => {
+    it('POST /users should return 400 when firstName is missing', async () => {
       const response = await request
         .post('/users')
-        .send({ last_name: 'Test', username: 'noname', password: 'pass123' })
+        .send({ lastName: 'Test', username: 'noname', password: 'pass123' })
         .expect(400);
-      expect(response.body.error).toBe('first_name is required and must be a non-empty string');
+      expect(response.body.error).toBe('firstName is required and must be a non-empty string');
     });
 
-    it('POST /users should return 400 when last_name is missing', async () => {
+    it('POST /users should return 400 when lastName is missing', async () => {
       const response = await request
         .post('/users')
-        .send({ first_name: 'Test', username: 'nolast', password: 'pass123' })
+        .send({ firstName: 'Test', username: 'nolast', password: 'pass123' })
         .expect(400);
-      expect(response.body.error).toBe('last_name is required and must be a non-empty string');
+      expect(response.body.error).toBe('lastName is required and must be a non-empty string');
     });
 
     it('POST /users should return 400 when username is missing', async () => {
       const response = await request
         .post('/users')
-        .send({ first_name: 'Test', last_name: 'User', password: 'pass123' })
+        .send({ firstName: 'Test', lastName: 'User', password: 'pass123' })
         .expect(400);
       expect(response.body.error).toBe('username is required and must be a non-empty string');
     });
@@ -214,7 +214,7 @@ describe('User Endpoints', () => {
     it('POST /users should return 400 when password is missing', async () => {
       const response = await request
         .post('/users')
-        .send({ first_name: 'Test', last_name: 'User', username: 'nopass' })
+        .send({ firstName: 'Test', lastName: 'User', username: 'nopass' })
         .expect(400);
       expect(response.body.error).toBe('password is required and must be a non-empty string');
     });
@@ -255,7 +255,7 @@ describe('User Endpoints', () => {
       const response = await request
         .put('/users/abc')
         .set('Authorization', `Bearer ${token}`)
-        .send({ first_name: 'Test' })
+        .send({ firstName: 'Test' })
         .expect(400);
       expect(response.body.error).toBe('user id must be a valid positive integer');
     });
@@ -266,7 +266,7 @@ describe('User Endpoints', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({})
         .expect(400);
-      expect(response.body.error).toBe('at least one field (first_name, last_name, username, password) is required to update');
+      expect(response.body.error).toBe('at least one field (firstName, lastName, username, password) is required to update');
     });
 
     it('DELETE /users/:id should return 400 for invalid id', async () => {

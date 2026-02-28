@@ -11,7 +11,7 @@ export class UserStore {
   async index(): Promise<User[]> {
     try {
       const { rows } = await client.query(`SELECT ${SAFE_FIELDS} FROM users`);
-      return rows;
+      return rows.map(this.mapRow);
     } catch (err) {
       throw new Error(`Cannot get users: ${err}`);
     }
@@ -20,7 +20,7 @@ export class UserStore {
   async show(id: number): Promise<User> {
     try {
       const { rows } = await client.query(`SELECT ${SAFE_FIELDS} FROM users WHERE id=$1`, [id]);
-      return rows[0];
+      return rows[0] ? this.mapRow(rows[0]) : rows[0];
     } catch (err) {
       throw new Error(`Cannot get user ${id}: ${err}`);
     }
@@ -31,9 +31,9 @@ export class UserStore {
       const hash = bcrypt.hashSync(user.password + BCRYPT_PASSWORD, parseInt(SALT_ROUNDS as string));
       const { rows } = await client.query(
         `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4) RETURNING ${SAFE_FIELDS}`,
-        [user.first_name, user.last_name, user.username, hash]
+        [user.firstName, user.lastName, user.username, hash]
       );
-      return rows[0];
+      return this.mapRow(rows[0]);
     } catch (err) {
       throw new Error(`Cannot create user ${user.username}: ${err}`);
     }
@@ -45,8 +45,8 @@ export class UserStore {
       const values: (string | number)[] = [];
       let i = 1;
 
-      if (user.first_name) { fields.push(`first_name=$${i++}`); values.push(user.first_name); }
-      if (user.last_name) { fields.push(`last_name=$${i++}`); values.push(user.last_name); }
+      if (user.firstName) { fields.push(`first_name=$${i++}`); values.push(user.firstName); }
+      if (user.lastName) { fields.push(`last_name=$${i++}`); values.push(user.lastName); }
       if (user.username) { fields.push(`username=$${i++}`); values.push(user.username); }
       if (user.password) {
         const hash = bcrypt.hashSync(user.password + BCRYPT_PASSWORD, parseInt(SALT_ROUNDS as string));
@@ -59,7 +59,7 @@ export class UserStore {
         `UPDATE users SET ${fields.join(', ')} WHERE id=$${i} RETURNING ${SAFE_FIELDS}`,
         values
       );
-      return rows[0];
+      return rows[0] ? this.mapRow(rows[0]) : rows[0];
     } catch (err) {
       throw new Error(`Cannot update user ${id}: ${err}`);
     }
@@ -71,7 +71,7 @@ export class UserStore {
         `DELETE FROM users WHERE id=$1 RETURNING ${SAFE_FIELDS}`,
         [id]
       );
-      return rows[0];
+      return rows[0] ? this.mapRow(rows[0]) : rows[0];
     } catch (err) {
       throw new Error(`Cannot delete user ${id}: ${err}`);
     }
@@ -80,7 +80,7 @@ export class UserStore {
   async findByUsername(username: string): Promise<User | undefined> {
     try {
       const { rows } = await client.query(`SELECT ${SAFE_FIELDS} FROM users WHERE username=$1`, [username]);
-      return rows[0];
+      return rows[0] ? this.mapRow(rows[0]) : rows[0];
     } catch (err) {
       throw new Error(`Cannot find user by username: ${err}`);
     }
@@ -91,11 +91,21 @@ export class UserStore {
       const { rows } = await client.query('SELECT * FROM users WHERE username=$1', [username]);
       if (rows.length && bcrypt.compareSync(password + BCRYPT_PASSWORD, rows[0].password)) {
         const { password: _pw, ...safeUser } = rows[0];
-        return safeUser;
+        return this.mapRow(safeUser);
       }
       return null;
     } catch (err) {
       throw new Error(`Cannot authenticate user: ${err}`);
     }
+  }
+
+  private mapRow(row: Record<string, unknown>): User {
+    return {
+      id: row.id as number | undefined,
+      firstName: row.first_name as string,
+      lastName: row.last_name as string,
+      username: row.username as string,
+      password: row.password as string,
+    };
   }
 }

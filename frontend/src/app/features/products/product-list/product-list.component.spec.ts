@@ -27,10 +27,10 @@ describe('ProductListComponent', () => {
       price: 79.99,
       image: 'https://example.com/img1.jpg',
       description: 'Wireless headphones',
-      preview_img: [],
-      types: [{ _id: 't1', product_id: 1, color: 'Black', quantity: 10, price: 79.99, stock: 10, image: '' }],
+      previewImg: [],
+      types: [{ _id: 't1', productId: 1, color: 'Black', quantity: 10, price: 79.99, stock: 10, image: '' }],
       reviews: [],
-      overall_rating: 4.5,
+      overallRating: 4.5,
       stock: 10
     },
     {
@@ -40,10 +40,10 @@ describe('ProductListComponent', () => {
       price: 249.99,
       image: 'https://example.com/img2.jpg',
       description: 'Ergonomic chair',
-      preview_img: [],
+      previewImg: [],
       types: [],
       reviews: [],
-      overall_rating: 5,
+      overallRating: 5,
       stock: 20
     }
   ];

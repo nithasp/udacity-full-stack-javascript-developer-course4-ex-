@@ -13,8 +13,8 @@ let orderId: number;
 describe('Order Endpoints', () => {
   beforeAll(async () => {
     const user: User = {
-      first_name: 'Order',
-      last_name: 'Tester',
+      firstName: 'Order',
+      lastName: 'Tester',
       username: 'ordertester',
       password: 'testpass123'
     };
@@ -40,7 +40,7 @@ describe('Order Endpoints', () => {
 
   it('POST /orders should create an order with token', async () => {
     const order: Order = {
-      user_id: userId,
+      userId,
       status: 'active'
     };
 
@@ -50,13 +50,13 @@ describe('Order Endpoints', () => {
       .send(order)
       .expect(200);
 
-    expect(response.body.user_id).toBe(userId);
+    expect(response.body.userId).toBe(userId);
     expect(response.body.status).toBe('active');
     orderId = response.body.id;
   });
 
   it('POST /orders should require token', async () => {
-    await request.post('/orders').send({ user_id: userId }).expect(401);
+    await request.post('/orders').send({ userId }).expect(401);
   });
 
   it('GET /orders should require token', async () => {
@@ -89,7 +89,7 @@ describe('Order Endpoints', () => {
 
     expect(Array.isArray(response.body)).toBe(true);
     response.body.forEach((order: Order) => {
-      expect(order.user_id).toBe(userId);
+      expect(order.userId).toBe(userId);
     });
   });
 
@@ -114,7 +114,7 @@ describe('Order Endpoints', () => {
     expect(Array.isArray(response.body)).toBe(true);
     response.body.forEach((order: Order) => {
       expect(order.status).toBe('active');
-      expect(order.user_id).toBe(userId);
+      expect(order.userId).toBe(userId);
     });
   });
 
@@ -128,7 +128,7 @@ describe('Order Endpoints', () => {
     expect(response.body.length).toBeGreaterThan(0);
     response.body.forEach((order: Order) => {
       expect(order.status).toBe('active');
-      expect(order.user_id).toBe(userId);
+      expect(order.userId).toBe(userId);
     });
   });
 
@@ -141,13 +141,13 @@ describe('Order Endpoints', () => {
       .post(`/orders/${orderId}/products`)
       .set('Authorization', `Bearer ${token}`)
       .send({
-        product_id: productId,
+        productId,
         quantity: 3
       })
       .expect(200);
 
-    expect(response.body.order_id).toBe(orderId);
-    expect(response.body.product_id).toBe(productId);
+    expect(response.body.orderId).toBe(orderId);
+    expect(response.body.productId).toBe(productId);
     expect(response.body.quantity).toBe(3);
   });
 
@@ -159,8 +159,8 @@ describe('Order Endpoints', () => {
 
     expect(Array.isArray(response.body)).toBe(true);
     expect(response.body.length).toBeGreaterThan(0);
-    expect(response.body[0].order_id).toBe(orderId);
-    expect(response.body[0].product_id).toBe(productId);
+    expect(response.body[0].orderId).toBe(orderId);
+    expect(response.body[0].productId).toBe(productId);
     expect(response.body[0].quantity).toBe(3);
   });
 
@@ -189,7 +189,7 @@ describe('Order Endpoints', () => {
     expect(response.body.length).toBeGreaterThan(0);
     response.body.forEach((order: Order) => {
       expect(order.status).toBe('complete');
-      expect(order.user_id).toBe(userId);
+      expect(order.userId).toBe(userId);
     });
   });
 
@@ -203,7 +203,7 @@ describe('Order Endpoints', () => {
     expect(response.body.length).toBeGreaterThan(0);
     response.body.forEach((order: Order) => {
       expect(order.status).toBe('complete');
-      expect(order.user_id).toBe(userId);
+      expect(order.userId).toBe(userId);
     });
   });
 
@@ -223,7 +223,7 @@ describe('Order Endpoints', () => {
     const createRes = await request
       .post('/orders')
       .set('Authorization', `Bearer ${token}`)
-      .send({ user_id: userId, status: 'active' });
+      .send({ userId, status: 'active' });
 
     const deleteOrderId = createRes.body.id;
 
@@ -268,29 +268,29 @@ describe('Order Endpoints', () => {
       expect(response.body.error).toBe('order with id 99999 not found');
     });
 
-    it('POST /orders should return 400 when user_id is missing', async () => {
+    it('POST /orders should return 400 when userId is missing', async () => {
       const response = await request
         .post('/orders')
         .set('Authorization', `Bearer ${token}`)
         .send({ status: 'active' })
         .expect(400);
-      expect(response.body.error).toBe('user_id is required and must be a valid number');
+      expect(response.body.error).toBe('userId is required and must be a valid number');
     });
 
-    it('POST /orders should return 400 when user_id is invalid', async () => {
+    it('POST /orders should return 400 when userId is invalid', async () => {
       const response = await request
         .post('/orders')
         .set('Authorization', `Bearer ${token}`)
-        .send({ user_id: 'abc', status: 'active' })
+        .send({ userId: 'abc', status: 'active' })
         .expect(400);
-      expect(response.body.error).toBe('user_id is required and must be a valid number');
+      expect(response.body.error).toBe('userId is required and must be a valid number');
     });
 
     it('POST /orders should return 400 when status is invalid', async () => {
       const response = await request
         .post('/orders')
         .set('Authorization', `Bearer ${token}`)
-        .send({ user_id: userId, status: 'invalid' })
+        .send({ userId, status: 'invalid' })
         .expect(400);
       expect(response.body.error).toBe("status must be either 'active' or 'complete'");
     });
@@ -338,20 +338,20 @@ describe('Order Endpoints', () => {
       expect(response.body.error).toBe('order id must be a valid positive integer');
     });
 
-    it('POST /orders/:id/products should return 400 when product_id is missing', async () => {
+    it('POST /orders/:id/products should return 400 when productId is missing', async () => {
       const response = await request
         .post(`/orders/${orderId}/products`)
         .set('Authorization', `Bearer ${token}`)
         .send({ quantity: 1 })
         .expect(400);
-      expect(response.body.error).toBe('product_id is required and must be a valid number');
+      expect(response.body.error).toBe('productId is required and must be a valid number');
     });
 
     it('POST /orders/:id/products should return 400 when quantity is missing', async () => {
       const response = await request
         .post(`/orders/${orderId}/products`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ product_id: productId })
+        .send({ productId })
         .expect(400);
       expect(response.body.error).toBe('quantity is required and must be a valid number');
     });

@@ -21,7 +21,7 @@
       </div>
       <div class="product-detail__thumbnails">
         <img
-          *ngFor="let img of product.preview_img"
+          *ngFor="let img of product.previewImg"
           [src]="img"
           [alt]="product.name"
           class="product-detail__thumbnail"
@@ -38,11 +38,11 @@
 
       <div class="product-detail__rating">
         <span *ngFor="let star of ratingStars" class="product-detail__star"
-              [class.product-detail__star--filled]="star <= product.overall_rating">
+              [class.product-detail__star--filled]="star <= product.overallRating">
           &#9733;
         </span>
         <span class="product-detail__rating-text">
-          {{ product.overall_rating }} ({{ product.reviews.length }} reviews)
+          {{ product.overallRating }} ({{ product.reviews.length }} reviews)
         </span>
       </div>
 

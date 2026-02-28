@@ -38,10 +38,10 @@ const create = asyncHandler(async (req: Request, res: Response) => {
     category: req.body.category,
     image: req.body.image,
     description: req.body.description,
-    preview_img: req.body.preview_img,
+    previewImg: req.body.previewImg,
     types: req.body.types,
     reviews: req.body.reviews,
-    overall_rating: req.body.overall_rating !== undefined ? parseFloat(req.body.overall_rating) : undefined,
+    overallRating: req.body.overallRating !== undefined ? parseFloat(req.body.overallRating) : undefined,
     stock: req.body.stock !== undefined ? parseInt(req.body.stock) : undefined,
     isActive: req.body.isActive,
     shopId: req.body.shopId,
@@ -55,14 +55,14 @@ const update = asyncHandler(async (req: Request, res: Response) => {
   const id = parseId(req.params.id, 'product id');
   const {
     name, price, category, image, description,
-    preview_img, types, reviews, overall_rating, stock, isActive,
+    previewImg, types, reviews, overallRating, stock, isActive,
     shopId, shopName,
   } = req.body;
 
   if (!name && price === undefined && category === undefined &&
       image === undefined && description === undefined &&
-      preview_img === undefined && types === undefined &&
-      reviews === undefined && overall_rating === undefined &&
+      previewImg === undefined && types === undefined &&
+      reviews === undefined && overallRating === undefined &&
       stock === undefined && isActive === undefined &&
       shopId === undefined && shopName === undefined)
     throw new AppError('at least one field is required to update', 400);
@@ -80,10 +80,10 @@ const update = asyncHandler(async (req: Request, res: Response) => {
     category,
     image,
     description,
-    preview_img,
+    previewImg,
     types,
     reviews,
-    overall_rating: overall_rating !== undefined ? parseFloat(overall_rating) : undefined,
+    overallRating: overallRating !== undefined ? parseFloat(overallRating) : undefined,
     stock: stock !== undefined ? parseInt(stock) : undefined,
     isActive,
     shopId,

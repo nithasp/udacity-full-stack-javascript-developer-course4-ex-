@@ -17,7 +17,7 @@ const generateAccessToken = (userId: number): string => {
 // ── POST /auth/register ─────────────────────────────────────────────────────
 
 const register = asyncHandler(async (req: Request, res: Response) => {
-  const { username, password, first_name, last_name } = req.body;
+  const { username, password, firstName, lastName } = req.body;
 
   if (!username || typeof username !== 'string' || !username.trim()) {
     throw new AppError('username is required', 400);
@@ -34,8 +34,8 @@ const register = asyncHandler(async (req: Request, res: Response) => {
   const user = await userStore.create({
     username: username.trim(),
     password,
-    first_name: first_name?.trim() || username.trim(),
-    last_name: last_name?.trim() || '',
+    firstName: firstName?.trim() || username.trim(),
+    lastName: lastName?.trim() || '',
   });
 
   const accessToken = generateAccessToken(user.id!);

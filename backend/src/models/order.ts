@@ -15,7 +15,7 @@ export class OrderStore {
       if (conditions.length) sql += ' WHERE ' + conditions.join(' AND ');
 
       const { rows } = await client.query(sql, params);
-      return rows;
+      return rows.map(this.mapOrderRow);
     } catch (err) {
       throw new Error(`Cannot get orders: ${err}`);
     }
@@ -24,7 +24,7 @@ export class OrderStore {
   async show(id: number): Promise<Order> {
     try {
       const { rows } = await client.query('SELECT * FROM orders WHERE id=$1', [id]);
-      return rows[0];
+      return rows[0] ? this.mapOrderRow(rows[0]) : rows[0];
     } catch (err) {
       throw new Error(`Cannot get order ${id}: ${err}`);
     }
@@ -34,9 +34,9 @@ export class OrderStore {
     try {
       const { rows } = await client.query(
         'INSERT INTO orders (user_id, status) VALUES ($1, $2) RETURNING *',
-        [order.user_id, order.status]
+        [order.userId, order.status]
       );
-      return rows[0];
+      return this.mapOrderRow(rows[0]);
     } catch (err) {
       throw new Error(`Cannot create order: ${err}`);
     }
@@ -48,7 +48,7 @@ export class OrderStore {
         'UPDATE orders SET status=$1 WHERE id=$2 RETURNING *',
         [status, id]
       );
-      return rows[0];
+      return rows[0] ? this.mapOrderRow(rows[0]) : rows[0];
     } catch (err) {
       throw new Error(`Cannot update order ${id}: ${err}`);
     }
@@ -57,7 +57,7 @@ export class OrderStore {
   async delete(id: number): Promise<Order> {
     try {
       const { rows } = await client.query('DELETE FROM orders WHERE id=$1 RETURNING *', [id]);
-      return rows[0];
+      return rows[0] ? this.mapOrderRow(rows[0]) : rows[0];
     } catch (err) {
       throw new Error(`Cannot delete order ${id}: ${err}`);
     }
@@ -66,7 +66,7 @@ export class OrderStore {
   async getOrderProducts(orderId: number): Promise<OrderProduct[]> {
     try {
       const { rows } = await client.query('SELECT * FROM order_products WHERE order_id=$1', [orderId]);
-      return rows;
+      return rows.map(this.mapOrderProductRow);
     } catch (err) {
       throw new Error(`Cannot get order products: ${err}`);
     }
@@ -76,9 +76,9 @@ export class OrderStore {
     try {
       const { rows } = await client.query(
         'INSERT INTO order_products (order_id, product_id, quantity) VALUES ($1, $2, $3) RETURNING *',
-        [orderProduct.order_id, orderProduct.product_id, orderProduct.quantity]
+        [orderProduct.orderId, orderProduct.productId, orderProduct.quantity]
       );
-      return rows[0];
+      return this.mapOrderProductRow(rows[0]);
     } catch (err) {
       throw new Error(`Cannot add product to order: ${err}`);
     }
@@ -96,9 +96,39 @@ export class OrderStore {
          LIMIT $2`,
         [userId, limit]
       );
-      return rows;
+      return rows.map(this.mapRecentPurchaseRow);
     } catch (err) {
       throw new Error(`Cannot get recent purchases for user ${userId}: ${err}`);
     }
+  }
+
+  private mapOrderRow(row: Record<string, unknown>): Order {
+    return {
+      id: row.id as number,
+      userId: row.user_id as number,
+      status: row.status as string,
+    };
+  }
+
+  private mapOrderProductRow(row: Record<string, unknown>): OrderProduct {
+    return {
+      id: row.id as number,
+      orderId: row.order_id as number,
+      productId: row.product_id as number,
+      quantity: row.quantity as number,
+    };
+  }
+
+  private mapRecentPurchaseRow(row: Record<string, unknown>): RecentPurchase {
+    return {
+      productId: row.product_id as number,
+      name: row.name as string,
+      price: row.price as number,
+      category: row.category as string | null,
+      image: row.image as string | null,
+      description: row.description as string | null,
+      quantity: row.quantity as number,
+      orderId: row.order_id as number,
+    };
   }
 }

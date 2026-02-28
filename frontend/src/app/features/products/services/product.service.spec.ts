@@ -14,10 +14,10 @@ describe('ProductService', () => {
       price: 99.99,
       image: 'https://example.com/img1.jpg',
       description: 'First product',
-      preview_img: [],
+      previewImg: [],
       types: [],
       reviews: [],
-      overall_rating: 4.5
+      overallRating: 4.5
     },
     {
       id: 2,
@@ -26,10 +26,10 @@ describe('ProductService', () => {
       price: 199.99,
       image: 'https://example.com/img2.jpg',
       description: 'Second product',
-      preview_img: [],
+      previewImg: [],
       types: [],
       reviews: [],
-      overall_rating: 5
+      overallRating: 5
     }
   ];
 
@@ -85,7 +85,7 @@ describe('ProductService', () => {
       expect(product.price).toBe(99.99);
       expect(product.image).toBe('https://example.com/img1.jpg');
       expect(product.description).toBe('First product');
-      expect(product.overall_rating).toBe(4.5);
+      expect(product.overallRating).toBe(4.5);
     });
 
     const req = httpMock.expectOne('http://localhost:3000/products');

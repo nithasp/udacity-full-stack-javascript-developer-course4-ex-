@@ -27,12 +27,12 @@ const show = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const create = asyncHandler(async (req: Request, res: Response) => {
-  const user_id = requirePositiveInt(req.body.user_id, 'user_id');
+  const userId = requirePositiveInt(req.body.userId, 'userId');
 
   if (req.body.status && !['active', 'complete'].includes(req.body.status))
     throw new AppError("status must be either 'active' or 'complete'", 400);
 
-  res.json(await store.create({ user_id, status: req.body.status || 'active' }));
+  res.json(await store.create({ userId, status: req.body.status || 'active' }));
 });
 
 const update = asyncHandler(async (req: Request, res: Response) => {
@@ -69,11 +69,11 @@ const completedOrdersByUser = asyncHandler(async (req: Request, res: Response) =
 });
 
 const addProduct = asyncHandler(async (req: Request, res: Response) => {
-  const order_id = parseId(req.params.id, 'order id in URL');
-  const product_id = requirePositiveInt(req.body.product_id, 'product_id');
+  const orderId = parseId(req.params.id, 'order id in URL');
+  const productId = requirePositiveInt(req.body.productId, 'productId');
   const quantity = requirePositiveInt(req.body.quantity, 'quantity');
 
-  res.json(await store.addProduct({ order_id, product_id, quantity }));
+  res.json(await store.addProduct({ orderId, productId, quantity }));
 });
 
 const orderRoutes = (app: Application) => {

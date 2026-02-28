@@ -18,31 +18,29 @@ const show = asyncHandler(async (req: Request, res: Response) => {
   const user = await store.show(id);
   if (!user) throw new AppError(`user with id ${req.params.id} not found`, 404);
   const recentPurchases = await orderStore.recentPurchases(id);
-  res.json({ ...user, recent_purchases: recentPurchases });
+  res.json({ ...user, recentPurchases });
 });
 
 const create = asyncHandler(async (req: Request, res: Response) => {
   const newUser = await store.create({
-    first_name: requireString(req.body.first_name, 'first_name'),
-    last_name: requireString(req.body.last_name, 'last_name'),
+    firstName: requireString(req.body.firstName, 'firstName'),
+    lastName: requireString(req.body.lastName, 'lastName'),
     username: requireString(req.body.username, 'username'),
     password: requireString(req.body.password, 'password'),
   });
-  // Token issuance is handled by POST /auth/register.
-  // This endpoint only creates the record; the client should call /auth/login afterwards.
   res.status(201).json({ user: newUser });
 });
 
 const update = asyncHandler(async (req: Request, res: Response) => {
   const id = parseId(req.params.id, 'user id');
-  const { first_name, last_name, username, password } = req.body;
+  const { firstName, lastName, username, password } = req.body;
 
-  if (!first_name && !last_name && !username && !password)
-    throw new AppError('at least one field (first_name, last_name, username, password) is required to update', 400);
+  if (!firstName && !lastName && !username && !password)
+    throw new AppError('at least one field (firstName, lastName, username, password) is required to update', 400);
 
   const updatedUser = await store.update(id, {
-    first_name: optionalString(first_name, 'first_name'),
-    last_name: optionalString(last_name, 'last_name'),
+    firstName: optionalString(firstName, 'firstName'),
+    lastName: optionalString(lastName, 'lastName'),
     username: optionalString(username, 'username'),
     password: optionalString(password, 'password'),
   });

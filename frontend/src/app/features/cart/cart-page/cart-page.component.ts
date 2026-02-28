@@ -265,7 +265,7 @@ export class CartPageComponent implements OnInit, OnDestroy {
     const checkoutItems = this.selectedItems
       .filter(item => item.cartItemId !== undefined)
       .map(item => ({
-        product_id: Number(item.product._id),
+        productId: Number(item.product._id),
         quantity: item.quantity,
       }));
 

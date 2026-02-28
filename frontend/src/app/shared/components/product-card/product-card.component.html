@@ -19,11 +19,11 @@
 
     <div class="product-card__rating">
       <span *ngFor="let star of ratingStars" class="product-card__star"
-            [class.product-card__star--filled]="star <= product.overall_rating"
-            [class.product-card__star--half]="star > product.overall_rating && star - 1 < product.overall_rating">
+            [class.product-card__star--filled]="star <= product.overallRating"
+            [class.product-card__star--half]="star > product.overallRating && star - 1 < product.overallRating">
         &#9733;
       </span>
-      <span class="product-card__rating-value">({{ product.overall_rating }})</span>
+      <span class="product-card__rating-value">({{ product.overallRating }})</span>
     </div>
 
     <div class="product-card__footer">

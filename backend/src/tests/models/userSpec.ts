@@ -5,8 +5,8 @@ const store = new UserStore();
 
 describe('User Model', () => {
   const testUser: User = {
-    first_name: 'John',
-    last_name: 'Doe',
+    firstName: 'John',
+    lastName: 'Doe',
     username: 'johndoe',
     password: 'password123'
   };
@@ -29,8 +29,8 @@ describe('User Model', () => {
 
   it('create method should add a user', async () => {
     const result = await store.create(testUser);
-    expect(result.first_name).toBe(testUser.first_name);
-    expect(result.last_name).toBe(testUser.last_name);
+    expect(result.firstName).toBe(testUser.firstName);
+    expect(result.lastName).toBe(testUser.lastName);
     expect(result.username).toBe(testUser.username);
   });
 
@@ -61,8 +61,8 @@ describe('User Model', () => {
   it('update method should update user information', async () => {
     const users = await store.index();
     const userId = users[0].id as number;
-    const result = await store.update(userId, { first_name: 'Jane' });
-    expect(result.first_name).toBe('Jane');
+    const result = await store.update(userId, { firstName: 'Jane' });
+    expect(result.firstName).toBe('Jane');
   });
 
   it('delete method should remove the user', async () => {

@@ -16,11 +16,11 @@ describe('ProductCardComponent', () => {
     price: 79.99,
     image: 'https://example.com/img.jpg',
     description: 'Premium wireless headphones with noise cancellation',
-    preview_img: ['https://example.com/img.jpg'],
+    previewImg: ['https://example.com/img.jpg'],
     types: [
       {
         _id: 'type1',
-        product_id: 1001,
+        productId: 1001,
         color: 'Black',
         quantity: 50,
         price: 79.99,
@@ -29,7 +29,7 @@ describe('ProductCardComponent', () => {
       }
     ],
     reviews: [{ star: 5, comment: 'Great!' }],
-    overall_rating: 4.5,
+    overallRating: 4.5,
     stock: 50
   };
 

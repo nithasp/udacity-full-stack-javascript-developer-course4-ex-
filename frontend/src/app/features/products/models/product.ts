@@ -1,5 +1,5 @@
 export interface ProductType {
-  product_id: number;
+  productId: number;
   color: string;
   quantity: number;
   price: number;
@@ -24,10 +24,10 @@ export interface Product {
   price: number;
   image: string;
   description: string;
-  preview_img: string[];
+  previewImg: string[];
   types: ProductType[];
   reviews: Review[];
-  overall_rating: number;
+  overallRating: number;
   stock?: number;
   isActive?: boolean;
   createdAt?: string;

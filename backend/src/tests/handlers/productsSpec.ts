@@ -9,8 +9,8 @@ let token: string;
 describe('Product Endpoints', () => {
   beforeAll(async () => {
     const user: User = {
-      first_name: 'Product',
-      last_name: 'Tester',
+      firstName: 'Product',
+      lastName: 'Tester',
       username: 'producttester',
       password: 'testpass123'
     };
@@ -24,10 +24,10 @@ describe('Product Endpoints', () => {
     category: 'Books',
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
     description: 'A test product for API testing.',
-    preview_img: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'],
+    previewImg: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'],
     types: [
       {
-        product_id: 9001,
+        productId: 9001,
         color: 'Red',
         quantity: 10,
         price: 49.99,
@@ -36,7 +36,7 @@ describe('Product Endpoints', () => {
       }
     ],
     reviews: [],
-    overall_rating: 0,
+    overallRating: 0,
     stock: 10,
     isActive: true
   };
@@ -58,7 +58,7 @@ describe('Product Endpoints', () => {
     expect(response.body.category).toBe(testProduct.category);
     expect(response.body.image).toBe(testProduct.image);
     expect(response.body.description).toBe(testProduct.description);
-    expect(response.body.preview_img).toEqual(testProduct.preview_img);
+    expect(response.body.previewImg).toEqual(testProduct.previewImg);
     expect(response.body.types).toEqual(testProduct.types);
     expect(response.body.stock).toBe(testProduct.stock);
     expect(response.body.isActive).toBe(testProduct.isActive);

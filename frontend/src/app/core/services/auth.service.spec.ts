@@ -17,8 +17,8 @@ describe('AuthService', () => {
     user: {
       id: 1,
       username: 'testuser',
-      first_name: 'Test',
-      last_name: 'User',
+      firstName: 'Test',
+      lastName: 'User',
     },
     accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiZXhwIjo5OTk5OTk5OTk5fQ.abc',
     refreshToken: 'refresh_token_mock',

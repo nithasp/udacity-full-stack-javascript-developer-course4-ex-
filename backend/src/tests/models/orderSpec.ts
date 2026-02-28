@@ -16,8 +16,8 @@ describe('Order Model', () => {
 
   beforeAll(async () => {
     const user: User = {
-      first_name: 'Test',
-      last_name: 'User',
+      firstName: 'Test',
+      lastName: 'User',
       username: 'testorderuser',
       password: 'password123'
     };
@@ -63,12 +63,12 @@ describe('Order Model', () => {
 
   it('create method should add an order', async () => {
     const order: Order = {
-      user_id: testUserId,
+      userId: testUserId,
       status: 'active'
     };
     const result = await store.create(order);
     testOrderId = result.id as number;
-    expect(result.user_id).toBe(testUserId);
+    expect(result.userId).toBe(testUserId);
     expect(result.status).toBe('active');
   });
 
@@ -86,7 +86,7 @@ describe('Order Model', () => {
     const result = await store.index({ userId: testUserId });
     expect(result.length).toBeGreaterThan(0);
     result.forEach((order) => {
-      expect(order.user_id).toBe(testUserId);
+      expect(order.userId).toBe(testUserId);
     });
   });
 
@@ -103,27 +103,27 @@ describe('Order Model', () => {
     expect(result.length).toBeGreaterThan(0);
     result.forEach((order) => {
       expect(order.status).toBe('active');
-      expect(order.user_id).toBe(testUserId);
+      expect(order.userId).toBe(testUserId);
     });
   });
 
   it('addProduct method should add a product to an order', async () => {
     const orderProduct: OrderProduct = {
-      order_id: testOrderId,
-      product_id: testProductId,
+      orderId: testOrderId,
+      productId: testProductId,
       quantity: 2
     };
     const result = await store.addProduct(orderProduct);
-    expect(result.order_id).toBe(testOrderId);
-    expect(result.product_id).toBe(testProductId);
+    expect(result.orderId).toBe(testOrderId);
+    expect(result.productId).toBe(testProductId);
     expect(result.quantity).toBe(2);
   });
 
   it('getOrderProducts method should return products for an order', async () => {
     const result = await store.getOrderProducts(testOrderId);
     expect(result.length).toBeGreaterThan(0);
-    expect(result[0].order_id).toBe(testOrderId);
-    expect(result[0].product_id).toBe(testProductId);
+    expect(result[0].orderId).toBe(testOrderId);
+    expect(result[0].productId).toBe(testProductId);
     expect(result[0].quantity).toBe(2);
   });
 
@@ -138,7 +138,7 @@ describe('Order Model', () => {
     expect(result.length).toBeGreaterThan(0);
     result.forEach((order) => {
       expect(order.status).toBe('complete');
-      expect(order.user_id).toBe(testUserId);
+      expect(order.userId).toBe(testUserId);
     });
   });
 
@@ -149,8 +149,8 @@ describe('Order Model', () => {
   it('recentPurchases method should return recent purchases for a user', async () => {
     const result = await store.recentPurchases(testUserId);
     expect(result.length).toBeGreaterThan(0);
-    expect(result[0].product_id).toBe(testProductId);
-    expect(result[0].order_id).toBe(testOrderId);
+    expect(result[0].productId).toBe(testProductId);
+    expect(result[0].orderId).toBe(testOrderId);
     expect(result[0].quantity).toBe(2);
     expect(result[0].name).toBe('Test Order Product');
     expect(parseFloat(result[0].price as unknown as string)).toBe(19.99);
@@ -167,7 +167,7 @@ describe('Order Model', () => {
   });
 
   it('delete method should remove the order', async () => {
-    const newOrder = await store.create({ user_id: testUserId, status: 'active' });
+    const newOrder = await store.create({ userId: testUserId, status: 'active' });
     const result = await store.delete(newOrder.id as number);
     expect(result.id).toBe(newOrder.id);
     const remaining = await store.index();

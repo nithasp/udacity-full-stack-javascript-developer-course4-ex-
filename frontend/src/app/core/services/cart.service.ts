@@ -112,29 +112,29 @@ export class CartService {
   /** Convert a raw CartApiItem (with joined product fields) into a frontend CartItem. */
   private apiItemToCartItem(api: CartApiItem): CartItem {
     const product: Product = {
-      _id: String(api.product_id),
-      name: api.product_name ?? '',
-      category: api.product_category ?? '',
-      price: api.product_price ?? 0,
-      image: api.product_image ?? '',
-      description: api.product_description ?? '',
-      preview_img: api.product_preview_img ?? [],
-      types: api.product_types ?? [],
-      reviews: (api.product_reviews ?? []) as Review[],
-      overall_rating: api.product_overall_rating ?? 0,
-      stock: api.product_stock,
-      isActive: api.product_is_active,
-      shopId: api.product_shop_id ?? undefined,
-      shopName: api.product_shop_name ?? undefined,
+      _id: String(api.productId),
+      name: api.productName ?? '',
+      category: api.productCategory ?? '',
+      price: api.productPrice ?? 0,
+      image: api.productImage ?? '',
+      description: api.productDescription ?? '',
+      previewImg: api.productPreviewImg ?? [],
+      types: api.productTypes ?? [],
+      reviews: (api.productReviews ?? []) as Review[],
+      overallRating: api.productOverallRating ?? 0,
+      stock: api.productStock,
+      isActive: api.productIsActive,
+      shopId: api.productShopId ?? undefined,
+      shopName: api.productShopName ?? undefined,
     };
 
     return {
       cartItemId: api.id,
       product,
       quantity: api.quantity,
-      selectedType: api.selected_type ?? undefined,
-      shopId: api.shop_id ?? product.shopId ?? '',
-      shopName: api.shop_name ?? product.shopName ?? '',
+      selectedType: api.selectedType ?? undefined,
+      shopId: api.shopId ?? product.shopId ?? '',
+      shopName: api.shopName ?? product.shopName ?? '',
     };
   }
 
@@ -192,12 +192,12 @@ export class CartService {
       });
     } else {
       this.cartApi.addItem({
-        product_id: Number(product._id),
+        productId: Number(product._id),
         quantity: item.quantity,
-        type_id: selectedType?._id ?? null,
-        selected_type: selectedType ?? null,
-        shop_id: product.shopId ?? null,
-        shop_name: product.shopName ?? null,
+        typeId: selectedType?._id ?? null,
+        selectedType: selectedType ?? null,
+        shopId: product.shopId ?? null,
+        shopName: product.shopName ?? null,
       }).subscribe({
         next: (apiItem) => {
           item.cartItemId = apiItem.id;
@@ -241,12 +241,12 @@ export class CartService {
 
     this.setLoading(key, true);
     this.cartApi.addItem({
-      product_id: Number(product._id),
+      productId: Number(product._id),
       quantity,
-      type_id: selectedType?._id ?? null,
-      selected_type: selectedType ?? null,
-      shop_id: product.shopId ?? null,
-      shop_name: product.shopName ?? null,
+      typeId: selectedType?._id ?? null,
+      selectedType: selectedType ?? null,
+      shopId: product.shopId ?? null,
+      shopName: product.shopName ?? null,
     }).subscribe({
       next: (apiItem) => {
         const item = this.cartItems.find(

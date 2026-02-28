@@ -67,10 +67,10 @@ describe('NavbarComponent', () => {
       price: 10,
       image: '',
       description: '',
-      preview_img: [],
+      previewImg: [],
       types: [],
       reviews: [],
-      overall_rating: 5
+      overallRating: 5
     };
     cartService.addToCart(product, 3);
     expect(component.cartCount).toBe(3);

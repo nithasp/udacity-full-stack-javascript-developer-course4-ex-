@@ -8,8 +8,8 @@ import { tap, catchError } from 'rxjs/operators';
 export interface AuthUser {
   id: number;
   username: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface AuthResponse {

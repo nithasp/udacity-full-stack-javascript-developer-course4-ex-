@@ -21,12 +21,12 @@ describe('CartPageComponent', () => {
     price: 79.99,
     image: 'https://example.com/img.jpg',
     description: 'A test product',
-    preview_img: [],
+    previewImg: [],
     types: [
-      { _id: 't1', product_id: 1001, color: 'Black', quantity: 50, price: 79.99, stock: 50, image: '' }
+      { _id: 't1', productId: 1001, color: 'Black', quantity: 50, price: 79.99, stock: 50, image: '' }
     ],
     reviews: [],
-    overall_rating: 4.5,
+    overallRating: 4.5,
     stock: 50,
     shopId: 'shop1',
     shopName: 'Test Shop'

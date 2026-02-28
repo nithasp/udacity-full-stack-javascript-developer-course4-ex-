@@ -7,47 +7,47 @@ const API_URL = 'http://localhost:3000/cart';
 
 export interface CartApiItem {
   id: number;
-  user_id: number;
-  product_id: number;
+  userId: number;
+  productId: number;
   quantity: number;
-  type_id: string;
-  selected_type: ProductType | null;
-  shop_id: string | null;
-  shop_name: string | null;
-  created_at: string;
-  updated_at: string;
+  typeId: string;
+  selectedType: ProductType | null;
+  shopId: string | null;
+  shopName: string | null;
+  createdAt: string;
+  updatedAt: string;
   // Joined product fields (present when fetching cart)
-  product_name?: string;
-  product_price?: number;
-  product_category?: string;
-  product_image?: string;
-  product_description?: string;
-  product_preview_img?: string[];
-  product_types?: ProductType[];
-  product_reviews?: unknown[];
-  product_overall_rating?: number;
-  product_stock?: number;
-  product_is_active?: boolean;
-  product_shop_id?: string | null;
-  product_shop_name?: string | null;
+  productName?: string;
+  productPrice?: number;
+  productCategory?: string;
+  productImage?: string;
+  productDescription?: string;
+  productPreviewImg?: string[];
+  productTypes?: ProductType[];
+  productReviews?: unknown[];
+  productOverallRating?: number;
+  productStock?: number;
+  productIsActive?: boolean;
+  productShopId?: string | null;
+  productShopName?: string | null;
 }
 
 export interface AddCartItemPayload {
-  product_id: number;
+  productId: number;
   quantity: number;
-  type_id?: string | null;
-  selected_type?: ProductType | null;
-  shop_id?: string | null;
-  shop_name?: string | null;
+  typeId?: string | null;
+  selectedType?: ProductType | null;
+  shopId?: string | null;
+  shopName?: string | null;
 }
 
 export interface CheckoutItem {
-  product_id: number;
+  productId: number;
   quantity: number;
 }
 
 export interface CheckoutResponse {
-  order: { id: number; user_id: number; status: string };
+  order: { id: number; userId: number; status: string };
 }
 
 @Injectable({ providedIn: 'root' })

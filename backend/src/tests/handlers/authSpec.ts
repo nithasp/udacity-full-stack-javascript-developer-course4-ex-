@@ -9,8 +9,8 @@ describe('Auth Endpoints', () => {
   const testUser = {
     username: 'authtest_' + Date.now(),
     password: 'test1234',
-    first_name: 'Auth',
-    last_name: 'Tester',
+    firstName: 'Auth',
+    lastName: 'Tester',
   };
 
   let accessToken: string;

@@ -10,10 +10,10 @@ interface BackendProduct {
   price: number;
   image?: string;
   description?: string;
-  preview_img?: string[];
+  previewImg?: string[];
   types?: Product['types'];
   reviews?: Product['reviews'];
-  overall_rating?: number;
+  overallRating?: number;
   stock?: number;
   isActive?: boolean;
   shopId?: string;
@@ -49,10 +49,10 @@ export class ProductService {
       price: p.price,
       image: p.image ?? '',
       description: p.description ?? '',
-      preview_img: p.preview_img ?? [],
+      previewImg: p.previewImg ?? [],
       types: p.types ?? [],
       reviews: p.reviews ?? [],
-      overall_rating: p.overall_rating ?? 0,
+      overallRating: p.overallRating ?? 0,
       stock: p.stock,
       isActive: p.isActive,
       shopId: p.shopId,

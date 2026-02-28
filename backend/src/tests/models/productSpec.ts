@@ -10,13 +10,13 @@ describe('Product Model', () => {
     category: 'Electronics',
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
     description: 'Premium wireless headphones with active noise cancellation.',
-    preview_img: [
+    previewImg: [
       'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
       'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500'
     ],
     types: [
       {
-        product_id: 1001,
+        productId: 1001,
         color: 'Black',
         quantity: 50,
         price: 79.99,
@@ -33,7 +33,7 @@ describe('Product Model', () => {
         date: '2026-01-15T10:30:00.000Z'
       }
     ],
-    overall_rating: 4.5,
+    overallRating: 4.5,
     stock: 85,
     isActive: true
   };
@@ -61,10 +61,10 @@ describe('Product Model', () => {
     expect(result.category).toBe(testProduct.category);
     expect(result.image).toBe(testProduct.image);
     expect(result.description).toBe(testProduct.description);
-    expect(result.preview_img).toEqual(testProduct.preview_img);
+    expect(result.previewImg).toEqual(testProduct.previewImg);
     expect(result.types).toEqual(testProduct.types);
     expect(result.reviews).toEqual(testProduct.reviews);
-    expect(result.overall_rating).toBe(testProduct.overall_rating);
+    expect(result.overallRating).toBe(testProduct.overallRating);
     expect(result.stock).toBe(testProduct.stock);
     expect(result.isActive).toBe(testProduct.isActive);
   });

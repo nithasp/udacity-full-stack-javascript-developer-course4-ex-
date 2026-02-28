@@ -1,21 +1,21 @@
 export interface CartItem {
   id?: number;
-  user_id: number;
-  product_id: number;
+  userId: number;
+  productId: number;
   quantity: number;
-  type_id?: string;
-  selected_type?: Record<string, unknown> | null;
-  shop_id?: string | null;
-  shop_name?: string | null;
-  created_at?: Date;
-  updated_at?: Date;
+  typeId?: string;
+  selectedType?: Record<string, unknown> | null;
+  shopId?: string | null;
+  shopName?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface UpsertCartItemPayload {
-  product_id: number;
+  productId: number;
   quantity: number;
-  type_id?: string | null;
-  selected_type?: Record<string, unknown> | null;
-  shop_id?: string | null;
-  shop_name?: string | null;
+  typeId?: string | null;
+  selectedType?: Record<string, unknown> | null;
+  shopId?: string | null;
+  shopName?: string | null;
 }

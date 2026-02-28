@@ -7,7 +7,7 @@ describe('CartService', () => {
 
   const mockType: ProductType = {
     _id: 'type1',
-    product_id: 1001,
+    productId: 1001,
     color: 'Black',
     quantity: 50,
     price: 79.99,
@@ -22,10 +22,10 @@ describe('CartService', () => {
     price: 79.99,
     image: 'https://example.com/img.jpg',
     description: 'A test product',
-    preview_img: ['https://example.com/img.jpg'],
+    previewImg: ['https://example.com/img.jpg'],
     types: [mockType],
     reviews: [],
-    overall_rating: 4.5
+    overallRating: 4.5
   };
 
   const mockProduct2: Product = {
