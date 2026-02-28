@@ -65,17 +65,53 @@
           <span class="navbar__cart-label">Cart</span>
         </a>
 
-        <button
-          class="navbar__link navbar__auth-btn navbar__auth-btn--logout"
-          (click)="logout()"
-        >
-          <svg class="navbar__link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-          <span>Logout</span>
-        </button>
+        <!-- User mini-menu -->
+        <div class="navbar__user-menu" [class.navbar__user-menu--open]="userMenuOpen">
+          <button
+            class="navbar__user-trigger"
+            (click)="toggleUserMenu()"
+            [attr.aria-expanded]="userMenuOpen"
+            aria-haspopup="true"
+          >
+            <!-- User avatar icon -->
+            <span class="navbar__user-avatar">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </span>
+            <span class="navbar__username">{{ displayName }}</span>
+            <!-- Chevron icon toggles direction -->
+            <svg
+              class="navbar__user-chevron"
+              [class.navbar__user-chevron--up]="userMenuOpen"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          <!-- Dropdown -->
+          <div class="navbar__user-dropdown" *ngIf="userMenuOpen">
+            <button
+              class="navbar__user-dropdown-item navbar__user-dropdown-item--logout"
+              (click)="logout()"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
       </ng-container>
 
       <ng-container *ngIf="!isLoggedIn">

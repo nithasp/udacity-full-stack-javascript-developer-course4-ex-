@@ -37,6 +37,17 @@ export class AuthService {
   private loggedInSubject = new BehaviorSubject<boolean>(this.hasValidToken());
   isLoggedIn$ = this.loggedInSubject.asObservable();
 
+  /**
+   * Emits the current user, or null when logged out.
+   * Seeded from the cached server response in localStorage so the navbar
+   * renders immediately on page refresh; replaced by the live /auth/me
+   * response once fetchCurrentUser() resolves.
+   */
+  private currentUserSubject = new BehaviorSubject<AuthUser | null>(
+    this.getCachedUser()
+  );
+  currentUser$ = this.currentUserSubject.asObservable();
+
   constructor(private http: HttpClient) {}
 
   // ── Token helpers ──────────────────────────────────────────────────────────
@@ -60,6 +71,16 @@ export class AuthService {
     }
   }
 
+  /** Read the user object that was cached from the last login/register response. */
+  private getCachedUser(): AuthUser | null {
+    try {
+      const raw = localStorage.getItem(USER_KEY);
+      return raw ? (JSON.parse(raw) as AuthUser) : null;
+    } catch {
+      return null;
+    }
+  }
+
   getAccessToken(): string | null {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
   }
@@ -69,8 +90,22 @@ export class AuthService {
   }
 
   getCurrentUser(): AuthUser | null {
-    const raw = localStorage.getItem(USER_KEY);
-    return raw ? JSON.parse(raw) : null;
+    return this.currentUserSubject.getValue();
+  }
+
+  /**
+   * Fetch the authenticated user's profile from the server and update
+   * currentUser$. Call this once on app init (when already logged in) so the
+   * displayed username always reflects the real database value.
+   */
+  fetchCurrentUser(): Observable<AuthUser> {
+    return this.http.get<AuthUser>(`${API_URL}/me`).pipe(
+      tap(user => {
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      }),
+      catchError(err => throwError(() => err))
+    );
   }
 
   private storeSession(response: AuthResponse): void {
@@ -78,6 +113,8 @@ export class AuthService {
     localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
     localStorage.setItem(USER_KEY, JSON.stringify(response.user));
     this.loggedInSubject.next(true);
+    // Use the user object directly from the server response — ground truth
+    this.currentUserSubject.next(response.user);
   }
 
   private storeRefreshedTokens(response: RefreshResponse): void {
@@ -165,5 +202,6 @@ export class AuthService {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     this.loggedInSubject.next(false);
+    this.currentUserSubject.next(null);
   }
 }
