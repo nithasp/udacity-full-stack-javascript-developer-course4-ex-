@@ -170,6 +170,24 @@
     }
   }
 
+  &__loading {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+  }
+
+  &__spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid $color-border;
+    border-top-color: $color-primary;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
   &__empty {
     display: flex;
     align-items: center;
@@ -868,5 +886,9 @@
       }
     }
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 

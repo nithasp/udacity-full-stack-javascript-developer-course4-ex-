@@ -10,7 +10,18 @@
         <button class="address-dialog__close" (click)="close()" aria-label="Close">&times;</button>
       </div>
 
-      <div class="address-dialog__list">
+      <!-- Loading state -->
+      <div class="address-dialog__loading" *ngIf="isLoadingAddresses">
+        <div class="address-dialog__spinner"></div>
+        <span>Loading addresses…</span>
+      </div>
+
+      <!-- Empty state -->
+      <div class="address-dialog__empty" *ngIf="!isLoadingAddresses && addresses.length === 0">
+        <p>No addresses yet. Add your first address below.</p>
+      </div>
+
+      <div class="address-dialog__list" *ngIf="!isLoadingAddresses && addresses.length > 0">
         <label *ngFor="let address of addresses" class="address-list-item"
           [class.address-list-item--selected]="localSelectedId === address.id">
           <input type="radio" name="addressSelect" [value]="address.id" [ngModel]="localSelectedId"
@@ -29,7 +40,9 @@
             <div class="address-list-item__tags">
               <span class="address-list-item__default-badge" *ngIf="address.isDefault">Default</span>
               <span class="address-list-item__label-badge">{{ address.label | titlecase }}</span>
-              <button type="button" class="address-list-item__delete" (click)="deleteAddress(address.id, $event)"
+              <button type="button" class="address-list-item__delete"
+                [disabled]="isDeleting"
+                (click)="promptDelete(address, $event)"
                 *ngIf="addresses.length > 1">Delete</button>
             </div>
           </div>
@@ -46,7 +59,8 @@
           </svg>
           Add New Address
         </button>
-        <button class="address-dialog__confirm-btn" (click)="confirmSelection()">Confirm</button>
+        <button class="address-dialog__confirm-btn" (click)="confirmSelection()"
+          [disabled]="addresses.length === 0">Confirm</button>
       </div>
     </ng-container>
 
@@ -98,8 +112,10 @@
         </label>
 
         <div class="address-dialog__actions">
-          <button type="button" class="address-dialog__cancel" (click)="backToList()">Cancel</button>
-          <button type="submit" class="address-dialog__save">Submit</button>
+          <button type="button" class="address-dialog__cancel" (click)="backToList()" [disabled]="isSaving">Cancel</button>
+          <button type="submit" class="address-dialog__save" [disabled]="isSaving">
+            {{ isSaving ? 'Saving…' : 'Submit' }}
+          </button>
         </div>
       </form>
     </ng-container>

@@ -5,6 +5,7 @@ import { CartItem } from '../../products/models/product';
 import { CartService } from '../../../core/services/cart.service';
 import { CartApiService } from '../../../core/services/cart-api.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { AddressApiService } from '../../../core/services/address-api.service';
 import { AddressEntry } from '../models/address.model';
 
 interface PaymentMethod {
@@ -37,18 +38,9 @@ export class CartPageComponent implements OnInit, OnDestroy {
   selectedKeys = new Set<string>();
 
   // ── Addresses ──────────────────────────────────────────────────────────────
-  addresses: AddressEntry[] = [
-    {
-      id: 'addr-1',
-      fullName: 'John Doe',
-      phone: '+1 555 123 4567',
-      address: '123 Main Street, Apt 4B',
-      city: 'New York, NY 10001',
-      isDefault: true,
-      label: 'home'
-    }
-  ];
-  selectedAddressId = 'addr-1';
+  addresses: AddressEntry[] = [];
+  selectedAddressId: number | null = null;
+  isLoadingAddresses = false;
   isAddressDialogOpen = false;
 
   // ── Payment ────────────────────────────────────────────────────────────────
@@ -78,12 +70,14 @@ export class CartPageComponent implements OnInit, OnDestroy {
   constructor(
     public cartService: CartService,
     private cartApi: CartApiService,
+    private addressApi: AddressApiService,
     private notificationService: NotificationService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Mirror the global cart-loading flag
+    this.fetchAddresses();
+
     this.cartSub = combineLatest([
       this.cartService.cart$,
       this.cartService.isCartLoading$,
@@ -100,6 +94,28 @@ export class CartPageComponent implements OnInit, OnDestroy {
       this.cleanUpRemovedKeys();
       this.rebuildShopGroups();
     });
+  }
+
+  private fetchAddresses(): void {
+    this.isLoadingAddresses = true;
+    this.addressApi.getAll().subscribe({
+      next: (list) => {
+        this.addresses = list;
+        this.isLoadingAddresses = false;
+        if (!this.selectedAddressId && list.length > 0) {
+          const def = list.find(a => a.isDefault) ?? list[0];
+          this.selectedAddressId = def.id;
+        }
+      },
+      error: () => {
+        this.isLoadingAddresses = false;
+      },
+    });
+  }
+
+  /** Called when the address dialog changes the list (create/update/delete) */
+  onAddressesChange(updated: AddressEntry[]): void {
+    this.addresses = updated;
   }
 
   private cleanUpRemovedKeys(): void {

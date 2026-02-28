@@ -8,6 +8,7 @@ import { InputFieldComponent } from './components/form/input-field/input-field.c
 import { QuantityInputComponent } from './components/form/quantity-input/quantity-input.component';
 import { ProductCardComponent } from './components/product-card/product-card.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { DialogConfirmComponent } from './components/dialogs/dialog-confirm/dialog-confirm.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     InputFieldComponent,
     QuantityInputComponent,
     ProductCardComponent,
-    NavbarComponent
+    NavbarComponent,
+    DialogConfirmComponent
   ],
   imports: [
     CommonModule,
@@ -32,7 +34,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     InputFieldComponent,
     QuantityInputComponent,
     ProductCardComponent,
-    NavbarComponent
+    NavbarComponent,
+    DialogConfirmComponent
   ]
 })
 export class SharedModule {}

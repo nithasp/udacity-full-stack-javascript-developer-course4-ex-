@@ -1,6 +1,18 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { AddressDialogMode, AddressEntry, AddressForm } from '../../../models/address.model';
 import { NotificationService } from '../../../../../core/services/notification.service';
+import { AddressApiService } from '../../../../../core/services/address-api.service';
+import { ConfirmDialogService } from '../../../../../core/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-address-dialog',
@@ -8,31 +20,36 @@ import { NotificationService } from '../../../../../core/services/notification.s
   styleUrl: './address-dialog.component.scss'
 })
 export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() addresses: AddressEntry[] = [];
-  @Input() selectedAddressId = '';
+  @Input() selectedAddressId: number | null = null;
 
+  @Output() selectedAddressIdChange = new EventEmitter<number | null>();
+  /** Emits whenever the address list changes (create / update / delete) so the parent can refresh */
   @Output() addressesChange = new EventEmitter<AddressEntry[]>();
-  @Output() selectedAddressIdChange = new EventEmitter<string>();
   @Output() closed = new EventEmitter<void>();
 
+  addresses: AddressEntry[] = [];
+  isLoadingAddresses = false;
+  isSaving = false;
+  isDeleting = false;
+
   dialogMode: AddressDialogMode = 'list';
-  editingAddressId: string | null = null;
+  editingAddressId: number | null = null;
   addressForm: AddressForm = this.blankForm();
   formSubmitted = false;
   closing = false;
 
-  /** Local copy — only pushed to parent on Confirm */
-  localSelectedId = '';
+  localSelectedId: number | null = null;
 
   constructor(
     private elementRef: ElementRef<HTMLElement>,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private addressApi: AddressApiService,
+    private confirmDialog: ConfirmDialogService
   ) {}
 
-  /** Move host element to <body> so position:fixed covers the full viewport,
-   *  regardless of any CSS transform/contain on ancestor cart-page elements. */
   ngOnInit(): void {
     document.body.appendChild(this.elementRef.nativeElement);
+    this.loadAddresses();
   }
 
   ngOnDestroy(): void {
@@ -42,16 +59,42 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  ngOnChanges(): void {
-    // Reset to list mode whenever dialog is (re)opened
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedAddressId']) {
+      this.localSelectedId = this.selectedAddressId;
+    }
+    // Reset to list mode whenever dialog re-opens (detected by a new instance being created)
     this.dialogMode = 'list';
     this.editingAddressId = null;
     this.addressForm = this.blankForm();
     this.formSubmitted = false;
-    this.localSelectedId = this.selectedAddressId;
   }
 
-  // ── Navigation ─────────────────────────────────────────────────────────────
+  // ── Data loading ────────────────────────────────────────────────────────────
+
+  private loadAddresses(emitChange = false): void {
+    this.isLoadingAddresses = true;
+    this.addressApi.getAll().subscribe({
+      next: (list) => {
+        this.addresses = list;
+        this.isLoadingAddresses = false;
+        // Auto-select default if nothing is selected yet
+        if (!this.localSelectedId && list.length > 0) {
+          const def = list.find(a => a.isDefault) ?? list[0];
+          this.localSelectedId = def.id;
+        }
+        if (emitChange) {
+          this.addressesChange.emit(list);
+        }
+      },
+      error: () => {
+        this.isLoadingAddresses = false;
+        this.notificationService.error('Failed to load addresses.');
+      },
+    });
+  }
+
+  // ── Navigation ──────────────────────────────────────────────────────────────
 
   openAddMode(): void {
     this.formSubmitted = false;
@@ -66,7 +109,7 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     this.editingAddressId = address.id;
     this.addressForm = {
       fullName: address.fullName,
-      phone: address.phone,
+      phone: address.phone ?? '',
       address: address.address,
       city: address.city,
       isDefault: address.isDefault,
@@ -93,77 +136,101 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // ── Selection ──────────────────────────────────────────────────────────────
+  // ── Selection ───────────────────────────────────────────────────────────────
 
   confirmSelection(): void {
     this.selectedAddressIdChange.emit(this.localSelectedId);
     this.close();
   }
 
-  onRadioChange(id: string): void {
+  onRadioChange(id: number): void {
     this.localSelectedId = id;
   }
 
-  // ── Label ──────────────────────────────────────────────────────────────────
+  // ── Label ───────────────────────────────────────────────────────────────────
 
   setLabel(label: 'home' | 'work' | 'other'): void {
     this.addressForm.label = label;
   }
 
-  // ── CRUD ───────────────────────────────────────────────────────────────────
+  // ── CRUD ────────────────────────────────────────────────────────────────────
 
-  deleteAddress(id: string, event: Event): void {
+  promptDelete(address: AddressEntry, event: Event): void {
     event.preventDefault();
     if (this.addresses.length <= 1) {
       this.notificationService.error('You must keep at least one address.');
       return;
     }
-    let updated = this.addresses.filter(a => a.id !== id);
-    if (this.localSelectedId === id) {
-      const fallback = updated.find(a => a.isDefault) ?? updated[0];
-      this.localSelectedId = fallback.id;
-    }
-    if (!updated.some(a => a.isDefault)) {
-      updated = [{ ...updated[0], isDefault: true }, ...updated.slice(1)];
-    }
-    this.addressesChange.emit(updated);
-    this.notificationService.info('Address removed.');
+    this.confirmDialog.confirm({
+      title: 'Delete Address',
+      message: `Remove "${address.fullName} — ${address.address}, ${address.city}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      danger: true,
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.isDeleting = true;
+      this.addressApi.delete(address.id).subscribe({
+        next: () => {
+          this.isDeleting = false;
+          if (this.localSelectedId === address.id) {
+            const remaining = this.addresses.filter(a => a.id !== address.id);
+            const fallback = remaining.find(a => a.isDefault) ?? remaining[0];
+            this.localSelectedId = fallback?.id ?? null;
+          }
+          this.notificationService.info('Address removed.');
+          this.loadAddresses(true);
+        },
+        error: () => {
+          this.isDeleting = false;
+          this.notificationService.error('Failed to delete address. Please try again.');
+        },
+      });
+    });
   }
 
   saveAddress(): void {
     this.formSubmitted = true;
-    if (!this.addressForm.fullName.trim() ||
-        !this.addressForm.address.trim() ||
-        !this.addressForm.city.trim()) {
+    if (
+      !this.addressForm.fullName.trim() ||
+      !this.addressForm.address.trim() ||
+      !this.addressForm.city.trim()
+    ) {
       return;
     }
 
-    let updated = [...this.addresses];
+    this.isSaving = true;
 
-    if (this.addressForm.isDefault) {
-      updated = updated.map(a => ({ ...a, isDefault: false }));
-    }
-
-    if (this.dialogMode === 'edit' && this.editingAddressId) {
-      updated = updated.map(a =>
-        a.id === this.editingAddressId
-          ? { id: this.editingAddressId, ...this.addressForm }
-          : a
-      );
-      this.notificationService.success('Address updated!');
+    if (this.dialogMode === 'edit' && this.editingAddressId !== null) {
+      this.addressApi.update(this.editingAddressId, this.addressForm).subscribe({
+        next: (updated) => {
+          this.isSaving = false;
+          const idx = this.addresses.findIndex(a => a.id === this.editingAddressId);
+          if (idx !== -1) this.addresses[idx] = updated;
+          this.notificationService.success('Address updated!');
+          this.backToList();
+          this.loadAddresses(true);
+        },
+        error: () => {
+          this.isSaving = false;
+          this.notificationService.error('Failed to update address. Please try again.');
+        },
+      });
     } else {
-      const newId = `address-${Date.now()}`;
-      updated = [...updated, { id: newId, ...this.addressForm }];
-      this.localSelectedId = newId;
-      this.notificationService.success('New address added!');
+      this.addressApi.create(this.addressForm).subscribe({
+        next: (created) => {
+          this.isSaving = false;
+          this.localSelectedId = created.id;
+          this.notificationService.success('New address added!');
+          this.backToList();
+          this.loadAddresses(true);
+        },
+        error: () => {
+          this.isSaving = false;
+          this.notificationService.error('Failed to save address. Please try again.');
+        },
+      });
     }
-
-    if (!updated.some(a => a.isDefault)) {
-      updated = [{ ...updated[0], isDefault: true }, ...updated.slice(1)];
-    }
-
-    this.addressesChange.emit(updated);
-    this.backToList();
   }
 
   private blankForm(): AddressForm {

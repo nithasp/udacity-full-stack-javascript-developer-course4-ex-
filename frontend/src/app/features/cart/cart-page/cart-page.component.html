@@ -36,23 +36,31 @@
         Delivery Address
       </div>
 
-      <div class="delivery-bar__row" *ngIf="selectedAddress; else noAddrBar">
-        <div class="delivery-bar__info">
-          <span class="delivery-bar__name">{{ selectedAddress.fullName }}</span>
-          <span class="delivery-bar__phone">({{ selectedAddress.phone }})</span>
-          <span class="delivery-bar__sep" aria-hidden="true">|</span>
-          <span class="delivery-bar__address">{{ selectedAddress.address }}, {{ selectedAddress.city }}</span>
-          <span class="delivery-bar__default" *ngIf="selectedAddress.isDefault">Default</span>
-        </div>
-        <button class="delivery-bar__change" (click)="isAddressDialogOpen = true">Change</button>
+      <!-- Loading state -->
+      <div class="delivery-bar__loading" *ngIf="isLoadingAddresses">
+        <div class="delivery-bar__spinner"></div>
+        <span>Loading delivery address…</span>
       </div>
 
-      <ng-template #noAddrBar>
-        <div class="delivery-bar__empty">
-          <span>No delivery address selected.</span>
-          <button class="delivery-bar__add" (click)="isAddressDialogOpen = true">+ Add Address</button>
+      <ng-container *ngIf="!isLoadingAddresses">
+        <div class="delivery-bar__row" *ngIf="selectedAddress; else noAddrBar">
+          <div class="delivery-bar__info">
+            <span class="delivery-bar__name">{{ selectedAddress.fullName }}</span>
+            <span class="delivery-bar__phone">({{ selectedAddress.phone }})</span>
+            <span class="delivery-bar__sep" aria-hidden="true">|</span>
+            <span class="delivery-bar__address">{{ selectedAddress.address }}, {{ selectedAddress.city }}</span>
+            <span class="delivery-bar__default" *ngIf="selectedAddress.isDefault">Default</span>
+          </div>
+          <button class="delivery-bar__change" (click)="isAddressDialogOpen = true">Change</button>
         </div>
-      </ng-template>
+
+        <ng-template #noAddrBar>
+          <div class="delivery-bar__empty">
+            <span>No delivery address selected.</span>
+            <button class="delivery-bar__add" (click)="isAddressDialogOpen = true">+ Add Address</button>
+          </div>
+        </ng-template>
+      </ng-container>
     </div>
 
     <!-- ── Cart Content Grid ──────────────────────────────────────────────── -->
@@ -236,6 +244,8 @@
   </div>
 
   <!-- ── Address Dialog (fixed overlay, covers full app) ──────────────────── -->
-  <app-address-dialog *ngIf="isAddressDialogOpen" [(addresses)]="addresses" [(selectedAddressId)]="selectedAddressId"
+  <app-address-dialog *ngIf="isAddressDialogOpen"
+    [(selectedAddressId)]="selectedAddressId"
+    (addressesChange)="onAddressesChange($event)"
     (closed)="isAddressDialogOpen = false"></app-address-dialog>
 </div>

@@ -7,6 +7,7 @@ import userRoutes from './handlers/users';
 import productRoutes from './handlers/products';
 import orderRoutes from './handlers/orders';
 import cartRoutes from './handlers/cart';
+import addressRoutes from './handlers/addresses';
 import { errorMiddleware } from './utils/errorHandler';
 import { config } from './config';
 
@@ -46,6 +47,7 @@ userRoutes(app);
 productRoutes(app);
 orderRoutes(app);
 cartRoutes(app);
+addressRoutes(app);
 
 // ── Global error handler (must be last) ──────────────────────────────────────
 app.use(errorMiddleware);
