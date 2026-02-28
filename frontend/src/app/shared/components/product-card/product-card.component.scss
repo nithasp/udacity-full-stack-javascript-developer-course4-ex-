@@ -113,26 +113,14 @@
     align-items: center;
     gap: $spacing-sm;
   }
-
-  &__quantity {
-    padding: $spacing-xs $spacing-sm;
-    border: 2px solid $color-border;
-    border-radius: $border-radius-sm;
-    font-size: $font-size-sm;
-    color: $color-text;
-    background: $color-bg-white;
-    cursor: pointer;
-    outline: none;
-    min-width: 50px;
-
-    &:focus {
-      border-color: $color-primary;
-    }
-  }
-
   &__add-btn {
     @include button-primary;
     padding: $spacing-xs $spacing-md;
     font-size: $font-size-sm;
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
   }
 }

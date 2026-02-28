@@ -49,7 +49,6 @@
     <app-product-card
       *ngFor="let product of filteredProducts; let i = index"
       [product]="product"
-      (addToCart)="onAddToCart($event)"
       class="animate-slide-up animate-delay-{{ i + 1 }}"
     ></app-product-card>
   </div>

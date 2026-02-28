@@ -38,6 +38,7 @@ export interface Product {
 
 
 export interface CartItem {
+  cartItemId?: number;
   product: Product;
   quantity: number;
   selectedType?: ProductType;

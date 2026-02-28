@@ -30,4 +30,6 @@ export interface Product {
   overall_rating?: number;
   stock?: number;
   isActive?: boolean;
+  shopId?: string;
+  shopName?: string;
 }

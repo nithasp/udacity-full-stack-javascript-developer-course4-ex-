@@ -16,6 +16,8 @@ interface BackendProduct {
   overall_rating?: number;
   stock?: number;
   isActive?: boolean;
+  shopId?: string;
+  shopName?: string;
 }
 
 @Injectable({
@@ -53,6 +55,8 @@ export class ProductService {
       overall_rating: p.overall_rating ?? 0,
       stock: p.stock,
       isActive: p.isActive,
+      shopId: p.shopId,
+      shopName: p.shopName,
     };
   }
 }

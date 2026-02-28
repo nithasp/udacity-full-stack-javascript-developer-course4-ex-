@@ -6,6 +6,7 @@ import authRoutes from './handlers/auth';
 import userRoutes from './handlers/users';
 import productRoutes from './handlers/products';
 import orderRoutes from './handlers/orders';
+import cartRoutes from './handlers/cart';
 import { errorMiddleware } from './utils/errorHandler';
 import { config } from './config';
 
@@ -44,6 +45,7 @@ authRoutes(app, authLimiter);
 userRoutes(app);
 productRoutes(app);
 orderRoutes(app);
+cartRoutes(app);
 
 // ── Global error handler (must be last) ──────────────────────────────────────
 app.use(errorMiddleware);

@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { Product, ProductType } from '../models/product';
 import { ProductService } from '../services/product.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -10,7 +12,7 @@ import { NotificationService } from '../../../core/services/notification.service
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
-export class ProductDetailComponent implements OnInit {
+export class ProductDetailComponent implements OnInit, OnDestroy {
   product: Product | undefined;
   selectedQuantity = 1;
   selectedType: ProductType | undefined;
@@ -18,11 +20,17 @@ export class ProductDetailComponent implements OnInit {
   quantities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   loading = true;
 
+  // Tracks accumulated qty before the debounce fires
+  private pendingQty = 0;
+
+  private clickSubject = new Subject<void>();
+  private sub!: Subscription;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    private cartService: CartService,
+    public cartService: CartService,
     private notificationService: NotificationService
   ) {}
 
@@ -44,6 +52,25 @@ export class ProductDetailComponent implements OnInit {
         }
       });
     }
+
+    this.sub = this.clickSubject.pipe(debounceTime(400)).subscribe(() => {
+      if (!this.product) return;
+
+      const addedQty = this.pendingQty;
+      this.pendingQty = 0;
+
+      // Sync accumulated local quantity to the backend
+      this.cartService.syncToBackend(this.product, this.selectedType);
+
+      this.notificationService.success(
+        `${addedQty}x ${this.product.name} added to cart!`,
+        'Added to Cart'
+      );
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   selectImage(img: string): void {
@@ -60,17 +87,22 @@ export class ProductDetailComponent implements OnInit {
   }
 
   addToCart(): void {
-    if (this.product) {
-      this.cartService.addToCart(this.product, this.selectedQuantity, this.selectedType);
-      this.notificationService.success(
-        `${this.selectedQuantity}x ${this.product.name} added to cart!`,
-        'Added to Cart'
-      );
-    }
+    if (!this.product) return;
+    this.pendingQty += this.selectedQuantity;
+
+    // Immediately reflect in local cart
+    this.cartService.addToCartLocal(this.product, this.selectedQuantity, this.selectedType);
+
+    // Reset the 400ms debounce window on every click
+    this.clickSubject.next();
   }
 
   goBack(): void {
     this.router.navigate(['/products']);
+  }
+
+  get isAdding(): boolean {
+    return this.cartService.isItemLoading(this.product?._id ?? '', this.selectedType?._id);
   }
 
   get currentPrice(): number {

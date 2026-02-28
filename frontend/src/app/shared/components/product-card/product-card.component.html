@@ -30,18 +30,10 @@
       <span class="product-card__price">${{ product.price | number:'1.2-2' }}</span>
 
       <div class="product-card__actions">
-        <select
-          class="product-card__quantity"
-          [(ngModel)]="selectedQuantity"
-          name="quantity"
-          aria-label="Quantity"
-        >
-          <option *ngFor="let q of quantities" [ngValue]="q">{{ q }}</option>
-        </select>
-
         <button
           class="product-card__add-btn"
           (click)="onAddToCart()"
+          [disabled]="isAdding"
           type="button"
         >
           Add to Cart

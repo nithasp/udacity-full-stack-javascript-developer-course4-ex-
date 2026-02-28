@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Product } from '../models/product';
 import { ProductService } from '../services/product.service';
-import { CartService } from '../../../core/services/cart.service';
 import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
@@ -19,7 +18,6 @@ export class ProductListComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private cartService: CartService,
     private notificationService: NotificationService
   ) { }
 
@@ -40,15 +38,6 @@ export class ProductListComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  }
-
-  onAddToCart(event: { product: Product; quantity: number }): void {
-    const defaultType = event.product.types[0];
-    this.cartService.addToCart(event.product, event.quantity, defaultType);
-    this.notificationService.success(
-      `${event.quantity}x ${event.product.name} added to cart!`,
-      'Added to Cart'
-    );
   }
 
   filterByCategory(category: string): void {

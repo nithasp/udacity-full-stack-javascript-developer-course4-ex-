@@ -25,8 +25,8 @@ export class ProductStore {
   async create(product: Product): Promise<Product> {
     try {
       const { rows } = await client.query(
-        `INSERT INTO products (name, price, category, image, description, preview_img, types, reviews, overall_rating, stock, is_active)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+        `INSERT INTO products (name, price, category, image, description, preview_img, types, reviews, overall_rating, stock, is_active, shop_id, shop_name)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
         [
           product.name,
           product.price,
@@ -38,7 +38,9 @@ export class ProductStore {
           JSON.stringify(product.reviews || []),
           product.overall_rating || 0,
           product.stock || 0,
-          product.isActive !== undefined ? product.isActive : true
+          product.isActive !== undefined ? product.isActive : true,
+          product.shopId || null,
+          product.shopName || null,
         ]
       );
       return this.mapRow(rows[0]);
@@ -64,6 +66,8 @@ export class ProductStore {
       if (product.overall_rating !== undefined) { fields.push(`overall_rating=$${i++}`); values.push(product.overall_rating); }
       if (product.stock !== undefined) { fields.push(`stock=$${i++}`); values.push(product.stock); }
       if (product.isActive !== undefined) { fields.push(`is_active=$${i++}`); values.push(product.isActive); }
+      if (product.shopId !== undefined) { fields.push(`shop_id=$${i++}`); values.push(product.shopId as string); }
+      if (product.shopName !== undefined) { fields.push(`shop_name=$${i++}`); values.push(product.shopName as string); }
 
       values.push(id);
       const { rows } = await client.query(
@@ -126,6 +130,8 @@ export class ProductStore {
       overall_rating: row.overall_rating ? parseFloat(row.overall_rating as string) : undefined,
       stock: row.stock as number | undefined,
       isActive: row.is_active as boolean | undefined,
+      shopId: row.shop_id as string | undefined,
+      shopName: row.shop_name as string | undefined,
     };
   }
 }

@@ -252,6 +252,11 @@
     @include respond-to(md) {
       width: auto;
     }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
   }
 
   &__reviews {

@@ -44,6 +44,8 @@ const create = asyncHandler(async (req: Request, res: Response) => {
     overall_rating: req.body.overall_rating !== undefined ? parseFloat(req.body.overall_rating) : undefined,
     stock: req.body.stock !== undefined ? parseInt(req.body.stock) : undefined,
     isActive: req.body.isActive,
+    shopId: req.body.shopId,
+    shopName: req.body.shopName,
   };
 
   res.json(await store.create(product));
@@ -53,14 +55,16 @@ const update = asyncHandler(async (req: Request, res: Response) => {
   const id = parseId(req.params.id, 'product id');
   const {
     name, price, category, image, description,
-    preview_img, types, reviews, overall_rating, stock, isActive
+    preview_img, types, reviews, overall_rating, stock, isActive,
+    shopId, shopName,
   } = req.body;
 
   if (!name && price === undefined && category === undefined &&
       image === undefined && description === undefined &&
       preview_img === undefined && types === undefined &&
       reviews === undefined && overall_rating === undefined &&
-      stock === undefined && isActive === undefined)
+      stock === undefined && isActive === undefined &&
+      shopId === undefined && shopName === undefined)
     throw new AppError('at least one field is required to update', 400);
 
   const validatedName = optionalString(name, 'name');
@@ -82,6 +86,8 @@ const update = asyncHandler(async (req: Request, res: Response) => {
     overall_rating: overall_rating !== undefined ? parseFloat(overall_rating) : undefined,
     stock: stock !== undefined ? parseInt(stock) : undefined,
     isActive,
+    shopId,
+    shopName,
   });
   if (!updatedProduct) throw new AppError(`product with id ${req.params.id} not found`, 404);
   res.json(updatedProduct);

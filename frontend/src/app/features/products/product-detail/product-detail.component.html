@@ -86,7 +86,8 @@
         </span>
       </div>
 
-      <button class="product-detail__add-btn" (click)="addToCart()" [disabled]="!product.stock">
+      <button class="product-detail__add-btn" (click)="addToCart()"
+        [disabled]="!product.stock || isAdding">
         Add to Cart
       </button>
     </div>
