@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, Input, OnDestroy } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -13,18 +13,25 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     }
   ]
 })
-export class QuantityInputComponent implements ControlValueAccessor {
+export class QuantityInputComponent implements ControlValueAccessor, OnDestroy {
   @Input() min = 1;
   @Input() max = 99;
 
   value = 1;
   disabled = false;
 
+  private isTyping = false;
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
   private onChange: (value: number) => void = () => {};
   private onTouched: () => void = () => {};
 
   writeValue(value: number): void {
-    this.value = value ?? this.min;
+    // Skip external updates while the user is actively typing so the
+    // optimistic cart update doesn't reset the input mid-keystroke.
+    if (!this.isTyping) {
+      this.value = value ?? this.min;
+    }
   }
 
   registerOnChange(fn: (value: number) => void): void {
@@ -56,21 +63,49 @@ export class QuantityInputComponent implements ControlValueAccessor {
   }
 
   onInput(event: Event): void {
-    const raw = (event.target as HTMLInputElement).value;
-    const parsed = parseInt(raw, 10);
+    const input = event.target as HTMLInputElement;
+    const parsed = parseInt(input.value, 10);
     if (!isNaN(parsed)) {
-      this.setValue(this.clamp(parsed));
+      const clamped = this.clamp(parsed);
+      this.value = clamped;
+
+      // Immediately correct the displayed value when it exceeds the allowed range
+      if (parsed !== clamped) {
+        input.value = String(clamped);
+      }
+
+      this.isTyping = true;
+
+      if (this.debounceTimer) clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.isTyping = false;
+        this.debounceTimer = null;
+        this.onChange(clamped);
+      }, 700);
     }
   }
 
   onBlur(event: Event): void {
+    // Flush any pending debounce immediately on blur
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+    this.isTyping = false;
+
     const raw = (event.target as HTMLInputElement).value;
     const parsed = parseInt(raw, 10);
     if (isNaN(parsed) || parsed < this.min) {
       this.setValue(this.min);
       (event.target as HTMLInputElement).value = String(this.value);
+    } else {
+      this.setValue(this.clamp(parsed));
     }
     this.onTouched();
+  }
+
+  ngOnDestroy(): void {
+    if (this.debounceTimer) clearTimeout(this.debounceTimer);
   }
 
   private setValue(val: number): void {

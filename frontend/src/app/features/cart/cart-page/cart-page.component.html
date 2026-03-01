@@ -126,9 +126,14 @@
             </div>
 
             <div class="cart-item__actions">
-              <app-quantity-input [ngModel]="item.quantity" (ngModelChange)="updateQuantity(item, $event)"
-                [name]="'qty-' + item.product._id + '-' + (item.selectedType?._id || 'default')" [min]="1"
-                [max]="99" [disabled]="isItemLoading(item) || isCheckingOut"></app-quantity-input>
+              <div class="cart-item__qty-wrapper">
+                <app-quantity-input [ngModel]="item.quantity" (ngModelChange)="updateQuantity(item, $event)"
+                  [name]="'qty-' + item.product._id + '-' + (item.selectedType?._id || 'default')" [min]="1"
+                  [max]="getItemStock(item)" [disabled]="isItemLoading(item) || isCheckingOut"></app-quantity-input>
+                <p *ngIf="item.quantity >= getItemStock(item)" class="cart-item__stock-warning">
+                  Only {{ getItemStock(item) }} {{ getItemStock(item) === 1 ? 'item' : 'items' }} left in stock
+                </p>
+              </div>
 
               <span class="cart-item__subtotal">
                 ${{ getItemSubtotal(item) | number:'1.2-2' }}

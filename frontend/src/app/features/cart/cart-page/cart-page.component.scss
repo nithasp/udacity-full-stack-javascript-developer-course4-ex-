@@ -323,12 +323,30 @@
 
   // quantity stepper lives inside app-quantity-input (.qty-input component)
 
+  &__qty-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &__stock-warning {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    font-size: $font-size-xs;
+    color: $color-warning;
+    font-weight: $font-weight-medium;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
   &__subtotal {
     font-size: $font-size-base;
     font-weight: $font-weight-bold;
     color: $color-text;
-    min-width: 70px;
+    min-width: 90px;
     text-align: right;
+    white-space: nowrap;
   }
 
   &__remove {
@@ -673,12 +691,26 @@
     &__actions {
       flex-basis: 100%;
       justify-content: flex-end;
+      align-items: flex-start;
       padding-top: $spacing-sm;
       border-top: 1px solid $color-border;
     }
 
+    &__qty-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-xs;
+    }
+
+    &__stock-warning {
+      position: static;
+      white-space: normal;
+      pointer-events: auto;
+    }
+
     &__subtotal {
       min-width: auto;
+      padding-top: 6px;
     }
   }
 
@@ -786,15 +818,30 @@
     &__actions {
       gap: $spacing-sm;
       padding-top: $spacing-xs;
+      align-items: flex-start;
+    }
+
+    &__qty-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-xs;
+    }
+
+    &__stock-warning {
+      position: static;
+      white-space: normal;
+      pointer-events: auto;
     }
 
     &__subtotal {
       font-size: $font-size-sm;
+      padding-top: 6px;
     }
 
     &__remove {
       font-size: $font-size-lg;
       padding: 2px;
+      padding-top: 8px;
     }
   }
 

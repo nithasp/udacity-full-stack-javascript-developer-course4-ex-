@@ -19,7 +19,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   selectedQuantity = 1;
   selectedType: ProductType | undefined;
   selectedImage = '';
-  quantities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   loading = true;
 
   // Tracks accumulated qty before the debounce fires
@@ -46,7 +45,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
           this.product = product;
           if (product) {
             this.selectedImage = product.image;
-            this.selectedType = product.types[0];
+            this.selectedType = product.types.length === 1 ? product.types[0] : undefined;
           }
           this.loading = false;
         },
@@ -84,6 +83,9 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   selectType(type: ProductType): void {
     this.selectedType = type;
     this.selectedImage = type.image;
+    if (this.selectedQuantity > type.stock) {
+      this.selectedQuantity = 1;
+    }
   }
 
   onQuantityChange(qty: number): void {
@@ -92,6 +94,30 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
   addToCart(): void {
     if (!this.product) return;
+
+    const existingItem = this.cartService.getItems().find(
+      item => item.product._id === this.product!._id &&
+              item.selectedType?._id === this.selectedType?._id
+    );
+    const currentCartQty = existingItem?.quantity ?? 0;
+    const totalAfterAdd = currentCartQty + this.selectedQuantity;
+
+    if (totalAfterAdd > this.currentStock) {
+      const remaining = this.currentStock - currentCartQty;
+      if (remaining <= 0) {
+        this.notificationService.warning(
+          `You already have the maximum available stock (${this.currentStock}) in your cart.`,
+          'Stock Limit Reached'
+        );
+      } else {
+        this.notificationService.warning(
+          `Cannot add ${this.selectedQuantity}. Only ${remaining} more ${remaining === 1 ? 'item' : 'items'} can be added (stock: ${this.currentStock}).`,
+          'Stock Limit Reached'
+        );
+      }
+      return;
+    }
+
     this.pendingQty += this.selectedQuantity;
 
     // Immediately reflect in local cart
@@ -111,6 +137,14 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
   get currentPrice(): number {
     return this.selectedType?.price ?? this.product?.price ?? 0;
+  }
+
+  get currentStock(): number {
+    return this.selectedType?.stock ?? this.product?.stock ?? 0;
+  }
+
+  get isQuantityAtLimit(): boolean {
+    return this.currentStock > 0 && this.selectedQuantity >= this.currentStock;
   }
 
   get ratingStars(): number[] {

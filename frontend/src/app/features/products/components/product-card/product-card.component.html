@@ -28,17 +28,6 @@
 
     <div class="product-card__footer">
       <span class="product-card__price">${{ product.price | number:'1.2-2' }}</span>
-
-      <div class="product-card__actions">
-        <button
-          class="product-card__add-btn"
-          (click)="onAddToCart()"
-          [disabled]="isAdding"
-          type="button"
-        >
-          Add to Cart
-        </button>
-      </div>
     </div>
   </div>
 </div>

@@ -64,29 +64,31 @@
       </div>
 
       <div class="product-detail__quantity">
-        <label class="product-detail__label" for="quantity">Quantity:</label>
-        <select
-          id="quantity"
-          class="product-detail__quantity-select"
+        <label class="product-detail__label">Quantity:</label>
+        <app-quantity-input
           [(ngModel)]="selectedQuantity"
           (ngModelChange)="onQuantityChange($event)"
           name="quantity"
-        >
-          <option *ngFor="let q of quantities" [ngValue]="q">{{ q }}</option>
-        </select>
+          [min]="1"
+          [max]="currentStock > 0 ? currentStock : 1"
+          [disabled]="currentStock === 0"
+        ></app-quantity-input>
+        <p *ngIf="isQuantityAtLimit" class="product-detail__stock-warning">
+          Only {{ currentStock }} {{ currentStock === 1 ? 'item' : 'items' }} left in stock
+        </p>
       </div>
 
       <div class="product-detail__stock">
-        <span *ngIf="product.stock && product.stock > 0" class="product-detail__in-stock">
-          In Stock ({{ product.stock }} available)
+        <span *ngIf="currentStock > 0" class="product-detail__in-stock">
+          In Stock ({{ currentStock }} available)
         </span>
-        <span *ngIf="!product.stock || product.stock === 0" class="product-detail__out-of-stock">
+        <span *ngIf="currentStock === 0" class="product-detail__out-of-stock">
           Out of Stock
         </span>
       </div>
 
       <button class="product-detail__add-btn" (click)="addToCart()"
-        [disabled]="!product.stock || isAdding">
+        [disabled]="(product.types.length > 1 && !selectedType) || currentStock === 0 || isAdding">
         Add to Cart
       </button>
     </div>

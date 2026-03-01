@@ -222,7 +222,19 @@ export class CartPageComponent implements OnInit, OnDestroy {
     return this.getItemPrice(item) * item.quantity;
   }
 
+  getItemStock(item: CartItem): number {
+    return item.selectedType?.stock ?? item.product.stock ?? 99;
+  }
+
   updateQuantity(item: CartItem, quantity: number): void {
+    const maxStock = this.getItemStock(item);
+    if (quantity > maxStock) {
+      this.notificationService.warning(
+        `Only ${maxStock} ${maxStock === 1 ? 'item' : 'items'} available in stock. Quantity cannot exceed the available stock.`,
+        'Stock Limit Reached'
+      );
+      return;
+    }
     this.cartService.updateQuantity(item.product._id, quantity, item.selectedType?._id);
   }
 

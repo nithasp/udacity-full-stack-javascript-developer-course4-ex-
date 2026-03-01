@@ -191,6 +191,10 @@
       background: $color-primary;
       color: white;
       border-color: $color-primary;
+
+      &:hover {
+        color: white;
+      }
     }
   }
 
@@ -198,21 +202,11 @@
     margin-bottom: $spacing-lg;
   }
 
-  &__quantity-select {
-    padding: $spacing-sm $spacing-md;
-    border: 2px solid $color-border;
-    border-radius: $border-radius-md;
-    font-size: $font-size-base;
-    color: $color-text;
-    background: $color-bg-white;
-    cursor: pointer;
-    outline: none;
-    min-width: 80px;
-
-    &:focus {
-      border-color: $color-primary;
-      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
-    }
+  &__stock-warning {
+    margin-top: $spacing-xs;
+    font-size: $font-size-sm;
+    color: $color-warning;
+    font-weight: $font-weight-medium;
   }
 
   &__stock {
