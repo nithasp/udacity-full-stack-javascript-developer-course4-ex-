@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ToastrModule } from 'ngx-toastr';
 import { CartPageComponent } from './cart-page.component';
 import { CartService } from '../../../core/services/cart/cart.service';
@@ -45,8 +46,9 @@ describe('CartPageComponent', () => {
     notificationSpy = jasmine.createSpyObj('NotificationService', ['success', 'error', 'info', 'warning']);
 
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, FormsModule, ToastrModule.forRoot()],
+      imports: [RouterTestingModule, HttpClientTestingModule, ToastrModule.forRoot()],
       declarations: [CartPageComponent, InputFieldComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         CartService,
         { provide: NotificationService, useValue: notificationSpy }
@@ -69,7 +71,7 @@ describe('CartPageComponent', () => {
   });
 
   it('should display cart items when cart has products', () => {
-    cartService.addToCart(mockProduct, 2, mockProduct.types[0]);
+    cartService.addToCartLocal(mockProduct, 2, mockProduct.types[0]);
     fixture.detectChanges();
     const items = fixture.nativeElement.querySelectorAll('.cart-item');
     expect(items.length).toBe(1);
@@ -86,8 +88,8 @@ describe('CartPageComponent', () => {
   });
 
   it('should group items by shop', () => {
-    cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
-    cartService.addToCart(mockProduct2, 1);
+    cartService.addToCartLocal(mockProduct, 1, mockProduct.types[0]);
+    cartService.addToCartLocal(mockProduct2, 1);
     fixture.detectChanges();
 
     const groups = component.shopGroups;
@@ -97,14 +99,14 @@ describe('CartPageComponent', () => {
   });
 
   it('should select all items by default', () => {
-    cartService.addToCart(mockProduct, 2, mockProduct.types[0]);
+    cartService.addToCartLocal(mockProduct, 2, mockProduct.types[0]);
     fixture.detectChanges();
     expect(component.selectedCount).toBe(2);
     expect(component.selectedTotal).toBeCloseTo(159.98, 2);
   });
 
   it('should toggle item selection', () => {
-    cartService.addToCart(mockProduct, 2, mockProduct.types[0]);
+    cartService.addToCartLocal(mockProduct, 2, mockProduct.types[0]);
     fixture.detectChanges();
 
     const item = component.cartItems[0];
@@ -114,7 +116,7 @@ describe('CartPageComponent', () => {
   });
 
   it('should toggle all items in a shop', () => {
-    cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
+    cartService.addToCartLocal(mockProduct, 1, mockProduct.types[0]);
     fixture.detectChanges();
 
     const group = component.shopGroups[0];
@@ -126,7 +128,8 @@ describe('CartPageComponent', () => {
   });
 
   it('should remove item from cart', () => {
-    cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
+    cartService.addToCartLocal(mockProduct, 1, mockProduct.types[0]);
+    fixture.detectChanges();
     const item: CartItem = { product: mockProduct, quantity: 1, selectedType: mockProduct.types[0], shopId: 'shop1', shopName: 'Test Shop' };
     component.removeItem(item);
     expect(component.cartItems.length).toBe(0);
@@ -134,7 +137,7 @@ describe('CartPageComponent', () => {
   });
 
   it('should prevent checkout with no selected items', () => {
-    cartService.addToCart(mockProduct, 1, mockProduct.types[0]);
+    cartService.addToCartLocal(mockProduct, 1, mockProduct.types[0]);
     fixture.detectChanges();
 
     const item = component.cartItems[0];

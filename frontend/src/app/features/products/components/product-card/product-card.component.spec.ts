@@ -1,18 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProductCardComponent } from './product-card.component';
 import { TruncatePipe } from '../../../../shared/pipes/truncate.pipe';
 import { Product } from '../../models/product.model';
-import { CartService } from '../../../../core/services/cart/cart.service';
-import { NotificationService } from '../../../../core/services/ui/notification.service';
 
 describe('ProductCardComponent', () => {
   let component: ProductCardComponent;
   let fixture: ComponentFixture<ProductCardComponent>;
 
   const mockProduct: Product = {
-    _id: 'prod1',
+    id: 1,
     name: 'Test Headphones',
     category: 'Electronics',
     price: 79.99,
@@ -21,7 +18,6 @@ describe('ProductCardComponent', () => {
     previewImg: ['https://example.com/img.jpg'],
     types: [
       {
-        _id: 'type1',
         productId: 1001,
         color: 'Black',
         quantity: 50,
@@ -31,15 +27,13 @@ describe('ProductCardComponent', () => {
       }
     ],
     reviews: [{ star: 5, comment: 'Great!' }],
-    overallRating: 4.5,
-    stock: 50
+    overallRating: 4.5
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FormsModule, RouterTestingModule],
-      declarations: [ProductCardComponent, TruncatePipe],
-      providers: [CartService, { provide: NotificationService, useValue: { success: () => {} } }]
+      imports: [RouterTestingModule],
+      declarations: [ProductCardComponent, TruncatePipe]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductCardComponent);
@@ -84,6 +78,6 @@ describe('ProductCardComponent', () => {
 
   it('should have a link to product detail page', () => {
     const link = fixture.nativeElement.querySelector('.product-card__image-link');
-    expect(link.getAttribute('href')).toContain('/products/prod1');
+    expect(link.getAttribute('href')).toContain('/products/1');
   });
 });

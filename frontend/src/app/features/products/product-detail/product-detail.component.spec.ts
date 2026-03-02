@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FormsModule } from '@angular/forms';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ToastrModule } from 'ngx-toastr';
 import { of } from 'rxjs';
 import { ProductDetailComponent } from './product-detail.component';
@@ -46,11 +46,11 @@ describe('ProductDetailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        FormsModule,
         RouterTestingModule,
         ToastrModule.forRoot()
       ],
       declarations: [ProductDetailComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: ProductService, useValue: productServiceSpy },
         { provide: NotificationService, useValue: notificationSpy },
@@ -80,8 +80,9 @@ describe('ProductDetailComponent', () => {
     expect(component.selectedImage).toBe('https://example.com/main.jpg');
   });
 
-  it('should set selectedType to first type', () => {
-    expect(component.selectedType?.color).toBe('Black');
+  it('should not auto-select type when multiple types exist', () => {
+    // With 2 types the component leaves selectedType undefined until user picks one
+    expect(component.selectedType).toBeUndefined();
   });
 
   it('should change selected image', () => {
@@ -96,6 +97,7 @@ describe('ProductDetailComponent', () => {
   });
 
   it('should update currentPrice based on selectedType', () => {
+    // No type selected → falls back to product price
     expect(component.currentPrice).toBe(79.99);
     component.selectType(mockProduct.types[1]);
     expect(component.currentPrice).toBe(84.99);
@@ -106,15 +108,17 @@ describe('ProductDetailComponent', () => {
     expect(component.selectedQuantity).toBe(5);
   });
 
-  it('should add product to cart', () => {
+  it('should add product to cart', fakeAsync(() => {
     spyOn(cartService, 'addToCartLocal');
     component.selectedQuantity = 2;
     component.addToCart();
     expect(cartService.addToCartLocal).toHaveBeenCalledWith(
       component.product!, 2, component.selectedType
     );
+    // Success notification fires after the 400ms debounce
+    tick(400);
     expect(notificationSpy.success).toHaveBeenCalled();
-  });
+  }));
 
   it('should display product name', () => {
     const name = fixture.nativeElement.querySelector('.product-detail__name');

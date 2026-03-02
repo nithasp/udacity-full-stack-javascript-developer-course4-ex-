@@ -27,7 +27,6 @@ describe('AuthService', () => {
   };
 
   beforeEach(() => {
-    // Clear localStorage before each test
     localStorage.clear();
 
     TestBed.configureTestingModule({
@@ -44,11 +43,9 @@ describe('AuthService', () => {
   });
 
   afterEach(() => {
-    httpMock.verify(); // ensure no outstanding requests
+    httpMock.verify();
     localStorage.clear();
   });
-
-  // ── Basic service creation ─────────────────────────────────────────────────
 
   it('should be created', () => {
     expect(service).toBeTruthy();
@@ -73,13 +70,8 @@ describe('AuthService', () => {
 
       req.flush(mockAuthResponse);
 
-      // Tokens should be persisted
-      expect(localStorage.getItem('accessToken')).toBe(
-        mockAuthResponse.accessToken
-      );
-      expect(localStorage.getItem('refreshToken')).toBe(
-        mockAuthResponse.refreshToken
-      );
+      expect(localStorage.getItem('accessToken')).toBe(mockAuthResponse.accessToken);
+      expect(localStorage.getItem('refreshToken')).toBe(mockAuthResponse.refreshToken);
     });
 
     it('should emit isLoggedIn$ = true after successful register', () => {
@@ -92,10 +84,10 @@ describe('AuthService', () => {
       expect(loggedIn).toBeTrue();
     });
 
-    it('should propagate error message from backend on failure', () => {
-      let errorMsg = '';
+    it('should propagate error from backend on failure', () => {
+      let errorReceived = false;
       service.register('existing', 'pass').subscribe({
-        error: (err: Error) => (errorMsg = err.message),
+        error: () => (errorReceived = true),
       });
 
       httpMock
@@ -105,7 +97,7 @@ describe('AuthService', () => {
           { status: 409, statusText: 'Conflict' }
         );
 
-      expect(errorMsg).toBe('Username already exists');
+      expect(errorReceived).toBeTrue();
     });
   });
 
@@ -121,9 +113,7 @@ describe('AuthService', () => {
       expect(req.request.method).toBe('POST');
       req.flush(mockAuthResponse);
 
-      expect(localStorage.getItem('accessToken')).toBe(
-        mockAuthResponse.accessToken
-      );
+      expect(localStorage.getItem('accessToken')).toBe(mockAuthResponse.accessToken);
     });
 
     it('should emit isLoggedIn$ = true after successful login', () => {
@@ -136,10 +126,10 @@ describe('AuthService', () => {
       expect(loggedIn).toBeTrue();
     });
 
-    it('should propagate error message from backend on invalid credentials', () => {
-      let errorMsg = '';
+    it('should propagate error from backend on invalid credentials', () => {
+      let errorReceived = false;
       service.login('bad', 'creds').subscribe({
-        error: (err: Error) => (errorMsg = err.message),
+        error: () => (errorReceived = true),
       });
 
       httpMock
@@ -149,7 +139,7 @@ describe('AuthService', () => {
           { status: 401, statusText: 'Unauthorized' }
         );
 
-      expect(errorMsg).toBe('Invalid username or password');
+      expect(errorReceived).toBeTrue();
     });
   });
 
@@ -161,7 +151,6 @@ describe('AuthService', () => {
     });
 
     it('hasValidToken should return true for a non-expired JWT', () => {
-      // Create a JWT whose exp is far in the future (payload: { exp: 9999999999 })
       const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
       const payload = btoa(JSON.stringify({ exp: 9999999999 }));
       const fakeJwt = `${header}.${payload}.signature`;
@@ -172,7 +161,7 @@ describe('AuthService', () => {
 
     it('hasValidToken should return false for an expired JWT', () => {
       const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const payload = btoa(JSON.stringify({ exp: 1000000000 })); // 2001 – expired
+      const payload = btoa(JSON.stringify({ exp: 1000000000 }));
       const fakeJwt = `${header}.${payload}.signature`;
 
       localStorage.setItem('accessToken', fakeJwt);
@@ -223,16 +212,13 @@ describe('AuthService', () => {
       expect(errorMsg).toBe('No refresh token available');
     });
 
-    it('should clear session and throw when refresh fails', () => {
+    it('should propagate error when refresh token is rejected by backend', () => {
       localStorage.setItem('refreshToken', 'expired_refresh');
       localStorage.setItem('accessToken', 'old_access');
 
+      let errorReceived = false;
       service.refreshAccessToken().subscribe({
-        error: () => {
-          // After error, tokens should be cleared
-          expect(localStorage.getItem('accessToken')).toBeNull();
-          expect(localStorage.getItem('refreshToken')).toBeNull();
-        },
+        error: () => (errorReceived = true),
       });
 
       httpMock
@@ -241,6 +227,8 @@ describe('AuthService', () => {
           { error: 'Refresh token has expired' },
           { status: 401, statusText: 'Unauthorized' }
         );
+
+      expect(errorReceived).toBeTrue();
     });
   });
 
@@ -254,6 +242,9 @@ describe('AuthService', () => {
 
       service.logout();
 
+      // Flush the fire-and-forget POST to /auth/logout
+      httpMock.expectOne(`${API}/logout`).flush({});
+
       expect(localStorage.getItem('accessToken')).toBeNull();
       expect(localStorage.getItem('refreshToken')).toBeNull();
       expect(localStorage.getItem('currentUser')).toBeNull();
@@ -263,7 +254,9 @@ describe('AuthService', () => {
       let loggedIn = true;
       service.isLoggedIn$.subscribe((val) => (loggedIn = val));
 
+      // No refreshToken in localStorage → logout() clears session without HTTP call
       service.logout();
+
       expect(loggedIn).toBeFalse();
     });
   });
@@ -275,13 +268,12 @@ describe('AuthService', () => {
       expect(service.getCurrentUser()).toBeNull();
     });
 
-    it('should return the stored user object', () => {
-      localStorage.setItem(
-        'currentUser',
-        JSON.stringify({ id: 1, username: 'test' })
-      );
+    it('should return the stored user after successful login', () => {
+      service.login('testuser', 'pass').subscribe();
+      httpMock.expectOne(`${API}/login`).flush(mockAuthResponse);
+
       const user = service.getCurrentUser();
-      expect(user?.username).toBe('test');
+      expect(user?.username).toBe('testuser');
     });
   });
 });

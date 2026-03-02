@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CartService } from './cart.service';
 import { Product, ProductType } from '../../../features/products/models/product.model';
 
@@ -36,7 +37,9 @@ describe('CartService', () => {
   };
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule]
+    });
     service = TestBed.inject(CartService);
   });
 
@@ -51,7 +54,7 @@ describe('CartService', () => {
   });
 
   it('should add a product to the cart', () => {
-    service.addToCart(mockProduct, 2, mockType);
+    service.addToCartLocal(mockProduct, 2, mockType);
     const items = service.getItems();
     expect(items.length).toBe(1);
     expect(items[0].product.id).toBe(1);
@@ -59,40 +62,40 @@ describe('CartService', () => {
   });
 
   it('should increment quantity when adding the same product', () => {
-    service.addToCart(mockProduct, 1, mockType);
-    service.addToCart(mockProduct, 3, mockType);
+    service.addToCartLocal(mockProduct, 1, mockType);
+    service.addToCartLocal(mockProduct, 3, mockType);
     const items = service.getItems();
     expect(items.length).toBe(1);
     expect(items[0].quantity).toBe(4);
   });
 
   it('should add different products as separate items', () => {
-    service.addToCart(mockProduct, 1, mockType);
-    service.addToCart(mockProduct2, 2);
+    service.addToCartLocal(mockProduct, 1, mockType);
+    service.addToCartLocal(mockProduct2, 2);
     const items = service.getItems();
     expect(items.length).toBe(2);
   });
 
   it('should calculate total correctly', () => {
-    service.addToCart(mockProduct, 2, mockType);
+    service.addToCartLocal(mockProduct, 2, mockType);
     expect(service.getTotal()).toBeCloseTo(159.98, 2);
   });
 
   it('should calculate total for multiple products', () => {
-    service.addToCart(mockProduct, 1, mockType);
-    service.addToCart(mockProduct2, 2);
+    service.addToCartLocal(mockProduct, 1, mockType);
+    service.addToCartLocal(mockProduct2, 2);
     expect(service.getTotal()).toBeCloseTo(79.99 + 2 * 49.99, 2);
   });
 
   it('should return correct cart count', () => {
-    service.addToCart(mockProduct, 3, mockType);
-    service.addToCart(mockProduct2, 2);
+    service.addToCartLocal(mockProduct, 3, mockType);
+    service.addToCartLocal(mockProduct2, 2);
     expect(service.getCartCount()).toBe(5);
   });
 
   it('should remove a product from the cart', () => {
-    service.addToCart(mockProduct, 1, mockType);
-    service.addToCart(mockProduct2, 1);
+    service.addToCartLocal(mockProduct, 1, mockType);
+    service.addToCartLocal(mockProduct2, 1);
     service.removeFromCart(1, 'type1');
     const items = service.getItems();
     expect(items.length).toBe(1);
@@ -100,21 +103,21 @@ describe('CartService', () => {
   });
 
   it('should update quantity of a product', () => {
-    service.addToCart(mockProduct, 1, mockType);
+    service.addToCartLocal(mockProduct, 1, mockType);
     service.updateQuantity(1, 5, 'type1');
     expect(service.getItems()[0].quantity).toBe(5);
   });
 
   it('should not allow quantity below 1', () => {
-    service.addToCart(mockProduct, 3, mockType);
+    service.addToCartLocal(mockProduct, 3, mockType);
     service.updateQuantity(1, 0, 'type1');
     expect(service.getItems()[0].quantity).toBe(1);
   });
 
   it('should clear the cart', () => {
-    service.addToCart(mockProduct, 1, mockType);
-    service.addToCart(mockProduct2, 2);
-    service.clearCart();
+    service.addToCartLocal(mockProduct, 1, mockType);
+    service.addToCartLocal(mockProduct2, 2);
+    service.clearLocalCart();
     expect(service.getItems().length).toBe(0);
     expect(service.getTotal()).toBe(0);
     expect(service.getCartCount()).toBe(0);
@@ -129,6 +132,6 @@ describe('CartService', () => {
         done();
       }
     });
-    service.addToCart(mockProduct, 1, mockType);
+    service.addToCartLocal(mockProduct, 1, mockType);
   });
 });

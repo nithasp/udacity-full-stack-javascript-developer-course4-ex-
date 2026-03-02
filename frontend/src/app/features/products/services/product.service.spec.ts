@@ -6,7 +6,7 @@ describe('ProductService', () => {
   let service: ProductService;
   let httpMock: HttpTestingController;
 
-  const mockBackendProducts = [
+  const mockProducts = [
     {
       id: 1,
       name: 'Product 1',
@@ -61,7 +61,7 @@ describe('ProductService', () => {
 
     const req = httpMock.expectOne('http://localhost:3000/products');
     expect(req.request.method).toBe('GET');
-    req.flush({ status: 200, message: 'Products fetched.', data: mockBackendProducts });
+    req.flush(mockProducts);
   });
 
   it('should find a product by ID', () => {
@@ -74,6 +74,6 @@ describe('ProductService', () => {
 
     const req = httpMock.expectOne('http://localhost:3000/products/2');
     expect(req.request.method).toBe('GET');
-    req.flush({ status: 200, message: 'Product fetched.', data: mockBackendProducts[1] });
+    req.flush(mockProducts[1]);
   });
 });

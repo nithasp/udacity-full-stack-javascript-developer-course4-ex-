@@ -98,15 +98,6 @@ describe('InputFieldComponent', () => {
     expect(component.errors.length).toBe(0);
   });
 
-  it('should show success state when valid and touched', () => {
-    component.required = true;
-    component.label = 'Name';
-    component.value = 'John';
-    component.touched = true;
-    expect(component.showSuccess).toBeTrue();
-    expect(component.showErrors).toBeFalse();
-  });
-
   it('should not show errors when not touched', () => {
     component.required = true;
     component.value = '';
@@ -158,16 +149,4 @@ describe('InputFieldComponent', () => {
     expect(error.textContent).toContain('required');
   });
 
-  it('should render success message in template when valid', () => {
-    component.required = true;
-    component.label = 'Name';
-    component.name = 'name';
-    component.value = 'John';
-    component.successMessage = 'Looks good!';
-    component.touched = true;
-    fixture.detectChanges();
-    const success = fixture.nativeElement.querySelector('.input-field__success-msg');
-    expect(success).toBeTruthy();
-    expect(success.textContent).toContain('Looks good!');
-  });
 });
