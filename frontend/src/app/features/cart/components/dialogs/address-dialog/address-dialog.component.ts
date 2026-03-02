@@ -23,7 +23,6 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
   @Input() selectedAddressId: number | null = null;
 
   @Output() selectedAddressIdChange = new EventEmitter<number | null>();
-  /** Emits whenever the address list changes (create / update / delete) so the parent can refresh */
   @Output() addressesChange = new EventEmitter<AddressEntry[]>();
   @Output() closed = new EventEmitter<void>();
 
@@ -63,14 +62,11 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     if (changes['selectedAddressId']) {
       this.localSelectedId = this.selectedAddressId;
     }
-    // Reset to list mode whenever dialog re-opens (detected by a new instance being created)
     this.dialogMode = 'list';
     this.editingAddressId = null;
     this.addressForm = this.blankForm();
     this.formSubmitted = false;
   }
-
-  // ── Data loading ────────────────────────────────────────────────────────────
 
   private loadAddresses(emitChange = false): void {
     this.isLoadingAddresses = true;
@@ -78,7 +74,6 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
       next: (list) => {
         this.addresses = list;
         this.isLoadingAddresses = false;
-        // Auto-select default if nothing is selected yet
         if (!this.localSelectedId && list.length > 0) {
           const def = list.find(a => a.isDefault) ?? list[0];
           this.localSelectedId = def.id;
@@ -93,8 +88,6 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
       },
     });
   }
-
-  // ── Navigation ──────────────────────────────────────────────────────────────
 
   openAddMode(): void {
     this.formSubmitted = false;
@@ -136,8 +129,6 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // ── Selection ───────────────────────────────────────────────────────────────
-
   confirmSelection(): void {
     this.selectedAddressIdChange.emit(this.localSelectedId);
     this.close();
@@ -147,13 +138,9 @@ export class AddressDialogComponent implements OnInit, OnChanges, OnDestroy {
     this.localSelectedId = id;
   }
 
-  // ── Label ───────────────────────────────────────────────────────────────────
-
   setLabel(label: 'home' | 'work' | 'other'): void {
     this.addressForm.label = label;
   }
-
-  // ── CRUD ────────────────────────────────────────────────────────────────────
 
   promptDelete(address: AddressEntry, event: Event): void {
     event.preventDefault();

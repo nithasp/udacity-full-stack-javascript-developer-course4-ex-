@@ -9,8 +9,6 @@ import { AddressApiService } from '../services/address-api.service';
 import { AddressEntry } from '../models/address.model';
 import { PaymentMethod, ShopGroup } from '../models/cart.model';
 
-export type { ShopGroup };
-
 @Component({
   selector: 'app-cart-page',
   templateUrl: './cart-page.component.html',
@@ -22,17 +20,13 @@ export class CartPageComponent implements OnInit, OnDestroy {
 
   isLoadingCart = true;
   isCheckingOut = false;
-
-  // ── Selection ───────────────────────────────────────────────────────────────
   selectedKeys = new Set<string>();
 
-  // ── Addresses ──────────────────────────────────────────────────────────────
   addresses: AddressEntry[] = [];
   selectedAddressId: number | null = null;
   isLoadingAddresses = false;
   isAddressDialogOpen = false;
 
-  // ── Payment ────────────────────────────────────────────────────────────────
   selectedPayment = 'visa';
   paymentMethods: PaymentMethod[] = [
     { id: 'visa',       name: 'Visa',          description: 'Credit / Debit Card',  badge: 'VISA', color: '#1a1f71' },
@@ -41,7 +35,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
     { id: 'bank',       name: 'Bank Transfer',  description: 'Direct Bank Transfer', badge: 'BANK', color: '#059669' },
   ];
 
-  // ── Discount ───────────────────────────────────────────────────────────────
   discountCode = '';
   appliedDiscount = 0;
   discountLabel = '';
@@ -102,7 +95,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Called when the address dialog changes the list (create/update/delete) */
   onAddressesChange(updated: AddressEntry[]): void {
     this.addresses = updated;
   }
@@ -121,17 +113,14 @@ export class CartPageComponent implements OnInit, OnDestroy {
     this.cartSub.unsubscribe();
   }
 
-  // ── Item key ────────────────────────────────────────────────────────────────
   getItemKey(item: CartItem): string {
     return `${item.product.id}_${item.selectedType?._id ?? 'default'}`;
   }
 
-  // ── Per-item loading state ─────────────────────────────────────────────────
   isItemLoading(item: CartItem): boolean {
     return this.cartService.isItemLoading(item.product.id, item.selectedType?._id);
   }
 
-  // ── Shop grouping ──────────────────────────────────────────────────────────
   private rebuildShopGroups(): void {
     const groupMap = new Map<string, ShopGroup>();
     for (const item of this.cartItems) {
@@ -145,7 +134,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
     this.shopGroups = Array.from(groupMap.values());
   }
 
-  // ── Selection logic ────────────────────────────────────────────────────────
   isItemSelected(item: CartItem): boolean {
     return this.selectedKeys.has(this.getItemKey(item));
   }
@@ -180,7 +168,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ── Selected totals ────────────────────────────────────────────────────────
   get selectedItems(): CartItem[] {
     return this.cartItems.filter(item => this.selectedKeys.has(this.getItemKey(item)));
   }
@@ -193,7 +180,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
     return this.selectedItems.reduce((count, item) => count + item.quantity, 0);
   }
 
-  // ── Price helpers ──────────────────────────────────────────────────────────
   get cartTotal(): number { return this.selectedTotal; }
   get cartCount(): number { return this.selectedCount; }
   get discountAmount(): number { return this.cartTotal * this.appliedDiscount; }
@@ -233,7 +219,6 @@ export class CartPageComponent implements OnInit, OnDestroy {
     this.notificationService.info(`${item.product.name} removed from cart`);
   }
 
-  // ── Discount ───────────────────────────────────────────────────────────────
   applyDiscount(): void {
     const code = this.discountCode.trim().toUpperCase();
     if (!code) {

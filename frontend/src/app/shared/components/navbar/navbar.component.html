@@ -5,7 +5,6 @@
       {{ title }}
     </a>
 
-    <!-- Hamburger toggle (mobile only) -->
     <button
       class="navbar__toggle"
       [class.navbar__toggle--active]="mobileMenuOpen"
@@ -18,7 +17,6 @@
       <span class="navbar__toggle-bar"></span>
     </button>
 
-    <!-- Backdrop overlay (mobile only) -->
     <div
       class="navbar__backdrop"
       [class.navbar__backdrop--visible]="mobileMenuOpen"
@@ -26,7 +24,6 @@
       aria-hidden="true"
     ></div>
 
-    <!-- Navigation menu -->
     <div
       class="navbar__menu"
       [class.navbar__menu--open]="mobileMenuOpen"
@@ -65,7 +62,6 @@
           <span class="navbar__cart-label">Cart</span>
         </a>
 
-        <!-- User mini-menu -->
         <div class="navbar__user-menu" [class.navbar__user-menu--open]="userMenuOpen">
           <button
             class="navbar__user-trigger"
@@ -73,7 +69,6 @@
             [attr.aria-expanded]="userMenuOpen"
             aria-haspopup="true"
           >
-            <!-- User avatar icon -->
             <span class="navbar__user-avatar">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -81,7 +76,6 @@
               </svg>
             </span>
             <span class="navbar__username">{{ displayName }}</span>
-            <!-- Chevron icon toggles direction -->
             <svg
               class="navbar__user-chevron"
               [class.navbar__user-chevron--up]="userMenuOpen"
@@ -97,7 +91,6 @@
             </svg>
           </button>
 
-          <!-- Dropdown -->
           <div class="navbar__user-dropdown" *ngIf="userMenuOpen">
             <button
               class="navbar__user-dropdown-item navbar__user-dropdown-item--logout"

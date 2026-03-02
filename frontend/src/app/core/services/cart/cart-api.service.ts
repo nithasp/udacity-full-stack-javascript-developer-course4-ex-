@@ -4,8 +4,6 @@ import { Observable } from 'rxjs';
 import { CartApiItem, AddCartItemPayload, CheckoutItem, CheckoutResponse } from '../../models/cart-api.model';
 import { API } from '../../config/api-config';
 
-export type { CartApiItem, AddCartItemPayload, CheckoutItem, CheckoutResponse };
-
 @Injectable({ providedIn: 'root' })
 export class CartApiService {
   private readonly baseUrl = `${API.baseUrl}/cart`;

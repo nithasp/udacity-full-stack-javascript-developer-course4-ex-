@@ -1,15 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { CartItem, Product, ProductType, Review } from '../../../features/products/models/product.model';
 import { CartApiService } from './cart-api.service';
 import { CartApiItem } from '../../models/cart-api.model';
-
-interface QuantityUpdate {
-  cartItemId: number;
-  quantity: number;
-  itemKey: string;
-}
+import { QuantityUpdate } from '../../models/cart.model';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
@@ -17,16 +12,13 @@ export class CartService {
   private cartSubject = new BehaviorSubject<CartItem[]>([]);
   cart$ = this.cartSubject.asObservable();
 
-  // Global initial-load state (true while the first getCart() is in flight)
   private cartLoadingSubject = new BehaviorSubject<boolean>(false);
   isCartLoading$ = this.cartLoadingSubject.asObservable();
 
-  // Per-item loading state: key = `${productId}_${typeId ?? 'default'}`
   private loadingKeys = new Set<string>();
   private loadingSubject = new BehaviorSubject<Set<string>>(new Set());
   loading$ = this.loadingSubject.asObservable();
 
-  // Debounced quantity-update pipeline
   private quantityUpdate$ = new Subject<QuantityUpdate>();
 
   constructor(private cartApi: CartApiService) {
@@ -35,10 +27,7 @@ export class CartService {
         debounceTime(400),
         switchMap(({ cartItemId, quantity, itemKey }) => {
           this.setLoading(itemKey, true);
-          return this.cartApi.updateItem(cartItemId, quantity).pipe(
-            // Ensure loading is cleared even on error via finalize-like pattern
-            // (handled in subscribe below)
-          );
+          return this.cartApi.updateItem(cartItemId, quantity);
         })
       )
       .subscribe({
@@ -51,14 +40,11 @@ export class CartService {
           this.clearLoadingByCartItemId(updated.id);
         },
         error: () => {
-          // On error clear all loading flags and re-emit state
           this.loadingKeys.clear();
           this.loadingSubject.next(new Set());
         },
       });
   }
-
-  // ── Loading helpers ────────────────────────────────────────────────────────
 
   private setLoading(key: string, loading: boolean): void {
     if (loading) {
@@ -84,9 +70,6 @@ export class CartService {
     return `${productId}_${typeId ?? 'default'}`;
   }
 
-  // ── Load cart from backend (call on cart page init) ─────────────────────
-
-  /** Fetch cart from backend. Sets isCartLoading$ while in flight. */
   fetchCart(): void {
     this.cartLoadingSubject.next(true);
     this.cartApi.getCart().subscribe({
@@ -101,7 +84,6 @@ export class CartService {
     });
   }
 
-  /** Clear local cart state (called on logout). */
   resetCart(): void {
     this.cartItems = [];
     this.cartSubject.next([]);
@@ -110,7 +92,6 @@ export class CartService {
     this.cartLoadingSubject.next(false);
   }
 
-  /** Convert a raw CartApiItem (with joined product fields) into a frontend CartItem. */
   private apiItemToCartItem(api: CartApiItem): CartItem {
     const product: Product = {
       id: api.productId,
@@ -139,12 +120,7 @@ export class CartService {
     };
   }
 
-  // ── Cart CRUD ──────────────────────────────────────────────────────────────
-
-  /**
-   * Update local cart state immediately without calling the backend.
-   * Used for instant UI feedback on every button click before the debounce fires.
-   */
+  /** Update local cart immediately for instant UI feedback (before debounce fires). */
   addToCartLocal(product: Product, quantity: number, selectedType?: ProductType): void {
     const existingIndex = this.cartItems.findIndex(
       item => item.product.id === product.id &&
@@ -164,14 +140,7 @@ export class CartService {
     this.cartSubject.next([...this.cartItems]);
   }
 
-  /**
-   * Sync the current local quantity for a product/type to the backend.
-   * Called after the debounce fires. Reads the current local quantity so
-   * all accumulated clicks are sent in one request.
-   *
-   * - If the item already has a cartItemId → PUT (update quantity)
-   * - If the item is new → POST (create)
-   */
+  /** Sync current local quantity to the backend (PUT if exists, POST if new). */
   syncToBackend(product: Product, selectedType?: ProductType): void {
     const key = this.makeKey(product.id, selectedType?._id);
     const item = this.cartItems.find(
@@ -207,7 +176,6 @@ export class CartService {
           this.setLoading(key, false);
         },
         error: () => {
-          // Revert local item on failure
           this.cartItems = this.cartItems.filter(
             i => !(i.product.id === product.id &&
                    i.selectedType?._id === selectedType?._id)
@@ -226,7 +194,6 @@ export class CartService {
               item.selectedType?._id === selectedType?._id
     );
 
-    // Optimistic local update
     if (existingIndex > -1) {
       this.cartItems[existingIndex].quantity += quantity;
     } else {
@@ -262,7 +229,6 @@ export class CartService {
         this.setLoading(key, false);
       },
       error: () => {
-        // Revert optimistic update
         if (existingIndex > -1) {
           this.cartItems[existingIndex].quantity -= quantity;
         } else {
@@ -298,7 +264,6 @@ export class CartService {
         error: () => this.setLoading(key, false),
       });
     } else {
-      // Item not yet persisted (edge case)
       this.cartItems = this.cartItems.filter(
         i => !(i.product.id === productId && i.selectedType?._id === typeId)
       );
@@ -307,10 +272,7 @@ export class CartService {
     }
   }
 
-  /**
-   * Update quantity for a cart item.
-   * The local state is updated immediately; the API call is debounced 400ms.
-   */
+  /** Local update immediately; API call debounced 400ms. */
   updateQuantity(productId: number, quantity: number, typeId?: string): void {
     const key = this.makeKey(productId, typeId);
     const item = this.cartItems.find(
@@ -335,7 +297,6 @@ export class CartService {
     });
   }
 
-  /** Clear local cart without calling the API (use after checkout completes). */
   clearLocalCart(): void {
     this.cartItems = [];
     this.cartSubject.next([]);

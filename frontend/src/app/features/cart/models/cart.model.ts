@@ -1,5 +1,3 @@
-// Moved from: features/cart/cart-page/cart-page.component.ts
-
 import { CartItem } from '../../products/models/product.model';
 
 export interface PaymentMethod {

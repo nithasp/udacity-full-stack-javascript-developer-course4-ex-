@@ -8,7 +8,6 @@
     [class.confirm-dialog--danger]="config.danger"
     (click)="$event.stopPropagation()">
 
-    <!-- Icon -->
     <div class="confirm-dialog__icon" [class.confirm-dialog__icon--danger]="config.danger">
       <svg *ngIf="config.danger" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
         fill="none" stroke="currentColor" stroke-width="1.5"
@@ -26,13 +25,8 @@
       </svg>
     </div>
 
-    <!-- Title -->
     <h2 class="confirm-dialog__title">{{ config.title }}</h2>
-
-    <!-- Message -->
     <p class="confirm-dialog__message">{{ config.message }}</p>
-
-    <!-- Actions -->
     <div class="confirm-dialog__actions">
       <button type="button" class="confirm-dialog__cancel" (click)="cancel()">
         {{ config.cancelText || 'Cancel' }}

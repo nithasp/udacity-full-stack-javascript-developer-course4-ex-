@@ -1,12 +1,10 @@
 <div class="cart-page">
   <h1 class="cart-page__title">Shopping Cart</h1>
 
-  <!-- Loading State -->
   <div *ngIf="isLoadingCart" class="cart-page__loading">
     <app-loading-spinner message="Loading your cart…" layout="block"></app-loading-spinner>
   </div>
 
-  <!-- Empty State -->
   <div *ngIf="!isLoadingCart && cartItems.length === 0" class="cart-page__empty">
     <div class="cart-page__empty-icon">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" fill="none"
@@ -23,7 +21,6 @@
 
   <div *ngIf="!isLoadingCart && cartItems.length > 0">
 
-    <!-- ── Delivery Address Bar (full-width, top) ─────────────────────────── -->
     <div class="delivery-bar">
       <div class="delivery-bar__heading">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"
@@ -35,7 +32,6 @@
         Delivery Address
       </div>
 
-      <!-- Loading state -->
       <div class="delivery-bar__loading" *ngIf="isLoadingAddresses">
         <app-loading-spinner message="Loading delivery address…" size="small" layout="inline"></app-loading-spinner>
       </div>
@@ -61,14 +57,9 @@
       </ng-container>
     </div>
 
-    <!-- ── Cart Content Grid ──────────────────────────────────────────────── -->
     <div class="cart-page__content">
-
-      <!-- Left: Cart Items grouped by shop -->
       <div class="cart-page__items">
         <div *ngFor="let group of shopGroups" class="shop-group">
-
-          <!-- Shop Header -->
           <div class="shop-group__header">
             <label class="shop-group__checkbox-label">
               <input type="checkbox" class="shop-group__checkbox" [checked]="isShopAllSelected(group)"
@@ -97,7 +88,6 @@
             <span class="shop-group__name">{{ group.shopName }}</span>
           </div>
 
-          <!-- Products in this shop -->
           <div *ngFor="let item of group.items" class="cart-item" [class.cart-item--unselected]="!isItemSelected(item)">
             <label class="cart-item__checkbox-label">
               <input type="checkbox" class="cart-item__checkbox" [checked]="isItemSelected(item)"
@@ -149,10 +139,7 @@
         </div>
       </div>
 
-      <!-- Right: Sidebar -->
       <div class="cart-page__sidebar">
-
-        <!-- Discount Code -->
         <div class="sidebar-card">
           <h3 class="sidebar-card__heading">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="14" height="14"
@@ -177,7 +164,6 @@
           </div>
         </div>
 
-        <!-- Payment Method -->
         <div class="sidebar-card">
           <h3 class="sidebar-card__heading">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="14" height="14"
@@ -199,7 +185,6 @@
           </div>
         </div>
 
-        <!-- Order Summary -->
         <div class="cart-summary">
           <h2 class="cart-summary__title">Order Summary</h2>
 
@@ -246,7 +231,6 @@
     </div>
   </div>
 
-  <!-- ── Address Dialog (fixed overlay, covers full app) ──────────────────── -->
   <app-address-dialog *ngIf="isAddressDialogOpen"
     [(selectedAddressId)]="selectedAddressId"
     (addressesChange)="onAddressesChange($event)"

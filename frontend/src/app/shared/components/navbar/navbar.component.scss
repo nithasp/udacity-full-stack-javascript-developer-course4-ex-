@@ -1,13 +1,11 @@
 @import 'variables';
 @import 'mixins';
 
-// ─── Open animation: drop down from above ──────────────────────────────────
 @keyframes menuDropDown {
   from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-// ─── Close animation: retract upward ───────────────────────────────────────
 @keyframes menuRetractUp {
   from { opacity: 1; transform: translateY(0); }
   to   { opacity: 0; transform: translateY(-10px); }
@@ -22,14 +20,12 @@
   box-shadow: $shadow-sm;
   height: $navbar-height;
 
-  // ── Container ────────────────────────────────────────────────────────────
   &__container {
     @include container;
     @include flex-between;
     height: 100%;
   }
 
-  // ── Brand / Logo ─────────────────────────────────────────────────────────
   &__brand {
     display: flex;
     align-items: center;
@@ -39,11 +35,9 @@
     color: $color-text;
     text-decoration: none;
     transition: color $transition-fast;
-    z-index: 210;          // stay above backdrop
+    z-index: 210;
 
-    &:hover {
-      color: $color-primary;
-    }
+    &:hover { color: $color-primary; }
   }
 
   &__logo {
@@ -51,7 +45,6 @@
     font-size: 1.875rem;
   }
 
-  // ── Hamburger toggle (hidden ≥ md) ────────────────────────────────────────
   &__toggle {
     display: flex;
     flex-direction: column;
@@ -62,7 +55,7 @@
     border-radius: $border-radius-md;
     cursor: pointer;
     padding: $spacing-sm;
-    z-index: 210;          // stay above backdrop
+    z-index: 210;
     transition: border-color $transition-fast, background $transition-fast;
 
     &:hover {
@@ -70,7 +63,6 @@
       border-color: $color-primary;
     }
 
-    // ── Animated bars ──────────────────────────────────────────────────────
     .navbar__toggle-bar {
       width: 28px;
       height: 2.5px;
@@ -80,7 +72,6 @@
       transition: transform $transition-base, opacity $transition-base, background $transition-base;
     }
 
-    // Transform to × when active
     &--active {
       border-color: $color-primary;
 
@@ -98,12 +89,9 @@
       }
     }
 
-    @include respond-to(md) {
-      display: none;
-    }
+    @include respond-to(md) { display: none; }
   }
 
-  // ── Backdrop / overlay (mobile only) ──────────────────────────────────────
   &__backdrop {
     display: none;
 
@@ -125,9 +113,7 @@
     }
   }
 
-  // ── Navigation menu ────────────────────────────────────────────────────────
   &__menu {
-    // Mobile: hidden by default, shown as a full-width dropdown
     display: none;
     flex-direction: column;
     position: absolute;
@@ -141,15 +127,10 @@
     z-index: 200;
     animation: menuDropDown 0.22s ease both;
 
-    &--open {
-      display: flex;
-    }
+    &--open { display: flex; }
 
-    &--closing {
-      animation: menuRetractUp 0.2s ease forwards;
-    }
+    &--closing { animation: menuRetractUp 0.2s ease forwards; }
 
-    // Desktop: inline row
     @include respond-to(md) {
       display: flex;
       flex-direction: row;
@@ -164,7 +145,6 @@
     }
   }
 
-  // ── Nav link ───────────────────────────────────────────────────────────────
   &__link {
     display: flex;
     align-items: center;
@@ -176,7 +156,7 @@
     text-decoration: none;
     border-radius: 0;
     transition: color $transition-fast, background $transition-fast;
-    min-height: 52px; // comfortable touch target
+    min-height: 52px;
 
     &:hover {
       color: $color-primary;
@@ -189,7 +169,6 @@
       font-weight: $font-weight-semibold;
       position: relative;
 
-      // Left-side active indicator via pseudo-element (mobile)
       &::after {
         content: '';
         position: absolute;
@@ -203,14 +182,10 @@
 
       @include respond-to(md) {
         border-radius: $border-radius-md;
-
-        &::after {
-          display: none;
-        }
+        &::after { display: none; }
       }
     }
 
-    // Desktop overrides
     @include respond-to(md) {
       padding: $spacing-sm $spacing-md;
       border-radius: $border-radius-md;
@@ -219,24 +194,17 @@
     }
   }
 
-  // ── Link icon (shown mobile, hidden desktop) ──────────────────────────────
   &__link-icon {
     width: 18px;
     height: 18px;
     flex-shrink: 0;
     opacity: 0.7;
 
-    @include respond-to(md) {
-      display: none;
-    }
+    @include respond-to(md) { display: none; }
   }
 
-  // ── Cart link specifics ───────────────────────────────────────────────────
   &__cart-link {
-    // on desktop: no gap between icon & label since label is hidden
-    @include respond-to(md) {
-      gap: 0;
-    }
+    @include respond-to(md) { gap: 0; }
   }
 
   &__cart-icon-wrap {
@@ -257,40 +225,27 @@
   }
 
   &__cart-label {
-    // visible on mobile, hidden on desktop (icon is enough)
     display: inline;
-
-    @include respond-to(md) {
-      display: none;
-    }
+    @include respond-to(md) { display: none; }
   }
 
-  // ── Auth buttons ─────────────────────────────────────────────────────────
   &__auth-btn {
     background: none;
     border: none;
     cursor: pointer;
     font-family: $font-family;
 
-    // Active state for both login & register buttons
     &--login.navbar__link--active,
     &--register.navbar__link--active {
       background: #1d4ed8;
       color: white;
       box-shadow: inset 0 -2px 0 0 white;
 
-      &::after {
-        display: none;
-      }
-
-      &:hover {
-        background: #1d4ed8;
-        color: white;
-      }
+      &::after { display: none; }
+      &:hover { background: #1d4ed8; color: white; }
     }
   }
 
-  // ── User mini-menu ────────────────────────────────────────────────────────
   &__user-menu {
     position: relative;
     display: flex;
@@ -312,12 +267,7 @@
     padding: $spacing-xs $spacing-sm;
     transition: color $transition-fast, background $transition-fast, border-color $transition-fast;
 
-    &:hover {
-      color: $color-primary;
-      background: $color-primary-bg;
-      border-color: $color-primary;
-    }
-
+    &:hover,
     .navbar__user-menu--open & {
       color: $color-primary;
       background: $color-primary-bg;
@@ -337,10 +287,7 @@
     flex-shrink: 0;
     color: $color-primary;
 
-    svg {
-      width: 16px;
-      height: 16px;
-    }
+    svg { width: 16px; height: 16px; }
   }
 
   &__username {
@@ -349,10 +296,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 
-    // hide label on very small screens to save space
-    @media (max-width: 360px) {
-      display: none;
-    }
+    @media (max-width: 360px) { display: none; }
   }
 
   &__user-chevron {
@@ -361,9 +305,7 @@
     flex-shrink: 0;
     transition: transform $transition-fast;
 
-    &--up {
-      transform: rotate(180deg);
-    }
+    &--up { transform: rotate(180deg); }
   }
 
   &__user-dropdown {
@@ -379,7 +321,6 @@
     overflow: hidden;
     animation: menuDropDown 0.18s ease both;
 
-    // On mobile (inside the expanded mobile menu), use static positioning
     @media (max-width: #{$breakpoint-md - 1px}) {
       position: static;
       box-shadow: none;
@@ -407,23 +348,14 @@
     text-align: left;
     transition: color $transition-fast, background $transition-fast;
 
-    svg {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
+    svg { width: 16px; height: 16px; flex-shrink: 0; }
 
     &--logout {
       color: $color-error;
-
-      &:hover {
-        color: darken($color-error, 10%);
-        background: $color-error-bg;
-      }
+      &:hover { color: darken($color-error, 10%); background: $color-error-bg; }
     }
   }
 
-  // ── Badge ──────────────────────────────────────────────────────────────────
   &__badge {
     @include flex-center;
     position: absolute;
@@ -441,9 +373,6 @@
     animation: scaleIn 0.3s ease;
     border: 2px solid $color-bg-white;
 
-    @include respond-to(md) {
-      top: -4px;
-      right: -6px;
-    }
+    @include respond-to(md) { top: -4px; right: -6px; }
   }
 }

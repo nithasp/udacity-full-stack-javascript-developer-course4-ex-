@@ -1,5 +1,3 @@
-// Moved from: core/services/cart/cart-api.service.ts
-
 import { ProductType } from '../../features/products/models/product.model';
 
 export interface CartApiItem {
@@ -13,7 +11,6 @@ export interface CartApiItem {
   shopName: string | null;
   createdAt: string;
   updatedAt: string;
-  // Joined product fields (present when fetching cart)
   productName?: string;
   productPrice?: number;
   productCategory?: string;

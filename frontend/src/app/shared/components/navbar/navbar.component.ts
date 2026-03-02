@@ -2,7 +2,8 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../../core/services/cart/cart.service';
-import { AuthService, AuthUser } from '../../../core/services/auth/auth.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { AuthUser } from '../../../core/models/auth.model';
 import { NotificationService } from '../../../core/services/ui/notification.service';
 
 @Component({

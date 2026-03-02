@@ -6,31 +6,25 @@ import { ToastrModule } from 'ngx-toastr';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    CoreModule,
     SharedModule,
     ToastrModule.forRoot({
       timeOut: 3000,
       positionClass: 'toast-top-right',
       progressBar: true,
       closeButton: true,
-      progressAnimation: 'increasing'
-    })
+      progressAnimation: 'increasing',
+    }),
   ],
-  providers: [
-    provideHttpClient(withInterceptors([authInterceptor]))
-  ],
-  bootstrap: [AppComponent]
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

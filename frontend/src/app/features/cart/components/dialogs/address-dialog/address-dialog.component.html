@@ -1,21 +1,17 @@
-<!-- Fixed overlay — covers the entire app viewport -->
 <div class="address-dialog-overlay" [class.address-dialog-overlay--closing]="closing" (click)="close()"
   (animationend)="onOverlayAnimationDone($event)">
   <div class="address-dialog" [class.address-dialog--closing]="closing" (click)="$event.stopPropagation()">
 
-    <!-- ── LIST mode ──────────────────────────────────────────────────────── -->
     <ng-container *ngIf="dialogMode === 'list'">
       <div class="address-dialog__header">
         <h2 class="address-dialog__title">My Address</h2>
         <button class="address-dialog__close" (click)="close()" aria-label="Close">&times;</button>
       </div>
 
-      <!-- Loading state -->
       <div class="address-dialog__loading" *ngIf="isLoadingAddresses">
         <app-loading-spinner message="Loading addresses…" layout="block"></app-loading-spinner>
       </div>
 
-      <!-- Empty state -->
       <div class="address-dialog__empty" *ngIf="!isLoadingAddresses && addresses.length === 0">
         <p>No addresses yet. Add your first address below.</p>
       </div>
@@ -63,7 +59,6 @@
       </div>
     </ng-container>
 
-    <!-- ── ADD / EDIT mode ────────────────────────────────────────────────── -->
     <ng-container *ngIf="dialogMode === 'add' || dialogMode === 'edit'">
       <div class="address-dialog__header">
         <button class="address-dialog__back" (click)="backToList()" aria-label="Back to list">

@@ -1,8 +1,6 @@
 @import 'variables';
 @import 'mixins';
 
-// ─── Overlay ──────────────────────────────────────────────────────────────────
-
 .confirm-overlay {
   position: fixed;
   inset: 0;
@@ -18,8 +16,6 @@
     animation: confirmFadeOut 0.18s ease forwards;
   }
 }
-
-// ─── Dialog Panel ─────────────────────────────────────────────────────────────
 
 .confirm-dialog {
   background: $color-bg-white;
@@ -39,8 +35,6 @@
     animation: confirmSlideDown 0.18s ease forwards;
   }
 
-  // ── Icon ────────────────────────────────────────────────────────────────────
-
   &__icon {
     width: 60px;
     height: 60px;
@@ -58,8 +52,6 @@
     }
   }
 
-  // ── Text ────────────────────────────────────────────────────────────────────
-
   &__title {
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
@@ -73,8 +65,6 @@
     margin: 0;
     line-height: 1.5;
   }
-
-  // ── Actions ─────────────────────────────────────────────────────────────────
 
   &__actions {
     display: flex;
@@ -112,8 +102,6 @@
     }
   }
 }
-
-// ─── Animations ───────────────────────────────────────────────────────────────
 
 @keyframes confirmFadeIn {
   from { opacity: 0; }

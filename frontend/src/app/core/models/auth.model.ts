@@ -1,5 +1,3 @@
-// Moved from: core/services/auth/auth-api.service.ts
-
 export interface AuthUser {
   id: number;
   username: string;
