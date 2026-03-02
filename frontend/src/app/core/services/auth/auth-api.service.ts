@@ -3,20 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthUser, AuthResponse, RefreshResponse } from '../../models/auth.model';
+import { API } from '../../config/api-config';
 
 export type { AuthUser, AuthResponse, RefreshResponse };
 
-// ── Constants ────────────────────────────────────────────────────────────────
-
-const API_URL = 'http://localhost:3000/auth';
-
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
+  private readonly baseUrl = `${API.baseUrl}/auth`;
+
   constructor(private http: HttpClient) {}
 
   login(username: string, password: string): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${API_URL}/login`, { username, password })
+      .post<AuthResponse>(`${this.baseUrl}/login`, { username, password })
       .pipe(
         catchError((err) => {
           const message = err.error?.error || 'Login failed. Please try again.';
@@ -27,7 +26,7 @@ export class AuthApiService {
 
   register(username: string, password: string): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${API_URL}/register`, { username, password })
+      .post<AuthResponse>(`${this.baseUrl}/register`, { username, password })
       .pipe(
         catchError((err) => {
           const message =
@@ -43,7 +42,7 @@ export class AuthApiService {
    */
   refresh(refreshToken: string): Observable<RefreshResponse> {
     return this.http
-      .post<RefreshResponse>(`${API_URL}/refresh`, { refreshToken })
+      .post<RefreshResponse>(`${this.baseUrl}/refresh`, { refreshToken })
       .pipe(
         catchError((err) => {
           const message =
@@ -58,11 +57,11 @@ export class AuthApiService {
    * Fire-and-forget — callers subscribe with { error: () => {} }.
    */
   logout(refreshToken: string): Observable<unknown> {
-    return this.http.post(`${API_URL}/logout`, { refreshToken });
+    return this.http.post(`${this.baseUrl}/logout`, { refreshToken });
   }
 
   /** Fetch the authenticated user's profile from the server. */
   fetchMe(): Observable<AuthUser> {
-    return this.http.get<AuthUser>(`${API_URL}/me`);
+    return this.http.get<AuthUser>(`${this.baseUrl}/me`);
   }
 }

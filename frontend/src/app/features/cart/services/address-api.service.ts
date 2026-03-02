@@ -2,30 +2,31 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AddressEntry, AddressForm } from '../models/address.model';
-
-const API_URL = 'http://localhost:3000/addresses';
+import { API } from '../../../core/config/api-config';
 
 @Injectable({ providedIn: 'root' })
 export class AddressApiService {
+  private readonly baseUrl = `${API.baseUrl}/addresses`;
+
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<AddressEntry[]> {
-    return this.http.get<AddressEntry[]>(API_URL);
+    return this.http.get<AddressEntry[]>(this.baseUrl);
   }
 
   getOne(id: number): Observable<AddressEntry> {
-    return this.http.get<AddressEntry>(`${API_URL}/${id}`);
+    return this.http.get<AddressEntry>(`${this.baseUrl}/${id}`);
   }
 
   create(form: AddressForm): Observable<AddressEntry> {
-    return this.http.post<AddressEntry>(API_URL, form);
+    return this.http.post<AddressEntry>(this.baseUrl, form);
   }
 
   update(id: number, form: Partial<AddressForm>): Observable<AddressEntry> {
-    return this.http.put<AddressEntry>(`${API_URL}/${id}`, form);
+    return this.http.put<AddressEntry>(`${this.baseUrl}/${id}`, form);
   }
 
   delete(id: number): Observable<AddressEntry> {
-    return this.http.delete<AddressEntry>(`${API_URL}/${id}`);
+    return this.http.delete<AddressEntry>(`${this.baseUrl}/${id}`);
   }
 }
