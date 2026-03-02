@@ -41,7 +41,11 @@ const register = asyncHandler(async (req: Request, res: Response) => {
   const accessToken = generateAccessToken(user.id!);
   const refreshToken = await refreshTokenStore.create(user.id!, config.refreshTokenExpiryMs);
 
-  res.json({ user, accessToken, refreshToken });
+  res.status(201).json({
+    status: 201,
+    message: 'Account created successfully.',
+    data: { user, accessToken, refreshToken },
+  });
 });
 
 // ── POST /auth/login ────────────────────────────────────────────────────────
@@ -67,7 +71,11 @@ const login = asyncHandler(async (req: Request, res: Response) => {
   // Fire-and-forget: clean up expired tokens without blocking the response
   refreshTokenStore.deleteExpired().catch(() => {});
 
-  res.json({ user, accessToken, refreshToken });
+  res.json({
+    status: 200,
+    message: 'Login successful! Welcome back.',
+    data: { user, accessToken, refreshToken },
+  });
 });
 
 // ── POST /auth/refresh (with token rotation) ───────────────────────────────
@@ -93,7 +101,11 @@ const refresh = asyncHandler(async (req: Request, res: Response) => {
     config.refreshTokenExpiryMs
   );
 
-  res.json({ accessToken, refreshToken: newRefreshToken });
+  res.json({
+    status: 200,
+    message: 'Token refreshed successfully.',
+    data: { accessToken, refreshToken: newRefreshToken },
+  });
 });
 
 // ── POST /auth/logout ───────────────────────────────────────────────────────
@@ -105,7 +117,7 @@ const logout = asyncHandler(async (req: Request, res: Response) => {
     await refreshTokenStore.deleteByToken(refreshToken);
   }
 
-  res.json({ message: 'Logged out successfully' });
+  res.json({ status: 200, message: 'Logged out successfully.', data: null });
 });
 
 // ── POST /auth/logout-all (requires valid access token) ─────────────────────
@@ -113,7 +125,7 @@ const logout = asyncHandler(async (req: Request, res: Response) => {
 const logoutAll = asyncHandler(async (req: Request, res: Response) => {
   // req.user is guaranteed by verifyAuthToken middleware
   await refreshTokenStore.deleteAllForUser(req.user!.userId);
-  res.json({ message: 'All sessions revoked' });
+  res.json({ status: 200, message: 'All sessions revoked.', data: null });
 });
 
 // ── GET /auth/me (requires valid access token) ─────────────────────────────
@@ -122,7 +134,7 @@ const me = asyncHandler(async (req: Request, res: Response) => {
   // req.user is guaranteed by verifyAuthToken middleware
   const user = await userStore.show(req.user!.userId);
   if (!user) throw new AppError('User not found', 404);
-  res.json(user);
+  res.json({ status: 200, message: 'User fetched successfully.', data: user });
 });
 
 // ── Register routes ─────────────────────────────────────────────────────────

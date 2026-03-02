@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { AuthUser, AuthResponse, RefreshResponse } from '../../models/auth.model';
 import { API } from '../../config/api-config';
 
@@ -14,26 +13,11 @@ export class AuthApiService {
   constructor(private http: HttpClient) {}
 
   login(username: string, password: string): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${this.baseUrl}/login`, { username, password })
-      .pipe(
-        catchError((err) => {
-          const message = err.error?.error || 'Login failed. Please try again.';
-          return throwError(() => new Error(message));
-        })
-      );
+    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, { username, password });
   }
 
   register(username: string, password: string): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${this.baseUrl}/register`, { username, password })
-      .pipe(
-        catchError((err) => {
-          const message =
-            err.error?.error || 'Registration failed. Please try again.';
-          return throwError(() => new Error(message));
-        })
-      );
+    return this.http.post<AuthResponse>(`${this.baseUrl}/register`, { username, password });
   }
 
   /**
@@ -41,15 +25,7 @@ export class AuthApiService {
    * Pure HTTP — no side effects on the caller's state.
    */
   refresh(refreshToken: string): Observable<RefreshResponse> {
-    return this.http
-      .post<RefreshResponse>(`${this.baseUrl}/refresh`, { refreshToken })
-      .pipe(
-        catchError((err) => {
-          const message =
-            err.error?.error || 'Session expired. Please log in again.';
-          return throwError(() => new Error(message));
-        })
-      );
+    return this.http.post<RefreshResponse>(`${this.baseUrl}/refresh`, { refreshToken });
   }
 
   /**

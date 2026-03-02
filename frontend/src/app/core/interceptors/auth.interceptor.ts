@@ -1,8 +1,10 @@
 import {
   HttpErrorResponse,
+  HttpEvent,
   HttpHandlerFn,
   HttpInterceptorFn,
   HttpRequest,
+  HttpResponse,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -10,6 +12,7 @@ import {
   BehaviorSubject,
   catchError,
   filter,
+  map,
   switchMap,
   take,
   throwError,
@@ -17,6 +20,7 @@ import {
 
 import { AuthService } from '../services/auth/auth.service';
 import { NotificationService } from '../services/ui/notification.service';
+import { ApiResponse } from '../models/api.model';
 
 // ── Module-level state shared across all interceptor invocations ─────────────
 
@@ -32,6 +36,16 @@ const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+function isApiEnvelope(body: unknown): body is ApiResponse<unknown> {
+  return (
+    body !== null &&
+    typeof body === 'object' &&
+    'status' in body &&
+    'message' in body &&
+    'data' in body
+  );
+}
+
 /** Clone the request and attach the Bearer token header. */
 function addToken(req: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
   return req.clone({
@@ -39,13 +53,21 @@ function addToken(req: HttpRequest<unknown>, token: string): HttpRequest<unknown
   });
 }
 
-/** Returns `true` for URLs that must NOT carry an access token. */
+/**
+ * Returns `true` for URLs that must NOT carry an access token.
+ * NOTE: errors from these endpoints are still handled by the interceptor.
+ */
 function isAuthEndpoint(url: string): boolean {
   return (
     url.includes('/auth/login') ||
     url.includes('/auth/register') ||
     url.includes('/auth/refresh')
   );
+}
+
+/** Extract a human-readable message from the error envelope. */
+function extractMessage(error: HttpErrorResponse): string {
+  return error.error?.message || error.message || 'An unexpected error occurred.';
 }
 
 // ── Interceptor ──────────────────────────────────────────────────────────────
@@ -58,19 +80,22 @@ export const authInterceptor: HttpInterceptorFn = (
   const router = inject(Router);
   const notification = inject(NotificationService);
 
-  // Don't attach tokens to public auth endpoints
-  if (isAuthEndpoint(req.url)) {
-    return next(req);
-  }
-
-  // Attach the access token (if available)
-  const token = authService.getAccessToken();
+  // Attach the access token only for protected (non-auth) endpoints
+  const token = isAuthEndpoint(req.url) ? null : authService.getAccessToken();
   const authReq = token ? addToken(req, token) : req;
 
   return next(authReq).pipe(
-    catchError((error: HttpErrorResponse) => {
-      return handleError(error, authReq, next, authService, router, notification);
-    })
+    // Transparently unwrap { status, message, data } envelopes so services
+    // receive the flat payload they expect, with no per-service operators needed.
+    map((event: HttpEvent<unknown>) => {
+      if (event instanceof HttpResponse && isApiEnvelope(event.body)) {
+        return event.clone({ body: event.body.data });
+      }
+      return event;
+    }),
+    catchError((error: HttpErrorResponse) =>
+      handleError(error, authReq, next, authService, router, notification)
+    )
   );
 };
 
@@ -87,13 +112,18 @@ function handleError(
   // Network / CORS / server unreachable (status 0)
   if (error.status === 0) {
     notification.error('Cannot reach the server. Please check your connection.');
-    return throwError(() => error);
+    return throwError(() => new Error('Cannot reach the server.'));
   }
 
-  // 401 Unauthenticated — attempt token refresh or redirect to login
+  // 401 Unauthenticated
   if (error.status === 401) {
-    const code: string | undefined = error.error?.code;
+    // On public auth endpoints a 401 means wrong credentials (not an expired
+    // session), so skip the refresh/redirect logic and just forward the message.
+    if (isAuthEndpoint(req.url)) {
+      return throwError(() => new Error(extractMessage(error)));
+    }
 
+    const code: string | undefined = error.error?.code;
     if (code === 'token_expired') {
       return handle401Refresh(req, next, authService, router, notification);
     }
@@ -102,30 +132,30 @@ function handleError(
     authService.clearSession();
     notification.error('Your session is invalid. Please log in again.');
     router.navigate(['/auth/login']);
-    return throwError(() => error);
+    return throwError(() => new Error(extractMessage(error)));
   }
 
   // 403 Forbidden — authenticated but not authorised
   if (error.status === 403) {
     notification.error('You do not have permission to perform this action.');
-    return throwError(() => error);
+    return throwError(() => new Error(extractMessage(error)));
   }
 
   // 429 Too Many Requests — rate limited by the server
   if (error.status === 429) {
     notification.error('Too many requests. Please wait a moment and try again.');
-    return throwError(() => error);
+    return throwError(() => new Error(extractMessage(error)));
   }
 
   // 5xx Server errors
   if (error.status >= 500) {
     notification.error('A server error occurred. Please try again later.');
-    return throwError(() => error);
+    return throwError(() => new Error(extractMessage(error)));
   }
 
-  // All other errors (400, 404, 409, …) are passed through to the caller
-  // so individual components can display field-level or contextual messages.
-  return throwError(() => error);
+  // 400, 404, 409 etc. — normalize and forward to the caller so components
+  // can display field-level or contextual messages.
+  return throwError(() => new Error(extractMessage(error)));
 }
 
 // ── Refresh-and-retry logic ──────────────────────────────────────────────────

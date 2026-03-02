@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { AuthApiService } from './auth-api.service';
 import { AuthUser, AuthResponse, RefreshResponse } from '../../models/auth.model';
 
@@ -83,8 +83,7 @@ export class AuthService {
       tap((user) => {
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         this.currentUserSubject.next(user);
-      }),
-      catchError((err) => throwError(() => err))
+      })
     );
   }
 

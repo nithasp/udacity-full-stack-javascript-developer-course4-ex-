@@ -10,5 +10,9 @@ export const errorMiddleware = (
   err: Error, _req: Request, res: Response, _next: NextFunction
 ): void => {
   const statusCode = (err as AppError).statusCode || 500;
-  res.status(statusCode).json({ error: err.message || 'Internal Server Error' });
+  res.status(statusCode).json({
+    status: statusCode,
+    message: err.message || 'Internal Server Error',
+    data: null,
+  });
 };
