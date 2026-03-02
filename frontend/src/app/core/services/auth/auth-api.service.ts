@@ -2,26 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AuthUser, AuthResponse, RefreshResponse } from '../../models/auth.model';
 
-// ── Interfaces ───────────────────────────────────────────────────────────────
-
-export interface AuthUser {
-  id: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-}
-
-export interface AuthResponse {
-  user: AuthUser;
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface RefreshResponse {
-  accessToken: string;
-  refreshToken: string;
-}
+export type { AuthUser, AuthResponse, RefreshResponse };
 
 // ── Constants ────────────────────────────────────────────────────────────────
 

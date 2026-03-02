@@ -1,21 +1,6 @@
-import { Product } from '../models/product';
+import { Product, BackendProduct } from '../models/product.model';
 
-export interface BackendProduct {
-  id: number;
-  name: string;
-  category?: string;
-  price: number;
-  image?: string;
-  description?: string;
-  previewImg?: string[];
-  types?: Product['types'];
-  reviews?: Product['reviews'];
-  overallRating?: number;
-  stock?: number;
-  isActive?: boolean;
-  shopId?: string;
-  shopName?: string;
-}
+export type { BackendProduct };
 
 export function mapBackendProduct(p: BackendProduct): Product {
   return {

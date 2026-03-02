@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { AuthApiService, AuthUser, AuthResponse, RefreshResponse } from './auth-api.service';
+import { AuthApiService } from './auth-api.service';
+import { AuthUser, AuthResponse, RefreshResponse } from '../../models/auth.model';
 
-// Re-export so all existing consumers keep their imports unchanged
 export type { AuthUser, AuthResponse, RefreshResponse };
 
 // ── Constants ────────────────────────────────────────────────────────────────

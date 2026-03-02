@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { map } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { Product, ProductType } from '../models/product';
+import { Product, ProductType } from '../models/product.model';
 import { ProductService } from '../services/product.service';
 import { mapBackendProduct } from '../utils/product-mappers';
 import { CartService } from '../../../core/services/cart/cart.service';

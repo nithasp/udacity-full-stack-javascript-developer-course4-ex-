@@ -1,26 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { combineLatest, Subscription } from 'rxjs';
-import { CartItem } from '../../products/models/product';
+import { CartItem } from '../../products/models/product.model';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { CartApiService } from '../../../core/services/cart/cart-api.service';
 import { NotificationService } from '../../../core/services/ui/notification.service';
 import { AddressApiService } from '../services/address-api.service';
 import { AddressEntry } from '../models/address.model';
+import { PaymentMethod, ShopGroup } from '../models/cart.model';
 
-interface PaymentMethod {
-  id: string;
-  name: string;
-  description: string;
-  badge: string;
-  color: string;
-}
-
-export interface ShopGroup {
-  shopId: string;
-  shopName: string;
-  items: CartItem[];
-}
+export type { ShopGroup };
 
 @Component({
   selector: 'app-cart-page',

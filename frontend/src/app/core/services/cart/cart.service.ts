@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
-import { CartItem, Product, ProductType, Review } from '../../../features/products/models/product';
-import { CartApiService, CartApiItem } from './cart-api.service';
+import { CartItem, Product, ProductType, Review } from '../../../features/products/models/product.model';
+import { CartApiService } from './cart-api.service';
+import { CartApiItem } from '../../models/cart-api.model';
 
 interface QuantityUpdate {
   cartItemId: number;

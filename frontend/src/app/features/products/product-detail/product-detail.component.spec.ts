@@ -9,8 +9,8 @@ import { ProductDetailComponent } from './product-detail.component';
 import { ProductService } from '../services/product.service';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { NotificationService } from '../../../core/services/ui/notification.service';
-import { Product } from '../models/product';
-import { BackendProduct, mapBackendProduct } from '../utils/product-mappers';
+import { Product, BackendProduct } from '../models/product.model';
+import { mapBackendProduct } from '../utils/product-mappers';
 
 describe('ProductDetailComponent', () => {
   let component: ProductDetailComponent;

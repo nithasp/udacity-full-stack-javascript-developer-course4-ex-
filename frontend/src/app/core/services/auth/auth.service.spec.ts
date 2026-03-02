@@ -6,7 +6,8 @@ import {
 import { provideHttpClient } from '@angular/common/http';
 
 import { AuthService } from './auth.service';
-import { AuthApiService, AuthResponse, RefreshResponse } from './auth-api.service';
+import { AuthApiService } from './auth-api.service';
+import { AuthResponse, RefreshResponse } from '../../models/auth.model';
 
 describe('AuthService', () => {
   let service: AuthService;

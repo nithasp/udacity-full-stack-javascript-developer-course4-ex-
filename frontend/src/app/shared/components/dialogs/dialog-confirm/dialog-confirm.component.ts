@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ConfirmDialogConfig, ConfirmDialogService } from '../../../../core/services/ui/confirm-dialog.service';
+import { ConfirmDialogService } from '../../../../core/services/ui/confirm-dialog.service';
+import { ConfirmDialogConfig } from '../../../../core/models/confirm-dialog.model';
 
 @Component({
   selector: 'app-dialog-confirm',

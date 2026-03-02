@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProductCardComponent } from './product-card.component';
 import { TruncatePipe } from '../../../../shared/pipes/truncate.pipe';
-import { Product } from '../../models/product';
+import { Product } from '../../models/product.model';
 import { CartService } from '../../../../core/services/cart/cart.service';
 import { NotificationService } from '../../../../core/services/ui/notification.service';
 

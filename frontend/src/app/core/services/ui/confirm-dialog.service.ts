@@ -1,14 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { ConfirmDialogConfig } from '../../models/confirm-dialog.model';
 
-export interface ConfirmDialogConfig {
-  title: string;
-  message: string;
-  confirmText?: string;
-  cancelText?: string;
-  /** When true the confirm button renders in red (destructive action) */
-  danger?: boolean;
-}
+export type { ConfirmDialogConfig };
 
 @Injectable({ providedIn: 'root' })
 export class ConfirmDialogService {
