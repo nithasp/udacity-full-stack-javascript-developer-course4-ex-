@@ -16,7 +16,7 @@ describe('CartService', () => {
   };
 
   const mockProduct: Product = {
-    _id: 'prod1',
+    id: 1,
     name: 'Test Product',
     category: 'Electronics',
     price: 79.99,
@@ -30,7 +30,7 @@ describe('CartService', () => {
 
   const mockProduct2: Product = {
     ...mockProduct,
-    _id: 'prod2',
+    id: 2,
     name: 'Test Product 2',
     price: 49.99
   };
@@ -54,7 +54,7 @@ describe('CartService', () => {
     service.addToCart(mockProduct, 2, mockType);
     const items = service.getItems();
     expect(items.length).toBe(1);
-    expect(items[0].product._id).toBe('prod1');
+    expect(items[0].product.id).toBe(1);
     expect(items[0].quantity).toBe(2);
   });
 
@@ -93,21 +93,21 @@ describe('CartService', () => {
   it('should remove a product from the cart', () => {
     service.addToCart(mockProduct, 1, mockType);
     service.addToCart(mockProduct2, 1);
-    service.removeFromCart('prod1', 'type1');
+    service.removeFromCart(1, 'type1');
     const items = service.getItems();
     expect(items.length).toBe(1);
-    expect(items[0].product._id).toBe('prod2');
+    expect(items[0].product.id).toBe(2);
   });
 
   it('should update quantity of a product', () => {
     service.addToCart(mockProduct, 1, mockType);
-    service.updateQuantity('prod1', 5, 'type1');
+    service.updateQuantity(1, 5, 'type1');
     expect(service.getItems()[0].quantity).toBe(5);
   });
 
   it('should not allow quantity below 1', () => {
     service.addToCart(mockProduct, 3, mockType);
-    service.updateQuantity('prod1', 0, 'type1');
+    service.updateQuantity(1, 0, 'type1');
     expect(service.getItems()[0].quantity).toBe(1);
   });
 

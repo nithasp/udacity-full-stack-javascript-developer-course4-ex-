@@ -15,7 +15,7 @@ describe('CartPageComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationService>;
 
   const mockProduct: Product = {
-    _id: 'prod1',
+    id: 1,
     name: 'Test Product',
     category: 'Electronics',
     price: 79.99,
@@ -34,7 +34,7 @@ describe('CartPageComponent', () => {
 
   const mockProduct2: Product = {
     ...mockProduct,
-    _id: 'prod2',
+    id: 2,
     name: 'Test Product 2',
     price: 49.99,
     shopId: 'shop2',

@@ -1,6 +1,3 @@
-// Moved from: features/products/models/product.ts
-// BackendProduct moved from: features/products/utils/product-mappers.ts
-
 export interface ProductType {
   productId: number;
   color: string;
@@ -21,7 +18,7 @@ export interface Review {
 }
 
 export interface Product {
-  _id: string;
+  id: number;
   name: string;
   category: string;
   price: number;
@@ -48,19 +45,3 @@ export interface CartItem {
   shopName: string;
 }
 
-export interface BackendProduct {
-  id: number;
-  name: string;
-  category?: string;
-  price: number;
-  image?: string;
-  description?: string;
-  previewImg?: string[];
-  types?: Product['types'];
-  reviews?: Product['reviews'];
-  overallRating?: number;
-  stock?: number;
-  isActive?: boolean;
-  shopId?: string;
-  shopName?: string;
-}

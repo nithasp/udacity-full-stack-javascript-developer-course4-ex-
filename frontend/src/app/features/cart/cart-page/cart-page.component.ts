@@ -123,12 +123,12 @@ export class CartPageComponent implements OnInit, OnDestroy {
 
   // ── Item key ────────────────────────────────────────────────────────────────
   getItemKey(item: CartItem): string {
-    return `${item.product._id}_${item.selectedType?._id ?? 'default'}`;
+    return `${item.product.id}_${item.selectedType?._id ?? 'default'}`;
   }
 
   // ── Per-item loading state ─────────────────────────────────────────────────
   isItemLoading(item: CartItem): boolean {
-    return this.cartService.isItemLoading(item.product._id, item.selectedType?._id);
+    return this.cartService.isItemLoading(item.product.id, item.selectedType?._id);
   }
 
   // ── Shop grouping ──────────────────────────────────────────────────────────
@@ -224,12 +224,12 @@ export class CartPageComponent implements OnInit, OnDestroy {
       );
       return;
     }
-    this.cartService.updateQuantity(item.product._id, quantity, item.selectedType?._id);
+    this.cartService.updateQuantity(item.product.id, quantity, item.selectedType?._id);
   }
 
   removeItem(item: CartItem): void {
     if (this.isItemLoading(item)) return;
-    this.cartService.removeFromCart(item.product._id, item.selectedType?._id);
+    this.cartService.removeFromCart(item.product.id, item.selectedType?._id);
     this.notificationService.info(`${item.product.name} removed from cart`);
   }
 
@@ -282,7 +282,7 @@ export class CartPageComponent implements OnInit, OnDestroy {
     const checkoutItems = this.selectedItems
       .filter(item => item.cartItemId !== undefined)
       .map(item => ({
-        productId: Number(item.product._id),
+        productId: item.product.id,
         quantity: item.quantity,
       }));
 

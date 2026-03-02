@@ -112,7 +112,7 @@
               </span>
             </label>
 
-            <a [routerLink]="['/products', item.product._id]" class="cart-item__image-link">
+            <a [routerLink]="['/products', item.product.id]" class="cart-item__image-link">
               <img [src]="item.selectedType?.image || item.product.image" [alt]="item.product.name"
                 class="cart-item__image" />
             </a>
@@ -128,7 +128,7 @@
             <div class="cart-item__actions">
               <div class="cart-item__qty-wrapper">
                 <app-quantity-input [ngModel]="item.quantity" (ngModelChange)="updateQuantity(item, $event)"
-                  [name]="'qty-' + item.product._id + '-' + (item.selectedType?._id || 'default')" [min]="1"
+                  [name]="'qty-' + item.product.id + '-' + (item.selectedType?._id || 'default')" [min]="1"
                   [max]="getItemStock(item)" [disabled]="isItemLoading(item) || isCheckingOut"></app-quantity-input>
                 <p *ngIf="item.quantity >= getItemStock(item)" class="cart-item__stock-warning">
                   Only {{ getItemStock(item) }} {{ getItemStock(item) === 1 ? 'item' : 'items' }} left in stock

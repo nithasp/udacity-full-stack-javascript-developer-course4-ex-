@@ -72,15 +72,15 @@ export class CartService {
   private clearLoadingByCartItemId(cartItemId: number): void {
     const item = this.cartItems.find(i => i.cartItemId === cartItemId);
     if (item) {
-      this.setLoading(this.makeKey(item.product._id, item.selectedType?._id), false);
+      this.setLoading(this.makeKey(item.product.id, item.selectedType?._id), false);
     }
   }
 
-  isItemLoading(productId: string, typeId?: string): boolean {
+  isItemLoading(productId: number, typeId?: string): boolean {
     return this.loadingKeys.has(this.makeKey(productId, typeId));
   }
 
-  private makeKey(productId: string, typeId?: string): string {
+  private makeKey(productId: number, typeId?: string): string {
     return `${productId}_${typeId ?? 'default'}`;
   }
 
@@ -113,7 +113,7 @@ export class CartService {
   /** Convert a raw CartApiItem (with joined product fields) into a frontend CartItem. */
   private apiItemToCartItem(api: CartApiItem): CartItem {
     const product: Product = {
-      _id: String(api.productId),
+      id: api.productId,
       name: api.productName ?? '',
       category: api.productCategory ?? '',
       price: api.productPrice ?? 0,
@@ -147,7 +147,7 @@ export class CartService {
    */
   addToCartLocal(product: Product, quantity: number, selectedType?: ProductType): void {
     const existingIndex = this.cartItems.findIndex(
-      item => item.product._id === product._id &&
+      item => item.product.id === product.id &&
               item.selectedType?._id === selectedType?._id
     );
     if (existingIndex > -1) {
@@ -173,9 +173,9 @@ export class CartService {
    * - If the item is new → POST (create)
    */
   syncToBackend(product: Product, selectedType?: ProductType): void {
-    const key = this.makeKey(product._id, selectedType?._id);
+    const key = this.makeKey(product.id, selectedType?._id);
     const item = this.cartItems.find(
-      i => i.product._id === product._id &&
+      i => i.product.id === product.id &&
            i.selectedType?._id === selectedType?._id
     );
     if (!item) return;
@@ -193,7 +193,7 @@ export class CartService {
       });
     } else {
       this.cartApi.addItem({
-        productId: Number(product._id),
+        productId: product.id,
         quantity: item.quantity,
         typeId: selectedType?._id ?? null,
         selectedType: selectedType ?? null,
@@ -209,7 +209,7 @@ export class CartService {
         error: () => {
           // Revert local item on failure
           this.cartItems = this.cartItems.filter(
-            i => !(i.product._id === product._id &&
+            i => !(i.product.id === product.id &&
                    i.selectedType?._id === selectedType?._id)
           );
           this.cartSubject.next([...this.cartItems]);
@@ -220,9 +220,9 @@ export class CartService {
   }
 
   addToCart(product: Product, quantity: number, selectedType?: ProductType): void {
-    const key = this.makeKey(product._id, selectedType?._id);
+    const key = this.makeKey(product.id, selectedType?._id);
     const existingIndex = this.cartItems.findIndex(
-      item => item.product._id === product._id &&
+      item => item.product.id === product.id &&
               item.selectedType?._id === selectedType?._id
     );
 
@@ -242,7 +242,7 @@ export class CartService {
 
     this.setLoading(key, true);
     this.cartApi.addItem({
-      productId: Number(product._id),
+      productId: product.id,
       quantity,
       typeId: selectedType?._id ?? null,
       selectedType: selectedType ?? null,
@@ -251,7 +251,7 @@ export class CartService {
     }).subscribe({
       next: (apiItem) => {
         const item = this.cartItems.find(
-          i => i.product._id === product._id &&
+          i => i.product.id === product.id &&
                i.selectedType?._id === selectedType?._id
         );
         if (item) {
@@ -267,7 +267,7 @@ export class CartService {
           this.cartItems[existingIndex].quantity -= quantity;
         } else {
           this.cartItems = this.cartItems.filter(
-            i => !(i.product._id === product._id &&
+            i => !(i.product.id === product.id &&
                    i.selectedType?._id === selectedType?._id)
           );
         }
@@ -277,10 +277,10 @@ export class CartService {
     });
   }
 
-  removeFromCart(productId: string, typeId?: string): void {
+  removeFromCart(productId: number, typeId?: string): void {
     const key = this.makeKey(productId, typeId);
     const item = this.cartItems.find(
-      i => i.product._id === productId && i.selectedType?._id === typeId
+      i => i.product.id === productId && i.selectedType?._id === typeId
     );
     if (!item) return;
 
@@ -290,7 +290,7 @@ export class CartService {
       this.cartApi.removeItem(item.cartItemId).subscribe({
         next: () => {
           this.cartItems = this.cartItems.filter(
-            i => !(i.product._id === productId && i.selectedType?._id === typeId)
+            i => !(i.product.id === productId && i.selectedType?._id === typeId)
           );
           this.cartSubject.next([...this.cartItems]);
           this.setLoading(key, false);
@@ -300,7 +300,7 @@ export class CartService {
     } else {
       // Item not yet persisted (edge case)
       this.cartItems = this.cartItems.filter(
-        i => !(i.product._id === productId && i.selectedType?._id === typeId)
+        i => !(i.product.id === productId && i.selectedType?._id === typeId)
       );
       this.cartSubject.next([...this.cartItems]);
       this.setLoading(key, false);
@@ -311,10 +311,10 @@ export class CartService {
    * Update quantity for a cart item.
    * The local state is updated immediately; the API call is debounced 400ms.
    */
-  updateQuantity(productId: string, quantity: number, typeId?: string): void {
+  updateQuantity(productId: number, quantity: number, typeId?: string): void {
     const key = this.makeKey(productId, typeId);
     const item = this.cartItems.find(
-      i => i.product._id === productId && i.selectedType?._id === typeId
+      i => i.product.id === productId && i.selectedType?._id === typeId
     );
     if (!item) return;
 

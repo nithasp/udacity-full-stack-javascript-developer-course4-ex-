@@ -1,11 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
-import { map } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Product, ProductType } from '../models/product.model';
 import { ProductService } from '../services/product.service';
-import { mapBackendProduct } from '../utils/product-mappers';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { NotificationService } from '../../../core/services/ui/notification.service';
 
@@ -38,9 +36,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.productService.getProductById(id).pipe(
-        map(mapBackendProduct)
-      ).subscribe({
+      this.productService.getProductById(id).subscribe({
         next: (product) => {
           this.product = product;
           if (product) {
@@ -96,7 +92,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     if (!this.product) return;
 
     const existingItem = this.cartService.getItems().find(
-      item => item.product._id === this.product!._id &&
+      item => item.product.id === this.product!.id &&
               item.selectedType?._id === this.selectedType?._id
     );
     const currentCartQty = existingItem?.quantity ?? 0;
@@ -132,7 +128,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   get isAdding(): boolean {
-    return this.cartService.isItemLoading(this.product?._id ?? '', this.selectedType?._id);
+    return this.cartService.isItemLoading(this.product?.id ?? 0, this.selectedType?._id);
   }
 
   get currentPrice(): number {

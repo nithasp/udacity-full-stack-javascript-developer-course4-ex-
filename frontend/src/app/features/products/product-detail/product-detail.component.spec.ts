@@ -9,8 +9,7 @@ import { ProductDetailComponent } from './product-detail.component';
 import { ProductService } from '../services/product.service';
 import { CartService } from '../../../core/services/cart/cart.service';
 import { NotificationService } from '../../../core/services/ui/notification.service';
-import { Product, BackendProduct } from '../models/product.model';
-import { mapBackendProduct } from '../utils/product-mappers';
+import { Product } from '../models/product.model';
 
 describe('ProductDetailComponent', () => {
   let component: ProductDetailComponent;
@@ -19,7 +18,7 @@ describe('ProductDetailComponent', () => {
   let cartService: CartService;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
 
-  const mockBackendProduct: BackendProduct = {
+  const mockProduct: Product = {
     id: 1,
     name: 'Test Headphones',
     category: 'Electronics',
@@ -39,11 +38,9 @@ describe('ProductDetailComponent', () => {
     stock: 85
   };
 
-  const mockProduct: Product = mapBackendProduct(mockBackendProduct);
-
   beforeEach(async () => {
     productServiceSpy = jasmine.createSpyObj('ProductService', ['getProductById']);
-    productServiceSpy.getProductById.and.returnValue(of(mockBackendProduct));
+    productServiceSpy.getProductById.and.returnValue(of(mockProduct));
     notificationSpy = jasmine.createSpyObj('NotificationService', ['success', 'error', 'info', 'warning']);
 
     await TestBed.configureTestingModule({
