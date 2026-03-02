@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "start": "node dist/server.js",
-    "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./dist --onSuccess \"node ./dist/server.js\"",
+    "watch": "tsc-watch --onSuccess \"node ./dist/server.js\"",
     "build": "npx tsc",
     "test": "cross-env ENV=test npm run build && db-migrate --env test up && cross-env ENV=test jasmine && db-migrate --env test reset",
     "migrate:up": "db-migrate up",
